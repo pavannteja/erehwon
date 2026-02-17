@@ -158,11 +158,18 @@
                         <h2 class="problems-heading" style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 8px;">Your Projects</h2>
                         <p class="problems-subheading" style="color: #888; font-size: 1rem; margin: 0;">Manage and track your active innovation initiatives</p>
                     </div>
-                    <form action="/create-project" method="POST" style="display: inline;">
-                        <button type="submit" class="new-project-btn" style="background: #ffde00; color: #000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
-                            <i class="fas fa-plus"></i> New Project
-                        </button>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <% if (currentUser && !currentUser.isTeam) { %>
+                        <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 12px 24px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-users"></i> Create Team
+                        </a>
+                        <% } %>
+                        <form action="/create-project" method="POST" style="display: inline;">
+                            <button type="submit" class="new-project-btn" style="background: #ffde00; color: #000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
+                                <i class="fas fa-plus"></i> New Project
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <% if(campgrounds.length === 0) { %>
@@ -172,11 +179,18 @@
                         </div>
                         <h2 style="color: #fff; font-size: 1.5rem; margin-bottom: 12px;">No Projects Yet</h2>
                         <p style="color: #888; font-size: 1rem; margin-bottom: 30px;">Start by creating your first project to begin your innovation journey!</p>
-                        <form action="/create-project" method="POST" style="display: inline;">
-                            <button type="submit" class="empty-state-btn" style="background: #ffde00; color: #000; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; border: none; cursor: pointer;">
-                                <i class="fas fa-plus"></i> Create Your First Project
-                            </button>
-                        </form>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <% if (currentUser && !currentUser.isTeam) { %>
+                            <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-users"></i> Create Team
+                            </a>
+                            <% } %>
+                            <form action="/create-project" method="POST" style="display: inline;">
+                                <button type="submit" class="empty-state-btn" style="background: #ffde00; color: #000; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; border: none; cursor: pointer;">
+                                    <i class="fas fa-plus"></i> Create Your First Project
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 <% } else { %>
                     <div class="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-top: 30px;">

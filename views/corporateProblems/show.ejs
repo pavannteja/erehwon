@@ -4,7 +4,11 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h2 class="text-white mb-0"><%= corporateProblem.title %></h2>
-            <% if (currentUser && (currentUser.isProblemCreator || currentUser.isAdmin) && corporateProblem.createdBy._id.toString() === currentUser._id.toString()) { %>
+            <%
+                const isOwner = currentUser && corporateProblem.createdBy && corporateProblem.createdBy._id && corporateProblem.createdBy._id.toString() === currentUser._id.toString();
+                const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
+            %>
+            <% if (canManageProblem) { %>
             <div class="d-flex gap-2">
                 <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="btn btn-warning btn-sm">
                     <i class="fas fa-edit"></i> Edit

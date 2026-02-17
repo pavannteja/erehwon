@@ -42,7 +42,41 @@ const UserSchema = new Schema({
     isProblemCreator: {
         type: Boolean,
         default: false
-    }
+    },
+    // When true, this account represents a team login,
+    // not an individual student. Teams can have their
+    // own dashboard and own projects.
+    isTeam: {
+        type: Boolean,
+        default: false
+    },
+    // Members (individual user accounts) that belong to this team
+    teamMembers: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    // Owner (individual user) who created this team
+    teamOwner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    // Teams this individual belongs to
+    teams: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    // School & program membership for individuals/teams
+    school: {
+        type: Schema.Types.ObjectId,
+        ref: 'School'
+    },
+    program: {
+        type: Schema.Types.ObjectId,
+        ref: 'Program'
+    },
+    // Convenience fields for grouping/filtering teams and users
+    schoolName: String,
+    programName: String
 });
 
 UserSchema.plugin(passportLocalMongoose, {

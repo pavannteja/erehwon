@@ -61,7 +61,11 @@
                                     </button>
                                 </form>
                             </div>
-                            <% if (currentUser && (currentUser.isProblemCreator || currentUser.isAdmin) && problem.createdBy._id.toString() === currentUser._id.toString()) { %>
+                            <% 
+                                const isOwner = currentUser && problem.createdBy && problem.createdBy._id && problem.createdBy._id.toString() === currentUser._id.toString();
+                                const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
+                            %>
+                            <% if (canManageProblem) { %>
                             <div class="mt-2 d-flex gap-2">
                                 <a href="/corporate-problems/<%= problem._id %>/edit" class="btn btn-outline-warning btn-sm flex-grow-1">
                                     <i class="fas fa-edit"></i> Edit

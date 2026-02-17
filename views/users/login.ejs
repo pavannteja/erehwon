@@ -8,7 +8,7 @@
                     <img src="/images/logo-tranparent.png" alt="Erehwon Logo" class="img-fluid" style="max-height: 120px; width: auto; object-fit: contain;">
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title text-center">
+                    <h5 class="card-title text-center mb-3">
                         <img src="/images/logo-tranparent.png" alt="Erehwon" style="height: 32px; width: auto; margin-right: 8px; vertical-align: middle;">
                         Login
                     </h5>
@@ -30,27 +30,57 @@
                     </div>
                     <% } %>
                     
-                    <form action="/login" method="POST" class="validated-form" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" autofocus required>
-                            <div class="valid-feedback">
-                                Looks good!
+                    <!-- Individual Login -->
+                    <div class="mb-4">
+                        <h6 class="text-white mb-2">Individual Login</h6>
+                        <form action="/login" method="POST" class="validated-form" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label" for="username">Individual Username</label>
+                                <input class="form-control" type="text" id="username" name="username" autofocus required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="password">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" required>
-                            <div class="valid-feedback">
-                                Looks good!
+                            <div class="mb-3">
+                                <label class="form-label" for="password">Password</label>
+                                <input class="form-control" type="password" id="password" name="password" required>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <button class="btn btn-success">Login</button>
-                        </div>
-                    </form>
+                            <div class="mb-3">
+                                <button class="btn btn-success w-100">Login as Individual</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <hr class="text-muted">
+
+                    <!-- Team Login -->
+                    <div class="mb-3">
+                        <h6 class="text-white mb-2">Team Login</h6>
+                        <p class="text-muted" style="font-size: 0.85rem;">
+                            Use the <strong>team username</strong> that was generated when your team was created
+                            (for example: <code>yourname_team</code>).
+                        </p>
+                        <form action="/login" method="POST" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label" for="teamUsername">Team Username</label>
+                                <input class="form-control" type="text" id="teamUsername" name="username" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="teamPassword">Team Password</label>
+                                <input class="form-control" type="password" id="teamPassword" name="password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <button class="btn btn-outline-primary w-100">Login as Team</button>
+                            </div>
+                        </form>
+                    </div>
                     
                     <div class="text-center">
                         <a href="/forgot-password" class="btn btn-link fw-semibold">Forgot your password?</a>

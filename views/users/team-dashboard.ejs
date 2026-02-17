@@ -1,0 +1,126 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="dashboard-container">
+    <div class="container">
+        <div class="dashboard-header">
+            <div class="dashboard-title-section">
+                <h1>Team Dashboard</h1>
+                <p>
+                    Team: <strong><%= currentUser.displayName || currentUser.username %></strong>
+                    <% if (currentUser.schoolName) { %>
+                        &middot; School: <strong><%= currentUser.schoolName %></strong>
+                    <% } %>
+                    <% if (currentUser.programName) { %>
+                        &middot; Program: <strong><%= currentUser.programName %></strong>
+                    <% } %>
+                </p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Team Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (members && members.length > 0) { %>
+                            <ul class="list-group list-group-flush">
+                                <% members.forEach(member => { %>
+                                    <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <strong><%= member.username %></strong>
+                                            <% if (member.email) { %>
+                                                <br><small class="text-muted"><%= member.email %></small>
+                                            <% } %>
+                                        </span>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <p class="text-muted mb-0">No members linked to this team yet.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Team Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            Use this team login to create and manage projects that belong to the whole team.
+                            All projects created while logged in as this team will appear below.
+                        </p>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Team username:</strong> <code><%= currentUser.username %></code></li>
+                            <% if (currentUser.schoolName) { %>
+                                <li><strong>School:</strong> <%= currentUser.schoolName %></li>
+                            <% } %>
+                            <% if (currentUser.programName) { %>
+                                <li><strong>Program:</strong> <%= currentUser.programName %></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header" style="margin-top: 10px;">
+            <div class="dashboard-title-section">
+                <h2>Your Team Projects</h2>
+                <p>Projects created while logged in as this team.</p>
+            </div>
+            <form action="/create-project" method="POST" style="display: inline;">
+                <button type="submit" class="new-project-btn">
+                    <i class="fas fa-plus"></i> New Team Project
+                </button>
+            </form>
+        </div>
+
+        <% if (!projects || projects.length === 0) { %>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h2>No Team Projects Yet</h2>
+                <p>Start by creating your first team project to begin your innovation journey together.</p>
+                <form action="/create-project" method="POST" style="display: inline;">
+                    <button type="submit" class="new-project-btn">
+                        <i class="fas fa-plus"></i> Create First Team Project
+                    </button>
+                </form>
+            </div>
+        <% } else { %>
+            <div class="projects-grid">
+                <% projects.forEach(campground => { %>
+                    <div class="project-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <h3 class="project-card-title"><%= campground.title %></h3>
+                        </div>
+                        <p class="project-card-description">
+                            <%= campground.description || campground.problem || 'Innovation project for solving real-world problems' %>
+                        </p>
+                        
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span class="progress-phase"><%= campground.currentStage || 'Excite & Enrol' %></span>
+                                <span class="progress-percentage"><%= campground.progress || 0 %>%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: <%= campground.progress || 0 %>%"></div>
+                            </div>
+                        </div>
+
+                        <a href="/problems/<%= campground._id %>" class="open-btn">
+                            Open <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>
+

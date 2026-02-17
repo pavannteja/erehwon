@@ -3,72 +3,90 @@ const Campground = require('../models/campgrounds');
 const crypto = require('crypto');
 const { sendPasswordResetEmail } = require('../utils/email');
 const { getProblemStage } = require('../utils/stageHelper');
-const Idea = require('../models/schemas').Idea;
+const { Idea, Program, School } = require('../models/schemas');
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register');
 }
 
-module.exports.renderDashboard = async (req, res) => {
-    try {
-        console.log('Rendering dashboard for user:', req.user._id);
-        const campgrounds = await Campground.find({ author: req.user._id })
-            .populate('author')
-            .populate('reviews')
-            .populate('teamInfo.enrolledProgram')
-            .populate('problemStatementInfo.selectedPredefinedProblem')
-            .populate('solution')
-            .populate('prototype')
-            .lean() // Use lean to get plain objects with all fields
-            .sort({ createdAt: -1 }); // Show newest first
-        
-        // Add stage information and idea counts to each campground
-        const campgroundsWithStage = await Promise.all(campgrounds.map(async (campground) => {
-            // Count ideas for ideation progress
+// Helper: load projects with stage info for a given author
+async function loadUserProjectsWithStage(authorId) {
+    const campgrounds = await Campground.find({ author: authorId })
+        .populate('author')
+        .populate('reviews')
+        .populate('teamInfo.enrolledProgram')
+        .populate('problemStatementInfo.selectedPredefinedProblem')
+        .populate('solution')
+        .populate('prototype')
+        .lean()
+        .sort({ createdAt: -1 });
+
+    const campgroundsWithStage = await Promise.all(
+        campgrounds.map(async (campground) => {
             let ideaCount = 0;
             try {
                 ideaCount = await Idea.countDocuments({ problemId: campground._id });
             } catch (err) {
                 ideaCount = 0;
             }
-            
-            // Get stage info with ideaCount
-            // Ensure prototype is properly populated with files
+
             let campForStage = campground;
             if (campground.prototype) {
-              if (typeof campground.prototype === 'object' && campground.prototype._id) {
-                // Prototype is populated, check if it has files
-                // With .lean(), files should be accessible directly
-                if (!campground.prototype.files || !Array.isArray(campground.prototype.files) || campground.prototype.files.length === 0) {
-                  // Files not populated or empty, fetch prototype separately
-                  const { Prototype } = require('../models/schemas');
-                  const proto = await Prototype.findById(campground.prototype._id);
-                  if (proto) {
-                    campForStage = { ...campground };
-                    campForStage.prototype = proto.toObject ? proto.toObject() : proto;
-                  }
+                if (typeof campground.prototype === 'object' && campground.prototype._id) {
+                    if (!campground.prototype.files || !Array.isArray(campground.prototype.files) || campground.prototype.files.length === 0) {
+                        const { Prototype } = require('../models/schemas');
+                        const proto = await Prototype.findById(campground.prototype._id);
+                        if (proto) {
+                            campForStage = { ...campground };
+                            campForStage.prototype = proto.toObject ? proto.toObject() : proto;
+                        }
+                    }
+                } else {
+                    const { Prototype } = require('../models/schemas');
+                    const proto = await Prototype.findById(campground.prototype);
+                    if (proto) {
+                        campForStage = { ...campground };
+                        campForStage.prototype = proto.toObject ? proto.toObject() : proto;
+                    }
                 }
-              } else {
-                // Prototype is just an ID, we need to fetch it
-                const { Prototype } = require('../models/schemas');
-                const proto = await Prototype.findById(campground.prototype);
-                if (proto) {
-                  campForStage = { ...campground };
-                  campForStage.prototype = proto.toObject ? proto.toObject() : proto;
-                }
-              }
             }
             const stageInfo = getProblemStage(campForStage, ideaCount);
-            const campObj = { ...campground }; // Create a copy to avoid mutating the original
+            const campObj = { ...campground };
             campObj.currentStage = stageInfo.name;
             campObj.stageNumber = stageInfo.stage;
             campObj.progress = stageInfo.progress;
             campObj.ideaCount = ideaCount;
             campObj.stageProgress = stageInfo.stageProgress;
-            
             return campObj;
-        }));
-        
+        })
+    );
+
+    return campgroundsWithStage;
+}
+
+module.exports.renderDashboard = async (req, res) => {
+    try {
+        console.log('Rendering dashboard for user:', req.user._id);
+
+        // If this is a team account, render a different dashboard
+        if (req.user.isTeam) {
+            const teamProjects = await loadUserProjectsWithStage(req.user._id);
+
+            // Load member details for display
+            const members = await User.find({ _id: { $in: req.user.teamMembers || [] } })
+                .select('username email schoolName programName')
+                .lean();
+
+            return res.render('users/team-dashboard', {
+                currentUser: req.user,
+                projects: teamProjects,
+                members
+            });
+        }
+
+        // Individual dashboard (existing behaviour)
+        const campgroundsWithStage = await loadUserProjectsWithStage(req.user._id);
+
         console.log('Found campgrounds:', campgroundsWithStage.length);
         res.render('users/dashboard', { campgrounds: campgroundsWithStage, currentUser: req.user });
     } catch (error) {
@@ -221,3 +239,156 @@ module.exports.resetPassword = async (req, res) => {
         res.redirect('/forgot-password');
     }
 }
+
+// ===== TEAM CREATION FEATURE =====
+
+// Show page where an individual can choose school/program and
+// see other individuals from that combination to create a team.
+module.exports.renderCreateTeam = async (req, res) => {
+    try {
+        // Only individual users can create teams
+        if (req.user.isTeam) {
+            req.flash('error', 'Teams cannot create other teams.');
+            return res.redirect('/dashboard');
+        }
+
+        const schools = await School.find({ isActive: true }).sort({ name: 1 }).lean();
+        const programs = await Program.find({ isActive: true }).sort({ name: 1 }).lean();
+
+        const { school: selectedSchoolId, program: selectedProgramId } = req.query;
+
+        let candidates = [];
+        let selectedSchool = null;
+        let selectedProgram = null;
+
+        if (selectedSchoolId && selectedProgramId) {
+            selectedSchool = schools.find(s => String(s._id) === String(selectedSchoolId)) || null;
+            selectedProgram = programs.find(p => String(p._id) === String(selectedProgramId)) || null;
+
+            // Find candidate users that:
+            // - are not teams
+            // - are not already in any team
+            // - are not the current user
+            // - (optionally) already associated with this school & program
+            const baseFilter = {
+                isTeam: false,
+                _id: { $ne: req.user._id },
+                $or: [{ teams: { $exists: false } }, { teams: { $size: 0 } }]
+            };
+
+            const possibleUsers = await User.find(baseFilter)
+                .select('username email school program schoolName programName')
+                .lean();
+
+            candidates = possibleUsers.filter(u => {
+                // If user already has school/program set, require match
+                if (u.school || u.program) {
+                    const schoolMatch = !u.school || String(u.school) === String(selectedSchoolId);
+                    const programMatch = !u.program || String(u.program) === String(selectedProgramId);
+                    return schoolMatch && programMatch;
+                }
+                // If not set, allow them as candidate for this combination
+                return true;
+            });
+        }
+
+        res.render('users/create-team', {
+            currentUser: req.user,
+            schools,
+            programs,
+            selectedSchoolId: selectedSchoolId || '',
+            selectedProgramId: selectedProgramId || '',
+            selectedSchool,
+            selectedProgram,
+            candidates
+        });
+    } catch (error) {
+        console.error('Error rendering create team page:', error);
+        req.flash('error', 'Error loading team creation page.');
+        res.redirect('/dashboard');
+    }
+};
+
+// Handle POST to actually create the team account.
+module.exports.createTeam = async (req, res) => {
+    try {
+        if (req.user.isTeam) {
+            req.flash('error', 'Teams cannot create other teams.');
+            return res.redirect('/dashboard');
+        }
+
+        const { teamName, teamPassword, members = [], schoolId, programId } = req.body;
+
+        if (!teamName || !teamPassword) {
+            req.flash('error', 'Team name and password are required.');
+            return res.redirect('/teams/new');
+        }
+
+        // Ensure current user is always part of the team
+        const memberIds = Array.isArray(members) ? members.slice() : (members ? [members] : []);
+        if (!memberIds.includes(String(req.user._id))) {
+            memberIds.push(String(req.user._id));
+        }
+
+        // Deduplicate member ids
+        const uniqueMemberIds = [...new Set(memberIds)];
+
+        if (!schoolId || !programId) {
+            req.flash('error', 'Please select a school and a program.');
+            return res.redirect('/teams/new');
+        }
+
+        const schoolDoc = await School.findById(schoolId);
+        const programDoc = await Program.findById(programId);
+
+        // Generate a unique team username based on owner username
+        let baseUsername = `${req.user.username}_team`;
+        let candidateUsername = baseUsername;
+        let suffix = 1;
+        // eslint-disable-next-line no-constant-condition
+        while (await User.findOne({ username: candidateUsername })) {
+            suffix += 1;
+            candidateUsername = `${baseUsername}${suffix}`;
+        }
+
+        // Create the team user account
+        const teamUser = new User({
+            email: `${candidateUsername}@team.local`, // not used for login, just required by schema
+            username: candidateUsername,
+            displayName: teamName,
+            isTeam: true,
+            teamMembers: uniqueMemberIds,
+            teamOwner: req.user._id,
+            school: schoolDoc ? schoolDoc._id : undefined,
+            program: programDoc ? programDoc._id : undefined,
+            schoolName: schoolDoc ? schoolDoc.name : undefined,
+            programName: programDoc ? programDoc.name : undefined
+        });
+
+        const registeredTeam = await User.register(teamUser, teamPassword);
+
+        // Mark team membership and school/program on individual user records
+        await User.updateMany(
+            { _id: { $in: uniqueMemberIds } },
+            {
+                $addToSet: { teams: registeredTeam._id },
+                $set: {
+                    school: schoolDoc ? schoolDoc._id : undefined,
+                    program: programDoc ? programDoc._id : undefined,
+                    schoolName: schoolDoc ? schoolDoc.name : undefined,
+                    programName: programDoc ? programDoc.name : undefined
+                }
+            }
+        );
+
+        req.flash(
+            'success',
+            `Team "${teamName}" created successfully! You can now log in as the team using username "${registeredTeam.username}".`
+        );
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error('Error creating team:', error);
+        req.flash('error', error.message || 'Error creating team.');
+        res.redirect('/teams/new');
+    }
+};

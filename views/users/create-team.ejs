@@ -1,0 +1,226 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+    .create-team-shell {
+        max-width: 1100px;
+    }
+
+    .create-team-card {
+        background: linear-gradient(180deg, #121212 0%, #0d0d0d 100%);
+        border: 1px solid #2f2f2f;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .create-team-header {
+        background: linear-gradient(90deg, rgba(255, 222, 0, 0.12), rgba(255, 222, 0, 0.02));
+        border-bottom: 1px solid #2f2f2f;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .step-title {
+        color: #f5f5f5;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .subtle-panel {
+        background: #161616;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .create-team-table-wrap {
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .create-team-table-wrap .table {
+        margin-bottom: 0;
+    }
+
+    .create-team-table-wrap thead th {
+        background: #1a1a1a;
+        border-bottom: 1px solid #333;
+        color: #d7d7d7;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+
+    .create-team-table-wrap tbody td {
+        vertical-align: middle;
+    }
+
+    .member-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #3a3a3a;
+        font-size: 0.82rem;
+        color: #cfcfcf;
+        background: #171717;
+    }
+
+    .member-pill i {
+        color: #ffde00;
+    }
+
+    .cta-btn {
+        min-width: 170px;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-12 create-team-shell">
+            <div class="card create-team-card">
+                <div class="create-team-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1 text-white d-flex align-items-center gap-2">
+                            <i class="fas fa-users text-warning"></i>
+                            Create a Team
+                        </h3>
+                        <p class="mb-0 text-muted small">
+                            Select your school and program, then choose your teammates.
+                        </p>
+                    </div>
+                    <span class="member-pill">
+                        <i class="fas fa-user-check"></i>
+                        Owner: <%= currentUser.username %>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Select individuals from your school and program to form a team. 
+                        A team login will be created automatically from the team owner&apos;s username.
+                        You only need to set a team password that all members will share.
+                    </p>
+
+                    <form action="/teams" method="POST">
+                        <h6 class="step-title">Step 1: Team setup</h6>
+                        <div class="subtle-panel mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="schoolId" class="form-label text-white">School *</label>
+                                <select id="schoolId" name="schoolId" class="form-select" required onchange="this.form.submit()">
+                                    <option value="">Select school</option>
+                                    <% schools.forEach(school => { %>
+                                        <option value="<%= school._id %>" <%= String(selectedSchoolId) === String(school._id) ? 'selected' : '' %>><%= school.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="programId" class="form-label text-white">Program *</label>
+                                <select id="programId" name="programId" class="form-select" required onchange="this.form.submit()">
+                                    <option value="">Select program</option>
+                                    <% programs.forEach(program => { %>
+                                        <option value="<%= program._id %>" <%= String(selectedProgramId) === String(program._id) ? 'selected' : '' %>><%= program.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="teamName" class="form-label text-white">Team Name *</label>
+                                <input type="text" id="teamName" name="teamName" class="form-control" placeholder="e.g. Innovators Squad" required>
+                            </div>
+                        </div>
+                        </div>
+
+                        <h6 class="step-title">Step 2: Shared login password</h6>
+                        <div class="subtle-panel mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="teamPassword" class="form-label text-white">Team Password *</label>
+                                <input type="password" id="teamPassword" name="teamPassword" class="form-control" required>
+                                <small class="text-muted">Share this only with team members.</small>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                            <h6 class="step-title mb-0">Step 3: Select team members</h6>
+                            <span class="text-muted small">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Members listed are from selected school and program.
+                            </span>
+                        </div>
+
+                        <div class="table-responsive mb-3 create-team-table-wrap">
+                            <table class="table table-dark table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input 
+                                                type="checkbox" 
+                                                disabled 
+                                                checked
+                                            >
+                                        </td>
+                                        <td>
+                                            <strong><%= currentUser.username %></strong>
+                                            <span class="badge bg-primary ms-2">You (Owner)</span>
+                                        </td>
+                                        <td><%= currentUser.email %></td>
+                                    </tr>
+
+                                    <% if (selectedSchoolId && selectedProgramId && candidates && candidates.length > 0) { %>
+                                        <% candidates.forEach(candidate => { %>
+                                            <tr>
+                                                <td>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        name="members" 
+                                                        value="<%= candidate._id %>"
+                                                    >
+                                                </td>
+                                                <td><%= candidate.username %></td>
+                                                <td><%= candidate.email || 'N/A' %></td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else if (selectedSchoolId && selectedProgramId) { %>
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-4">
+                                                No other individuals found from your school and program yet.
+                                            </td>
+                                        </tr>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted py-4">
+                                                Please select a school and program to see available teammates.
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Preserve the selected school & program when submitting to create the team -->
+                        <input type="hidden" name="schoolId" value="<%= selectedSchoolId || '' %>">
+                        <input type="hidden" name="programId" value="<%= selectedProgramId || '' %>">
+
+                        <div class="d-flex justify-content-between flex-wrap gap-2">
+                            <a href="/dashboard" class="btn btn-outline-secondary cta-btn">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary cta-btn">
+                                <i class="fas fa-users"></i> Create Team
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

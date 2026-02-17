@@ -23,10 +23,19 @@ router.get('/register', users.renderRegister);
 router.post('/register', catchAsync(users.register));
 
 router.get('/login', users.renderLogin);
-router.post('/login', storeReturnTo, passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), users.login);
+router.post(
+    '/login',
+    storeReturnTo,
+    passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }),
+    users.login
+);
 
-// Dashboard
+// Dashboard (individual or team, decided in controller)
 router.get('/dashboard', isLoggedIn, catchAsync(users.renderDashboard));
+
+// Team creation routes (individual users only)
+router.get('/teams/new', isLoggedIn, catchAsync(users.renderCreateTeam));
+router.post('/teams', isLoggedIn, catchAsync(users.createTeam));
 
 // Forgot password routes
 router.get('/forgot-password', users.renderForgotPassword);

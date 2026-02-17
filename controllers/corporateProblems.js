@@ -28,7 +28,14 @@ module.exports.renderNewForm = (req, res) => {
 // Create new corporate problem
 module.exports.createCorporateProblem = async (req, res) => {
     try {
-        const corporateProblem = new CorporateProblem(req.body.corporateProblem);
+        const corporateProblemData = { ...(req.body.corporateProblem || {}) };
+        // HTML checkbox sends "on" when checked; normalize to actual boolean for Mongoose.
+        corporateProblemData.isActive =
+            corporateProblemData.isActive === true ||
+            corporateProblemData.isActive === 'true' ||
+            corporateProblemData.isActive === 'on';
+
+        const corporateProblem = new CorporateProblem(corporateProblemData);
         corporateProblem.createdBy = req.user._id;
         await corporateProblem.save();
         req.flash('success', 'Corporate problem statement created successfully!');
@@ -87,9 +94,16 @@ module.exports.renderEditForm = async (req, res) => {
 
 // Update corporate problem
 module.exports.updateCorporateProblem = async (req, res) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
-        const corporateProblem = await CorporateProblem.findByIdAndUpdate(id, req.body.corporateProblem, { new: true });
+        const corporateProblemData = { ...(req.body.corporateProblem || {}) };
+        // Ensure checkbox value is cast safely.
+        corporateProblemData.isActive =
+            corporateProblemData.isActive === true ||
+            corporateProblemData.isActive === 'true' ||
+            corporateProblemData.isActive === 'on';
+
+        const corporateProblem = await CorporateProblem.findByIdAndUpdate(id, corporateProblemData, { new: true });
         
         if (!corporateProblem) {
             req.flash('error', 'Corporate problem not found');

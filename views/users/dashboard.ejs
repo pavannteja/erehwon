@@ -237,10 +237,17 @@
                 <h1>Your Projects</h1>
                 <p>Manage and track your active innovation initiatives</p>
             </div>
-            <a href="/excite-and-enrol" class="new-project-btn">
-                <i class="fas fa-plus"></i> New Project
-            </a>
-    </div>
+            <div class="d-flex gap-2">
+                <% if (currentUser && !currentUser.isTeam) { %>
+                <a href="/teams/new" class="btn btn-outline-secondary">
+                    <i class="fas fa-users"></i> Create Team
+                </a>
+                <% } %>
+                <a href="/excite-and-enrol" class="new-project-btn">
+                    <i class="fas fa-plus"></i> <%= campgrounds.length === 0 ? 'Create Your First Project' : 'New Project' %>
+                </a>
+            </div>
+        </div>
 
     <% if(campgrounds.length === 0) { %>
             <div class="empty-state">
@@ -249,9 +256,16 @@
                 </div>
                 <h2>No Projects Yet</h2>
                 <p>Start by creating your first project to begin your innovation journey!</p>
-                <a href="/excite-and-enrol" class="empty-state-btn">
-                    <i class="fas fa-plus"></i> Create Your First Project
-                </a>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <% if (currentUser && !currentUser.isTeam) { %>
+                    <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-users"></i> Create Team
+                    </a>
+                    <% } %>
+                    <a href="/excite-and-enrol" class="empty-state-btn">
+                        <i class="fas fa-plus"></i> Create Your First Project
+                    </a>
+                </div>
             </div>
         <% } else { %>
             <div class="projects-grid">
