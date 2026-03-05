@@ -1,290 +1,334 @@
 <% layout('layouts/boilerplate')%>
 
-<link rel="stylesheet" href="/stylesheets/home.css">
-<link rel="stylesheet" href="/stylesheets/tailwind-output.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/home.css">
+    <link rel="stylesheet" href="/stylesheets/tailwind-output.css">
 
-<div class="landing-page">
-    <!-- Top Right Navigation Links -->
-    <div class="top-right-links">
-        <a href="#" class="nav-link-text">Documentation</a>
-        <% if (currentUser) { %>
-            <a href="/dashboard" class="nav-link-text">Profile</a>
-        <% } else { %>
-            <a href="/login" class="nav-link-text">Login</a>
-        <% } %>
-    </div>
-
-    <!-- Main Content Container -->
-    <div class="landing-container">
-        <!-- Left Section: Hero Content -->
-        <div class="hero-section">
-            <!-- Logo -->
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 2L20.09 11.26L30 12.27L22.5 19.14L24.18 29.02L16 24.77L7.82 29.02L9.5 19.14L2 12.27L11.91 11.26L16 2Z" fill="#ffde00" stroke="#ffde00" stroke-width="1.5"/>
-                    </svg>
-                </div>
-                <span class="logo-text">Erehwon</span>
-            </div>
-
-            <!-- Main Heading -->
-            <h1 class="main-heading">Erehwon Innovation Process Made Collaborative</h1>
-
-            <!-- Description -->
-            <p class="description-text">
-                Guide your team through the complete innovation process. Discover problems, define solutions, ideate concepts, prototype ideas, and test with structured workflows.
-            </p>
-
-            <!-- Call to Action Button -->
-            <% if (currentUser) { %>
-                <a href="/excite-and-enrol" class="cta-button">
-                    <span class="plus-icon">+</span> Start New Project
-                </a>
-            <% } else { %>
-                <a href="/register" class="cta-button">
-                    <span class="plus-icon">+</span> Start New Project
-                </a>
-            <% } %>
-        </div>
-
-        <!-- Right Section: Feature Cards -->
-        <div class="features-section">
-            <div class="features-grid">
-                <!-- Feature Card 1: 5-Phase Workflow -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#ffde00"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">5-Phase Workflow</h3>
-                    <p class="feature-description">Structured stages from discovery to testing</p>
-                </div>
-
-                <!-- Feature Card 2: Team Collaboration -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#ffde00"/>
-                            <path d="M19 8C19 10.21 17.21 12 15 12C12.79 12 11 10.21 11 8C11 5.79 12.79 4 15 4C17.21 4 19 5.79 19 8Z" fill="#ffde00"/>
-                            <path d="M19 14C16.33 14 11 15.34 11 18V20H19V18C19 15.34 16.67 14 19 14Z" fill="#ffde00"/>
-                            <path d="M5 8C5 10.21 6.79 12 9 12C11.21 12 13 10.21 13 8C13 5.79 11.21 4 9 4C6.79 4 5 5.79 5 8Z" fill="#ffde00"/>
-                            <path d="M5 14C7.67 14 13 15.34 13 18V20H5V18C5 15.34 7.33 14 5 14Z" fill="#ffde00"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Team Collaboration</h3>
-                    <p class="feature-description">Real-time feedback and shared workspace</p>
-                </div>
-
-                <!-- Feature Card 3: Rapid Iteration -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 3L4 14H11L11 21L20 10H13L13 3Z" fill="#ffde00"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Rapid Iteration</h3>
-                    <p class="feature-description">Quick cycles to refine your ideas</p>
-                </div>
-
-                <!-- Feature Card 4: Progress Tracking -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 9L12 2L19 9H13V20H11V9H5Z" fill="#ffde00"/>
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">Progress Tracking</h3>
-                    <p class="feature-description">Visualize your project momentum</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Program Selection Section (Admin Only) -->
-    <% if (currentUser && currentUser.isAdmin) { %>
-        <div class="problems-section">
-            <div class="problems-container">
-                <div class="dashboard-header">
-                    <h2 class="problems-heading">Select Program</h2>
-                </div>
-                <p class="problems-subheading">Choose a program to view its dashboard and school data</p>
-                
-                <% if(!programs || programs.length === 0) { %>
-                    <div class="no-problems-message">
-                        <i class="fas fa-folder-open"></i>
-                        <h3>No Programs Found</h3>
-                        <p>Please create programs through the <a href="/admin/dashboard" style="color: #ffde00;">Admin Dashboard</a>.</p>
-                    </div>
+    <div class="landing-page">
+        <!-- Temporary 3D Spline Section -->
+        <section class="spline-temp-section" aria-label="3D preview">
+            <canvas id="canvas3d" class="spline-temp-canvas"></canvas>
+            <div class="spline-temp-content">
+                <div class="hero-minimal-badge">30+ Years of Global Innovation</div>
+                <h1 class="spline-temp-heading">
+                    <span class="spline-temp-heading-line1">Solve Real World Problems.</span>
+                    <span class="spline-temp-heading-line2">Build a Career that Matters.</span>
+                </h1>
+                <% if (currentUser) { %>
+                <a href="/excite-and-enrol" class="hero-minimal-btn spline-temp-btn"><span>Start Innovating</span></a>
                 <% } else { %>
-                    <div class="programs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-top: 30px;">
-                        <% programs.forEach(program => { %>
-                            <a href="/program/<%= program._id %>" class="program-card" style="background: #111; border-radius: 16px; padding: 24px; border: 1px solid #2a2a2a; transition: all 0.3s ease; display: flex; flex-direction: column; text-decoration: none; cursor: pointer;">
-                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                                    <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #ffde00, #ffed4e); display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; font-size: 1.2rem;">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <h3 class="program-card-title" style="font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 4px;"><%= program.name %></h3>
-                                        <% if (program.isActive) { %>
-                                            <span style="display: inline-block; padding: 4px 12px; background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.5); border-radius: 12px; color: #28a745; font-size: 0.75rem; font-weight: 600;">Active</span>
-                                        <% } else { %>
-                                            <span style="display: inline-block; padding: 4px 12px; background: rgba(108, 117, 125, 0.2); border: 1px solid rgba(108, 117, 125, 0.5); border-radius: 12px; color: #6c757d; font-size: 0.75rem; font-weight: 600;">Inactive</span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                <% if (program.description) { %>
-                                    <p class="program-card-description" style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;">
-                                        <%= program.description.length > 100 ? program.description.substring(0, 100) + '...' : program.description %>
-                                    </p>
-                                <% } %>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 16px; border-top: 1px solid #2a2a2a;">
-                                    <span style="color: #888; font-size: 0.85rem;">View Dashboard</span>
-                                    <i class="fas fa-arrow-right" style="color: #ffde00;"></i>
-                                </div>
-                            </a>
-                        <% }); %>
-                    </div>
+                <a href="/register" class="hero-minimal-btn spline-temp-btn"><span>Start Innovating</span></a>
                 <% } %>
             </div>
-        </div>
-    <% } else if (currentUser && !currentUser.isAdmin) { %>
-        <!-- Logged in but not admin - show dashboard cards (same design as dashboard) -->
-        <div class="problems-section">
-            <div class="problems-container">
-                <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
-                    <div class="dashboard-title-section">
-                        <h2 class="problems-heading" style="font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 8px;">Your Projects</h2>
-                        <p class="problems-subheading" style="color: #888; font-size: 1rem; margin: 0;">Manage and track your active innovation initiatives</p>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <% if (currentUser && !currentUser.isTeam) { %>
-                        <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 12px 24px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-users"></i> Create Team
-                        </a>
-                        <% } %>
-                        <form action="/create-project" method="POST" style="display: inline;">
-                            <button type="submit" class="new-project-btn" style="background: #ffde00; color: #000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
-                                <i class="fas fa-plus"></i> New Project
-                            </button>
-                        </form>
-                    </div>
-                </div>
+        </section>
 
-                <% if(campgrounds.length === 0) { %>
-                    <div class="empty-state" style="text-align: center; padding: 80px 20px; background: #111; border-radius: 16px; border: 1px solid #2a2a2a;">
-                        <div class="empty-state-icon" style="font-size: 4rem; color: #ffde00; margin-bottom: 20px;">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <h2 style="color: #fff; font-size: 1.5rem; margin-bottom: 12px;">No Projects Yet</h2>
-                        <p style="color: #888; font-size: 1rem; margin-bottom: 30px;">Start by creating your first project to begin your innovation journey!</p>
-                        <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <% if (currentUser && !currentUser.isTeam) { %>
-                            <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
-                                <i class="fas fa-users"></i> Create Team
-                            </a>
-                            <% } %>
-                            <form action="/create-project" method="POST" style="display: inline;">
-                                <button type="submit" class="empty-state-btn" style="background: #ffde00; color: #000; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; border: none; cursor: pointer;">
-                                    <i class="fas fa-plus"></i> Create Your First Project
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+        <!-- Hero Section -->
+        <section class="hero-minimal">
+            <% if (corporateProblemsHome && corporateProblemsHome.length > 0) { %>
+                <div class="hero-corporate-mirror">
+                    <%- include('corporateProblems/_indexContent', { corporateProblems: corporateProblemsHome.slice(0, 4), currentUser: currentUser }) %>
+                </div>
+            <% } %>
+            <div class="hero-minimal-cta">
+                <% if (currentUser) { %>
+                    <a href="/corporate-problems" class="hero-minimal-btn"><span>Find Your Mission</span></a>
                 <% } else { %>
-                    <div class="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-top: 30px;">
-                        <% campgrounds.forEach(campground => { 
-                            let teamInitials = [];
-                            if (campground.teamInfo && campground.teamInfo.groupMembers) {
-                                const members = campground.teamInfo.groupMembers.split(',').map(m => m.trim());
-                                teamInitials = members.slice(0, 3).map(m => m.charAt(0).toUpperCase());
-                            }
-                            if (teamInitials.length === 0 && campground.author) {
-                                teamInitials = [campground.author.username.charAt(0).toUpperCase()];
-                            }
-                        %>
-                            <div class="project-card" style="background: #111; border-radius: 16px; padding: 24px; border: 1px solid #2a2a2a; transition: all 0.3s ease; display: flex; flex-direction: column; height: 100%;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                                    <h3 class="project-card-title" style="font-size: 1.25rem; font-weight: 600; color: #fff; margin: 0; flex: 1;"><%= campground.title %></h3>
-                                    <% if (currentUser && (campground.author && campground.author._id && campground.author._id.toString() === currentUser._id.toString())) { %>
-                                    <a href="/problems/<%= campground._id %>/edit" class="edit-btn" style="color: #ffde00; font-size: 0.9rem; text-decoration: none; margin-left: 12px; padding: 4px 8px; border-radius: 4px; transition: all 0.3s ease;" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <% } %>
-                                </div>
-                                <p class="project-card-description" style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;">
-                                    <%= campground.description || campground.problem || 'Innovation project for solving real-world problems' %>
-                                </p>
-                                
-                                <div class="progress-section" style="margin-bottom: 20px;">
-                                    <div class="progress-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <span class="progress-phase" style="color: #ffde00; font-size: 0.85rem; font-weight: 500;"><%= campground.currentStage || 'Excite & Enrol' %></span>
-                                        <span class="progress-percentage" style="color: #888; font-size: 0.85rem;"><%= campground.progress || 0 %>%</span>
-                                    </div>
-                                    <div class="progress-bar-container" style="width: 100%; height: 8px; background: #2a2a2a; border-radius: 4px; overflow: hidden; margin-bottom: 12px;">
-                                        <div class="progress-bar-fill" style="height: 100%; background: #ffde00; border-radius: 4px; transition: width 0.3s ease; width: <%= campground.progress || 0 %>%"></div>
-                                    </div>
-                                    <!-- Incomplete Steps -->
-                                    <% 
-                                    const stages = [
-                                        { num: 1, name: 'Excite & Enrol', completed: campground.stageProgress && campground.stageProgress[1] === 20 },
-                                        { num: 2, name: 'Problem Discovery', completed: campground.stageProgress && campground.stageProgress[2] === 20 },
-                                        { num: 3, name: 'Ideation', completed: campground.stageProgress && campground.stageProgress[3] === 20 },
-                                        { num: 4, name: 'Conceptual Solution', completed: campground.stageProgress && campground.stageProgress[4] === 20 },
-                                        { num: 5, name: 'Prototyping', completed: campground.stageProgress && campground.stageProgress[5] === 20 }
-                                    ];
-                                    const incompleteStages = stages.filter(s => !s.completed);
-                                    %>
-                                    <% if (incompleteStages.length > 0) { %>
-                                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
-                                            <div style="color: #888; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Remaining Steps:</div>
-                                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                                <% incompleteStages.forEach(stage => { %>
-                                                    <span style="display: inline-block; padding: 4px 10px; background: rgba(255, 222, 0, 0.1); border: 1px solid rgba(255, 222, 0, 0.3); border-radius: 12px; color: #ffde00; font-size: 0.7rem; font-weight: 500;">
-                                                        <%= stage.name %>
-                                                    </span>
-                                                <% }); %>
+                    <a href="/login" class="hero-minimal-btn"><span>Find Your Mission</span></a>
+                <% } %>
+            </div>
+        </section>
+
+        <section class="leaders-ticker-section">
+            <h2 class="leaders-ticker-heading">Industry Leaders worked with</h2>
+            <div class="leaders-ticker">
+                <div class="leaders-ticker-track">
+                    <div class="leaders-ticker-item"><img src="/images/logo-arla.png" alt="Arla" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom"><img src="/images/logo-mahindra.png" alt="Mahindra" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-torai.png" alt="tor.ai" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom-cka"><img src="/images/logo-cka-birla.png" alt="CKA Birla Group" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom"><img src="/images/logo-ssgc.png" alt="SSGC" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-tata.png" alt="TATA" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-aditya-birla.png" alt="Aditya Birla Group" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-arla.png" alt="Arla" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom"><img src="/images/logo-mahindra.png" alt="Mahindra" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-torai.png" alt="tor.ai" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom-cka"><img src="/images/logo-cka-birla.png" alt="CKA Birla Group" /></div>
+                    <div class="leaders-ticker-item leaders-ticker-item--zoom"><img src="/images/logo-ssgc.png" alt="SSGC" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-tata.png" alt="TATA" /></div>
+                    <div class="leaders-ticker-item"><img src="/images/logo-aditya-birla.png" alt="Aditya Birla Group" /></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Program Selection Section (Admin Only) -->
+        <% if (currentUser && currentUser.isAdmin) { %>
+            <div class="problems-section">
+                <div class="problems-container">
+                    <div class="dashboard-header">
+                        <h2 class="problems-heading">Select Program</h2>
+                    </div>
+                    <p class="problems-subheading">Choose a program to view its dashboard and school data</p>
+
+                    <% if(!programs || programs.length===0) { %>
+                        <div class="no-problems-message">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>No Programs Found</h3>
+                            <p>Please create programs through the <a href="/admin/dashboard"
+                                    style="color: #ffde00;">Admin Dashboard</a>.</p>
+                        </div>
+                        <% } else { %>
+                            <div class="programs-grid"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-top: 30px;">
+                                <% programs.forEach(program=> { %>
+                                    <a href="/program/<%= program._id %>" class="program-card"
+                                        style="background: #111; border-radius: 16px; padding: 24px; border: 1px solid #2a2a2a; transition: all 0.3s ease; display: flex; flex-direction: column; text-decoration: none; cursor: pointer;">
+                                        <div
+                                            style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                                            <div
+                                                style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #ffde00, #ffed4e); display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; font-size: 1.2rem;">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <h3 class="program-card-title"
+                                                    style="font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 4px;">
+                                                    <%= program.name %>
+                                                </h3>
+                                                <% if (program.isActive) { %>
+                                                    <span
+                                                        style="display: inline-block; padding: 4px 12px; background: rgba(40, 167, 69, 0.2); border: 1px solid rgba(40, 167, 69, 0.5); border-radius: 12px; color: #28a745; font-size: 0.75rem; font-weight: 600;">Active</span>
+                                                    <% } else { %>
+                                                        <span
+                                                            style="display: inline-block; padding: 4px 12px; background: rgba(108, 117, 125, 0.2); border: 1px solid rgba(108, 117, 125, 0.5); border-radius: 12px; color: #6c757d; font-size: 0.75rem; font-weight: 600;">Inactive</span>
+                                                        <% } %>
                                             </div>
                                         </div>
-                                    <% } %>
-                                </div>
-                                
-                                <% if (teamInitials.length > 0) { %>
-                                    <div class="team-avatars" style="display: flex; gap: 8px; margin-bottom: 20px; align-items: center;">
-                                        <% teamInitials.forEach((initial, idx) => { %>
-                                            <div class="team-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ffde00, #ffed4e); display: flex; align-items: center; justify-content: center; color: #000; font-weight: 600; font-size: 0.75rem; border: 2px solid #111; <%= idx > 0 ? 'margin-left: -8px;' : '' %>"><%= initial %></div>
-                                        <% }); %>
-                                    </div>
-                                <% } %>
-                                
-                                <a href="/problems/<%= campground._id %>" class="open-btn" style="align-self: flex-end; background: transparent; border: 1px solid #444; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;">
-                                    Open <i class="fas fa-arrow-right"></i>
-                                </a>
+                                        <% if (program.description) { %>
+                                            <p class="program-card-description"
+                                                style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;">
+                                                <%= program.description.length> 100 ? program.description.substring(0,
+                                                    100) + '...' : program.description %>
+                                            </p>
+                                            <% } %>
+                                                <div
+                                                    style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 16px; border-top: 1px solid #2a2a2a;">
+                                                    <span style="color: #888; font-size: 0.85rem;">View Dashboard</span>
+                                                    <i class="fas fa-arrow-right" style="color: #ffde00;"></i>
+                                                </div>
+                                    </a>
+                                    <% }); %>
                             </div>
-                        <% }); %>
-                    </div>
-                <% } %>
+                            <% } %>
+                </div>
             </div>
-        </div>
-    <% } else { %>
-        <!-- Not logged in -->
-        <div class="problems-section">
-            <div class="problems-container">
-                <div class="login-prompt">
-                    <i class="fas fa-lock"></i>
-                    <h2 class="problems-heading">Login to Start Your Innovation Journey</h2>
-                    <p class="problems-subheading">Sign in to create and manage your innovation projects</p>
-                    <div class="login-actions">
-                        <a href="/login" class="cta-button">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                        <a href="/register" class="cta-button secondary">
-                            <i class="fas fa-user-plus"></i> Register
-                        </a>
+            <% } %>
+
+        <!-- Industry Features Section -->
+        <section class="industry-features-section">
+            <h2 class="industry-features-heading">Unlock your potential with real industry missions &amp; collaboration</h2>
+            <p class="industry-features-body">Join the innovation methodology trusted by global leaders for over 30 years. Stop practicing on hypotheticals and start tackling live industry missions today.</p>
+
+            <div class="industry-features-cards">
+                <article class="industry-feature-card">
+                    <img src="/images/feature-live-industry.png" alt="Live industry missions" class="industry-feature-image" />
+                    <h3 class="industry-feature-title">Live Industry Missions</h3>
+                    <p class="industry-feature-text">Work on real &amp; active problem statements from top companies.</p>
+                </article>
+                <article class="industry-feature-card">
+                    <img src="/images/feature-launchpad.png" alt="5-Phase launchpad" class="industry-feature-image" />
+                    <h3 class="industry-feature-title">A 7-Phase Launchpad</h3>
+                    <p class="industry-feature-text">Master the 7-phase path used by global leaders to build success models.</p>
+                </article>
+                <article class="industry-feature-card">
+                    <img src="/images/feature-portfolio.png" alt="Portfolio proof" class="industry-feature-image" />
+                    <h3 class="industry-feature-title">Portfolio Proof</h3>
+                    <p class="industry-feature-text">Show recruiters verified evidence of your ability to create in-market solutions that actually work.</p>
+                </article>
+            </div>
+
+            <div class="industry-features-actions">
+                <a href="#" class="industry-btn-learn">Learn More</a>
+                <a href="/register" class="industry-btn-signup">Sign Up <span aria-hidden="true">&#8250;</span></a>
+            </div>
+        </section>
+
+        <!-- Metrics Bento Grid -->
+        <section class="metrics-bento-wrap">
+            <div class="metrics-bento">
+                <div class="bento-left">
+                    <div class="bento-box bento-top-left">
+                        <img src="/images/metrics-world-map.png" alt="Global reach" class="bento-global-logo" />
+                        <p class="bento-global-text">Global Reach Across 2+ Continents</p>
+                    </div>
+                    <div class="bento-box bento-bottom-left">
+                        <img src="/images/metrics-students.png" alt="Active students" class="bento-students-img" />
+                        <div class="bento-students-text-block">
+                            <span class="bento-number">1000+</span>
+                            <span class="bento-label">Active Students</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-right">
+                    <div class="bento-box bento-top-right">
+                        <span class="bento-number">30+</span>
+                        <span class="bento-label">Years of<br>Experience</span>
+                    </div>
+                    <div class="bento-box bento-middle-right">
+                        <span class="bento-number">150+</span>
+                        <span class="bento-label">Problem<br>Statements</span>
+                    </div>
+                    <a href="/register" class="bento-box bento-button-box"><span class="bento-button-text">Enroll Now</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About the company / A Global Legacy of Innovation -->
+        <section class="about-company-section">
+            <h2 class="about-company-heading">A Global Legacy of Innovation.</h2>
+            <div class="about-company-grid">
+                <div class="about-company-column about-company-left">
+                    <div class="about-company-block">
+                        <img src="/images/about-icon-organizations.png" alt="" class="about-company-icon" />
+                        <h3 class="about-company-block-heading">450+ Organizations</h3>
+                        <p class="about-company-block-body">Your solutions reach giants in Auto, IT, FMCG, and beyond.</p>
+                    </div>
+                    <div class="about-company-block">
+                        <img src="/images/about-icon-globe.png" alt="" class="about-company-icon" />
+                        <h3 class="about-company-block-heading">1000+ Interventions</h3>
+                        <p class="about-company-block-body">Be part of a system that has facilitated breakthrough projects for decades.</p>
+                    </div>
+                </div>
+                <div class="about-company-column about-company-center">
+                    <img src="/images/about-section-image.png" alt="Collaboration and innovation" class="about-company-image" />
+                    <a href="#" class="about-company-btn"><span class="about-company-btn-text">Explore</span></a>
+                </div>
+                <div class="about-company-column about-company-right">
+                    <div class="about-company-block">
+                        <img src="/images/about-icon-academic.png" alt="" class="about-company-icon" />
+                        <h3 class="about-company-block-heading">Academic Reach</h3>
+                        <p class="about-company-block-body">As A.P.J. Abdul Kalam stated, innovation can start anywhere, start yours here.</p>
+                    </div>
+                    <div class="about-company-block">
+                        <img src="/images/about-icon-interventions.png" alt="" class="about-company-icon" />
+                        <h3 class="about-company-block-heading">Global Footprint</h3>
+                        <p class="about-company-block-body">Master a methodology that is respected and applied across Asia, Europe and the US.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    <% } %>
-</div>
+        </section>
+
+        <!-- Testimonial Section -->
+        <section class="testimonial-section">
+            <div class="testimonial-viewport">
+                <div class="testimonial-track" id="testimonial-track">
+                    <div class="testimonial-slide">
+                        <div class="testimonial-box">
+                            <img src="/images/logo-mahindra.png" alt="Mahindra Group" class="testimonial-logo" />
+                            <p class="testimonial-text">I have found great value in working with Erehwon. They have truly brought new capabilities in our innovation process. Their approach is not being the usual facilitator of a innovation process, rather a co-creator of innovation Ideas that can break the market dynamics.</p>
+                            <div class="testimonial-bottom-row">
+                                <div class="testimonial-person">
+                                    <p class="testimonial-name">Pawan Goenka</p>
+                                    <p class="testimonial-designation">Executive Director, Mahindra Ltd</p>
+                                </div>
+                                <div class="testimonial-nav">
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Previous testimonial" data-testimonial-dir="prev"><img src="/images/testimonial-chevron-right.png" alt="" class="testimonial-chevron" /></button>
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Next testimonial" data-testimonial-dir="next"><img src="/images/testimonial-chevron-left.png" alt="" class="testimonial-chevron" /></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide">
+                        <div class="testimonial-box">
+                            <img src="/images/logo-arla.png" alt="Arla Foods" class="testimonial-logo" />
+                            <p class="testimonial-text">Erehwon seems to constantly impress me, as I have never come across an innovation consulting firm, balancing ideas and paradigms with such an ease, to successfully confront gravity and discover Orbit-shifting innovation. Erehwon is leading the way.</p>
+                            <div class="testimonial-bottom-row">
+                                <div class="testimonial-person">
+                                    <p class="testimonial-name">Carsten Hallund Slot</p>
+                                    <p class="testimonial-designation">Vice President, Arla Foods</p>
+                                </div>
+                                <div class="testimonial-nav">
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Previous testimonial" data-testimonial-dir="prev"><img src="/images/testimonial-chevron-right.png" alt="" class="testimonial-chevron" /></button>
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Next testimonial" data-testimonial-dir="next"><img src="/images/testimonial-chevron-left.png" alt="" class="testimonial-chevron" /></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide">
+                        <div class="testimonial-box">
+                            <img src="/images/logo-johnson-johnson.png" alt="Johnson &amp; Johnson" class="testimonial-logo" />
+                            <p class="testimonial-text">Orbit-shifting Innovation is pioneering gap approach that can take diverse groups and introduce new thought paradigms to drive innovation. I have never worked with any other approach that could do this better. It builds the courage to target high value/high risk projects that can disrupt existing markets. I have no hesitation in recommending it for the toughest innovation projects.</p>
+                            <div class="testimonial-bottom-row">
+                                <div class="testimonial-person">
+                                    <p class="testimonial-name">Neal Matheson</p>
+                                    <p class="testimonial-designation">Chief Technology Officer - Consumer Products, Johnson &amp; Johnson, US</p>
+                                </div>
+                                <div class="testimonial-nav">
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Previous testimonial" data-testimonial-dir="prev"><img src="/images/testimonial-chevron-right.png" alt="" class="testimonial-chevron" /></button>
+                                    <button type="button" class="testimonial-chevron-btn" aria-label="Next testimonial" data-testimonial-dir="next"><img src="/images/testimonial-chevron-left.png" alt="" class="testimonial-chevron" /></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { Application } from 'https://unpkg.com/@splinetool/runtime@latest/build/runtime.js';
+
+        const canvas = document.getElementById('canvas3d');
+        const siteNav = document.querySelector('.site-nav');
+
+        const syncNavBackground = () => {
+            if (!siteNav) return;
+            if (window.scrollY > 0) {
+                siteNav.classList.add('scrolled');
+            } else {
+                siteNav.classList.remove('scrolled');
+            }
+        };
+
+        window.addEventListener('scroll', syncNavBackground, { passive: true });
+        syncNavBackground();
+
+        if (canvas) {
+            const app = new Application(canvas);
+            app.load('https://prod.spline.design/TAttAYfjHwO46UH3/scene.splinecode');
+
+            // Keep the 3D canvas interactive while forwarding wheel scroll to the page.
+            canvas.addEventListener('wheel', (event) => {
+                if (event.deltaY !== 0) {
+                    event.preventDefault();
+                    const scrollSpeedMultiplier = 2.8;
+                    window.scrollBy(0, event.deltaY * scrollSpeedMultiplier);
+                }
+            }, { passive: false });
+        }
+
+        // Testimonial slider: pan left/right on chevron click
+        (function () {
+            const track = document.getElementById('testimonial-track');
+            const buttons = document.querySelectorAll('.testimonial-chevron-btn[data-testimonial-dir]');
+            const total = track ? track.children.length : 0;
+            let index = 0;
+
+            function go(direction) {
+                if (total === 0) return;
+                if (direction === 'next') {
+                    index = (index + 1) % total;
+                } else {
+                    index = (index - 1 + total) % total;
+                }
+                track.style.transform = 'translateX(-' + (index * 100) + '%)';
+            }
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    go(this.getAttribute('data-testimonial-dir'));
+                });
+            });
+        })();
+    </script>

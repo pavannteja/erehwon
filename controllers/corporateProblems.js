@@ -1,11 +1,14 @@
 const CorporateProblem = require('../models/corporateProblem');
 const Campground = require('../models/campgrounds');
 const { getProblemStage } = require('../utils/stageHelper');
+const { Idea, Prototype } = require('../models/schemas');
 
 // Get all corporate problems (for browsing)
 module.exports.index = async (req, res) => {
     try {
-        const corporateProblems = await CorporateProblem.find({ isActive: true })
+        const corporateProblems = await CorporateProblem.find({
+            $or: [{ isActive: true }, { isActive: { $exists: false } }]
+        })
             .populate('createdBy', 'username')
             .sort({ createdAt: -1 });
         
@@ -58,10 +61,64 @@ module.exports.showCorporateProblem = async (req, res) => {
             req.flash('error', 'Corporate problem not found');
             return res.redirect('/corporate-problems');
         }
+
+        let adoptedProjects = [];
+        if (req.user && req.user.isAdmin) {
+            adoptedProjects = await Campground.find({ adoptedFromCorporateProblem: id })
+                .select('title description problem author teamInfo problemStatementInfo solution prototype createdAt')
+                .populate({
+                    path: 'author',
+                    select: 'username email isTeam schoolName programName teamMembers',
+                    populate: {
+                        path: 'teamMembers',
+                        select: 'username email'
+                    }
+                })
+                .sort({ createdAt: -1 })
+                .lean();
+
+            adoptedProjects = await Promise.all(
+                adoptedProjects.map(async (project) => {
+                    let ideaCount = 0;
+                    try {
+                        ideaCount = await Idea.countDocuments({ problemId: project._id });
+                    } catch (err) {
+                        ideaCount = 0;
+                    }
+
+                    let projectForStage = project;
+                    if (project.prototype) {
+                        if (typeof project.prototype === 'object' && project.prototype._id) {
+                            if (!Array.isArray(project.prototype.files) || project.prototype.files.length === 0) {
+                                const proto = await Prototype.findById(project.prototype._id).lean();
+                                if (proto) {
+                                    projectForStage = { ...project, prototype: proto };
+                                }
+                            }
+                        } else {
+                            const proto = await Prototype.findById(project.prototype).lean();
+                            if (proto) {
+                                projectForStage = { ...project, prototype: proto };
+                            }
+                        }
+                    }
+
+                    const stageInfo = getProblemStage(projectForStage, ideaCount);
+                    return {
+                        ...project,
+                        currentStage: stageInfo.name,
+                        progress: stageInfo.progress,
+                        stageProgress: stageInfo.stageProgress,
+                        ideaCount
+                    };
+                })
+            );
+        }
         
         res.render('corporateProblems/show', { 
             corporateProblem,
-            currentUser: req.user 
+            currentUser: req.user,
+            adoptedProjects
         });
     } catch (error) {
         console.error('Error fetching corporate problem:', error);

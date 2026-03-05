@@ -6,6 +6,7 @@ const { getProblemStage } = require('../utils/stageHelper');
 const { Idea, Program, School } = require('../models/schemas');
 
 module.exports.renderRegister = (req, res) => {
+    res.locals.bodyClass = 'register-page-body';
     res.render('users/register');
 }
 
@@ -103,7 +104,6 @@ module.exports.register = async(req, res) => {
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, err => {
             if(err) return next(err);
-            req.flash('success','Welcome to Problem Discovery Platform');
             res.redirect('/');
         })
     }catch(e){
@@ -112,13 +112,12 @@ module.exports.register = async(req, res) => {
     }
 }
 
-module.exports.renderLogin = (req, res) =>{
+module.exports.renderLogin = (req, res) => {
+    res.locals.bodyClass = 'login-page-body';
     res.render('users/login');
 }
 
 module.exports.login = (req, res) => {
-    req.flash('success', 'Welcome back!');
-    // Always redirect to home page after login
     delete req.session.returnTo;
     res.redirect('/');
 }
@@ -128,15 +127,12 @@ module.exports.logout = (req, res, next) => {
         if (err) {
             return next(err);
         }
-        req.flash('success', 'Goodbye!');
         res.redirect('/');
     });
 }
 
 // Google OAuth callback
 module.exports.googleCallback = (req, res) => {
-    req.flash('success', 'Welcome! You have successfully logged in with Google.');
-    // Always redirect to home page after login
     delete req.session.returnTo;
     res.redirect('/');
 }

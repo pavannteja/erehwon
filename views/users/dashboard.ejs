@@ -2,10 +2,10 @@
 
 <style>
 .dashboard-container {
-    background: #0a0a0a;
+    background: #f7f7f7;
     min-height: 100vh;
     padding: 40px 0;
-    color: #fff;
+    color: #1d1f21;
 }
 
 .dashboard-header {
@@ -16,35 +16,99 @@
 }
 
 .dashboard-title-section h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 50px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.07em;
+    color: #1d1f21;
+    margin: 0;
 }
 
 .dashboard-title-section p {
-    color: #888;
-    font-size: 1rem;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    color: #1d1f21;
+    font-size: 24px;
     margin: 0;
 }
 
 .new-project-btn {
-    background: #ffde00;
-    color: #000;
-    padding: 12px 24px;
+    background: transparent;
+    color: #1d1f21;
     border-radius: 8px;
     text-decoration: none;
+    font-family: 'Satoshi', sans-serif;
     font-weight: 500;
+    font-size: 20px;
+    padding: 8px 14px;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
 }
 
 .new-project-btn:hover {
-    background: #e6c800;
-    color: #000;
-    transform: translateY(-2px);
+    color: #1d1f21;
+    text-decoration: none;
+}
+
+.creating-btn {
+    background: transparent;
+    color: #1d1f21 !important;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    padding: 8px 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    overflow: visible;
+    z-index: 0;
+}
+
+.creating-btn:hover {
+    color: #1d1f21 !important;
+    text-decoration: none;
+}
+
+.new-project-btn::before,
+.open-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.6) 100%);
+    z-index: -1;
+}
+
+.new-project-btn::after,
+.open-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+
+.new-project-btn:hover::after,
+.open-btn:hover::after {
+    opacity: 1;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
 }
 
 .projects-grid {
@@ -55,122 +119,199 @@
 }
 
 .project-card {
-    background: #111;
-    border-radius: 16px;
-    padding: 24px;
-    border: 1px solid #2a2a2a;
+    background:
+        linear-gradient(45deg, rgba(248, 220, 0, 0.15) 0%, rgba(247, 247, 247, 0.15) 100%),
+        #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    height: 100%;
-}
-
-.project-card:hover {
-    border-color: #ffde00;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(255, 222, 0, 0.2);
-}
-
-.project-card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 8px;
-}
-
-.project-card-description {
-    color: #aaa;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
-    flex-grow: 1;
-}
-
-.progress-section {
-    margin-bottom: 20px;
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.progress-phase {
-    color: #ffde00;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.progress-percentage {
-    color: #888;
-    font-size: 0.85rem;
-}
-
-.progress-bar-container {
-    width: 100%;
-    height: 8px;
-    background: #2a2a2a;
-    border-radius: 4px;
+    height: 450px;
     overflow: hidden;
 }
 
-.progress-bar-fill {
+.project-card:hover {
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.project-card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.project-card-brand {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.project-card-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.project-card-brand-divider {
+    width: 0.5px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.25);
+    margin-left: 10px;
+    margin-right: 10px;
+    flex: 0 0 auto;
+}
+
+.project-card-title {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.07em;
+    line-height: 1;
+    color: #1d1f21;
+}
+
+.project-card-view-link {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    color: rgba(29, 31, 33, 0.9) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+}
+
+.project-card-view-link:hover {
+    color: rgba(29, 31, 33, 0.9) !important;
+}
+
+.project-card-innovation {
+    margin: 18px 0 0 0;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: rgba(29, 31, 33, 0.7);
+}
+
+.project-card-pills {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.project-card-pill {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #d9d9d9;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: rgba(29, 31, 33, 0.7);
+}
+
+.project-card-description {
+    margin: 16px 0 0 0;
+    color: rgba(29, 31, 33, 0.9);
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.project-progress-meta {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+}
+
+.project-progress-label,
+.project-progress-percent {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: rgba(29, 31, 33, 0.7);
+}
+
+.project-progress-percent {
+    margin-left: auto;
+}
+
+.project-progress-track {
+    width: 100%;
+    height: 10px;
+    background: #d9d9d9;
+    border-radius: 999px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.project-progress-fill {
     height: 100%;
-    background: #ffde00;
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    background: rgba(255, 215, 0, 0.7);
+    border-radius: inherit;
 }
 
-.team-avatars {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    align-items: center;
+.project-card-divider {
+    margin-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.25);
 }
 
-.team-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ffde00, #ffed4e);
+.project-card-bottom {
+    margin-top: 15px;
+}
+
+.project-card-footer {
+    margin-top: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #000;
-    font-weight: 600;
-    font-size: 0.75rem;
-    border: 2px solid #111;
-}
-
-.team-avatar:nth-child(2) {
-    margin-left: -8px;
-}
-
-.team-avatar:nth-child(3) {
-    margin-left: -8px;
 }
 
 .open-btn {
-    align-self: flex-end;
+    align-self: auto;
     background: transparent;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 10px 20px;
+    border: none;
+    color: #1d1f21;
+    padding: 10px 12px;
     border-radius: 8px;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
 }
 
 .open-btn:hover {
-    border-color: #ffde00;
-    color: #ffde00;
-    background: rgba(255, 222, 0, 0.1);
+    color: #1d1f21;
+    text-decoration: none;
+}
+
+.project-card-adopted {
+    margin: 0 0 0 auto;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.1;
+    color: rgba(29, 31, 33, 0.7);
+    text-align: right;
 }
 
 .empty-state {
@@ -237,15 +378,15 @@
                 <h1>Your Projects</h1>
                 <p>Manage and track your active innovation initiatives</p>
             </div>
-            <div class="d-flex gap-2">
-                <% if (currentUser && !currentUser.isTeam) { %>
-                <a href="/teams/new" class="btn btn-outline-secondary">
-                    <i class="fas fa-users"></i> Create Team
-                </a>
-                <% } %>
+            <div class="dashboard-actions">
                 <a href="/excite-and-enrol" class="new-project-btn">
                     <i class="fas fa-plus"></i> <%= campgrounds.length === 0 ? 'Create Your First Project' : 'New Project' %>
                 </a>
+                <% if (currentUser && !currentUser.isTeam) { %>
+                <a href="/teams/new" class="creating-btn">
+                    <i class="fas fa-users"></i> Create Team
+                </a>
+                <% } %>
             </div>
         </div>
 
@@ -256,15 +397,15 @@
                 </div>
                 <h2>No Projects Yet</h2>
                 <p>Start by creating your first project to begin your innovation journey!</p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <% if (currentUser && !currentUser.isTeam) { %>
-                    <a href="/teams/new" class="btn btn-outline-secondary" style="padding: 14px 28px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-users"></i> Create Team
-                    </a>
-                    <% } %>
+                <div class="dashboard-actions justify-content-center flex-wrap">
                     <a href="/excite-and-enrol" class="empty-state-btn">
                         <i class="fas fa-plus"></i> Create Your First Project
                     </a>
+                    <% if (currentUser && !currentUser.isTeam) { %>
+                    <a href="/teams/new" class="creating-btn">
+                        <i class="fas fa-users"></i> Create Team
+                    </a>
+                    <% } %>
                 </div>
             </div>
         <% } else { %>
@@ -282,55 +423,45 @@
                     }
                 %>
                     <div class="project-card">
-                        <h3 class="project-card-title"><%= campground.title %></h3>
+                        <div class="project-card-header-row">
+                            <div class="project-card-brand">
+                                <img src="/images/unilever-logo.png" alt="Company logo" class="project-card-logo">
+                                <span class="project-card-brand-divider" aria-hidden="true"></span>
+                                <h3 class="project-card-title"><%= campground.title %></h3>
+                            </div>
+                            <a href="/problems/<%= campground._id %>" class="project-card-view-link">View Details</a>
+                        </div>
+                        <p class="project-card-innovation">Incremental Innovation</p>
+                        <div class="project-card-pills">
+                            <span class="project-card-pill">Ideation</span>
+                            <span class="project-card-pill">Market Research</span>
+                            <span class="project-card-pill">Strategy</span>
+                        </div>
                         <p class="project-card-description">
                             <%= campground.description || campground.problem || 'Innovation project for solving real-world problems' %>
                         </p>
-                        
-                        <div class="progress-section">
-                            <div class="progress-label">
-                                <span class="progress-phase"><%= campground.currentStage || 'Excite & Enrol' %></span>
-                                <span class="progress-percentage"><%= campground.progress || 0 %>%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: <%= campground.progress || 0 %>%"></div>
-                            </div>
-                            <!-- Incomplete Steps -->
+
+                        <div class="project-card-bottom">
                             <% 
-                            const stages = [
-                                { num: 1, name: 'Excite & Enrol', completed: campground.stageProgress && campground.stageProgress[1] === 20 },
-                                { num: 2, name: 'Problem Discovery', completed: campground.stageProgress && campground.stageProgress[2] === 20 },
-                                { num: 3, name: 'Ideation', completed: campground.stageProgress && campground.stageProgress[3] === 20 },
-                                { num: 4, name: 'Conceptual Solution', completed: campground.stageProgress && campground.stageProgress[4] === 20 },
-                                { num: 5, name: 'Prototyping', completed: campground.stageProgress && campground.stageProgress[5] === 20 }
-                            ];
-                            const incompleteStages = stages.filter(s => !s.completed);
+                                const totalPhases = 7;
+                                const safeProgress = campground.progress || 0;
+                                const completedPhases = Math.max(0, Math.ceil((safeProgress * totalPhases) / 100));
                             %>
-                            <% if (incompleteStages.length > 0) { %>
-                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
-                                    <div style="color: #888; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Remaining Steps:</div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                        <% incompleteStages.forEach(stage => { %>
-                                            <span style="display: inline-block; padding: 4px 10px; background: rgba(255, 222, 0, 0.1); border: 1px solid rgba(255, 222, 0, 0.3); border-radius: 12px; color: #ffde00; font-size: 0.7rem; font-weight: 500;">
-                                                <%= stage.name %>
-                                            </span>
-                                        <% }); %>
-                                    </div>
-                                </div>
-                            <% } %>
-                        </div>
-                        
-                        <% if (teamInitials.length > 0) { %>
-                            <div class="team-avatars">
-                                <% teamInitials.forEach(initial => { %>
-                                    <div class="team-avatar"><%= initial %></div>
-                                <% }); %>
+                            <div class="project-progress-meta">
+                                <span class="project-progress-label">Completed: <%= completedPhases %>/<%= totalPhases %> phases</span>
+                                <span class="project-progress-percent"><%= safeProgress %>%</span>
                             </div>
-                        <% } %>
-                        
-                        <a href="/problems/<%= campground._id %>" class="open-btn">
-                            Open <i class="fas fa-arrow-right"></i>
-                        </a>
+                            <div class="project-progress-track">
+                                <div class="project-progress-fill" style="width: <%= safeProgress %>%"></div>
+                            </div>
+                            <div class="project-card-divider"></div>
+                            <div class="project-card-footer">
+                                <a href="/problems/<%= campground._id %>" class="open-btn">
+                                    Open <i class="fas fa-arrow-right"></i>
+                                </a>
+                                <p class="project-card-adopted">10+ students have adopted this mission</p>
+                            </div>
+                        </div>
                     </div>
                 <% }); %>
         </div>

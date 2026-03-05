@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white mb-1"><i class="fas fa-clipboard-list text-warning"></i> Must Have Definition - Functional and Non Functional Requirements</h3>
+            <p class="text-muted mb-0">Define requirements here so they can be used in Converge Ideas mapping.</p>
+        </div>
+        <a href="/process/<%= problem._id %>/analysis" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Analysis
+        </a>
+    </div>
+
+    <form method="POST" action="/process/<%= problem._id %>/analysis/must-have-definition-functional-non-functional">
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card border-secondary h-100">
+                    <div class="card-header bg-dark text-white">Functional Requirements</div>
+                    <div class="card-body">
+                        <p class="text-muted small">One requirement per line</p>
+                        <textarea name="functionalRequirementsText" rows="10" class="form-control"><%= (analysisData.functionalRequirements || []).join('\n') %></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card border-secondary h-100">
+                    <div class="card-header bg-dark text-white">Non Functional Requirements</div>
+                    <div class="card-body">
+                        <p class="text-muted small">One requirement per line</p>
+                        <textarea name="nonFunctionalRequirementsText" rows="10" class="form-control"><%= (analysisData.nonFunctionalRequirements || []).join('\n') %></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-save"></i> Save Requirements
+            </button>
+            <a href="/process/<%= problem._id %>/converge-ideas/map-ideas-to-functional-and-non-functional-requirements" class="btn btn-outline-light">
+                Go to Mapping <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </form>
+</div>

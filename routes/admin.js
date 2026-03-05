@@ -7,6 +7,8 @@ const fs = require('fs');
 const { isLoggedIn } = require('../middleware');
 const { Program, School, SchoolProgram, PredefinedProblem } = require('../models/schemas');
 const User = require('../models/user');
+const CorporateProblem = require('../models/corporateProblem');
+const Campground = require('../models/campgrounds');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -96,6 +98,46 @@ router.get('/admin/dashboard', isLoggedIn, isAdmin, async (req, res) => {
     const allUsers = await User.find().sort({ username: 1 });
     const problemCreators = allUsers.filter(u => u.isProblemCreator);
 
+    // Corporate problems + adopting teams/projects (for admin visibility)
+    const corporateProblems = await CorporateProblem.find()
+      .populate('createdBy', 'username')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const adoptedProjects = await Campground.find({
+      adoptedFromCorporateProblem: { $exists: true, $ne: null }
+    })
+      .select('title adoptedFromCorporateProblem author teamInfo createdAt')
+      .populate({
+        path: 'author',
+        select: 'username email isTeam teamMembers schoolName programName',
+        populate: {
+          path: 'teamMembers',
+          select: 'username email'
+        }
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const adoptedByProblemId = new Map();
+    for (const project of adoptedProjects) {
+      const problemId = String(project.adoptedFromCorporateProblem);
+      if (!adoptedByProblemId.has(problemId)) {
+        adoptedByProblemId.set(problemId, []);
+      }
+      adoptedByProblemId.get(problemId).push(project);
+    }
+
+    const corporateProblemAdoptions = corporateProblems.map(problem => {
+      const relatedProjects = adoptedByProblemId.get(String(problem._id)) || [];
+      const adopterProjects = relatedProjects.filter(project => !!project.author);
+      return {
+        ...problem,
+        adoptedProjects: adopterProjects,
+        adoptedCount: adopterProjects.length
+      };
+    });
+
     res.render('admin/dashboard', {
       currentUser: req.user,
       programs,
@@ -104,7 +146,8 @@ router.get('/admin/dashboard', isLoggedIn, isAdmin, async (req, res) => {
       problemSummary,
       totalProblems,
       allUsers,
-      problemCreators
+      problemCreators,
+      corporateProblemAdoptions
     });
   } catch (error) {
     console.error('Error loading admin dashboard:', error);

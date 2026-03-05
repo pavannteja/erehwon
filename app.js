@@ -1,5 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
+  const customEnvPath = path.join(__dirname, "Problem_Discovery.env");
+  const defaultEnvPath = path.join(__dirname, ".env");
+  require("dotenv").config({
+    path: fs.existsSync(customEnvPath) ? customEnvPath : defaultEnvPath
+  });
 }
 
 console.log('Environment Variables:', {
@@ -10,7 +17,6 @@ console.log('Environment Variables:', {
 
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
@@ -25,6 +31,7 @@ const multer = require('multer');
 const ExpressError = require("./utils/ExpressError");
 const User = require("./models/user");
 const Campground = require("./models/campgrounds");
+const CorporateProblem = require("./models/corporateProblem");
 const { Program } = require("./models/schemas");
 const { getProblemStage } = require("./utils/stageHelper");
 
@@ -37,6 +44,7 @@ const adminRoutes = require("./routes/admin");
 const programAdministratorRoutes = require("./routes/programAdministrator");
 const prototypingRoutes = require("./routes/prototyping");
 const corporateProblemsRoutes = require("./routes/corporateProblems");
+const processRoutes = require("./routes/process");
 
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp";
 
@@ -154,7 +162,8 @@ app.use(async (req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success") || [];
   res.locals.error = req.flash("error") || [];
-  
+  res.locals.currentPath = req.path;
+
   // SEO and meta data
   const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
   res.locals.baseURL = baseUrl;
@@ -189,11 +198,13 @@ app.use("/", adminRoutes);
 app.use("/", programAdministratorRoutes);
 app.use("/", prototypingRoutes);
 app.use("/corporate-problems", corporateProblemsRoutes);
+app.use("/", processRoutes);
 
 // Home route - displays user's problem statements
 app.get("/", async (req, res) => {
   let campgrounds = [];
   let programs = [];
+  let corporateProblemsHome = [];
   
   if (req.user) {
     try {
@@ -258,11 +269,26 @@ app.get("/", async (req, res) => {
         campObj.stageProgress = stageInfo.stageProgress; // Add stageProgress for incomplete steps display
         return campObj;
       }));
+
     } catch (error) {
       console.error('Error fetching data for home:', error);
       campgrounds = [];
       programs = [];
     }
+  }
+
+  try {
+    // Pull live data from corporate problems page source for home preview
+    // Visible for both logged-in and logged-out users.
+    corporateProblemsHome = await CorporateProblem.find({
+      $or: [{ isActive: true }, { isActive: { $exists: false } }]
+    })
+      .populate('createdBy', 'username')
+      .sort({ createdAt: -1 })
+      .lean();
+  } catch (error) {
+    console.error('Error fetching corporate problems preview for home:', error);
+    corporateProblemsHome = [];
   }
   
   const seoData = {
@@ -271,7 +297,7 @@ app.get("/", async (req, res) => {
     ogImage: (process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`) + "/images/logo-tranparent.png"
   };
   
-  res.render("home", { campgrounds, programs, ...seoData });
+  res.render("home", { campgrounds, programs, corporateProblemsHome, ...seoData });
 });
 
 // Robots.txt route

@@ -1,0 +1,46 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white mb-1"><i class="fas fa-list-check text-warning"></i> Converge Ideas - Idea Shortlisting</h3>
+            <p class="text-muted mb-0">Select ideas to carry forward into requirement mapping.</p>
+        </div>
+        <a href="/process/<%= problem._id %>/converge-ideas" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Converge Ideas
+        </a>
+    </div>
+
+    <form method="POST" action="/process/<%= problem._id %>/converge-ideas/idea-shortlisting">
+        <div class="card border-secondary">
+            <div class="card-body">
+                <% if (!ideas || ideas.length === 0) { %>
+                    <p class="text-muted mb-0">No ideas found yet. Complete Creative Ideation (Gear 1) first.</p>
+                <% } else { %>
+                    <div class="row g-3">
+                        <% ideas.forEach((idea, idx) => { %>
+                            <div class="col-12 col-md-6">
+                                <label class="card h-100 border-secondary p-3 d-block">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="selectedIdeaIds" value="<%= idea._id %>" <%= selectedIds.includes(String(idea._id)) ? 'checked' : '' %>>
+                                        <span class="form-check-label text-white fw-semibold">Idea <%= idx + 1 %></span>
+                                    </div>
+                                    <p class="text-muted mt-2 mb-0"><%= idea.content || '(No idea text)' %></p>
+                                </label>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-save"></i> Save Shortlist
+            </button>
+            <a href="/process/<%= problem._id %>/converge-ideas/map-ideas-to-functional-and-non-functional-requirements" class="btn btn-outline-light">
+                Next: Requirement Mapping <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </form>
+</div>

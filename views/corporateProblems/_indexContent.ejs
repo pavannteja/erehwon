@@ -1,0 +1,85 @@
+<div class="container mt-4 corporate-index-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="corporate-index-header-copy">
+            <h1 class="mb-2 corporate-index-heading">Corporate Problem Statements</h1>
+            <p class="corporate-index-subheading">Browse and adopt corporate problem statements to start your innovation journey</p>
+        </div>
+        <% if (currentUser && (currentUser.isProblemCreator || currentUser.isAdmin)) { %>
+        <a href="/corporate-problems/new" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Problem
+        </a>
+        <% } %>
+    </div>
+
+    <% if (corporateProblems.length === 0) { %>
+        <div class="card text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <h3 class="text-white">No Corporate Problems Yet</h3>
+                <p class="text-muted">Check back later or contact an administrator to create problem statements.</p>
+                <% if (currentUser && (currentUser.isProblemCreator || currentUser.isAdmin)) { %>
+                <a href="/corporate-problems/new" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus"></i> Create First Problem
+                </a>
+                <% } %>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="corporate-problems-grid">
+            <% corporateProblems.forEach((problem, index) => { %>
+            <% const isFeaturedCard = index === 0; %>
+            <article class="corporate-problem-card">
+                <div class="corporate-problem-card__top">
+                    <div class="corporate-problem-card__brand">
+                        <% if (isFeaturedCard) { %>
+                        <img src="/images/unilever-logo.png" alt="Unilever logo" class="corporate-problem-card__logo">
+                        <% } else { %>
+                        <div class="corporate-problem-card__logo-placeholder"><%= (problem.companyName || 'C').charAt(0).toUpperCase() %></div>
+                        <% } %>
+                        <span class="corporate-problem-card__brand-divider" aria-hidden="true"></span>
+                        <h2 class="corporate-problem-card__card-header">
+                            <%= isFeaturedCard ? 'Mastering Sustainable Energy' : problem.title %>
+                        </h2>
+                    </div>
+                    <a href="/corporate-problems/<%= problem._id %>" class="corporate-problem-card__view-link">View Details</a>
+                </div>
+
+                <p class="corporate-problem-card__innovation-type">
+                    <%= isFeaturedCard ? 'Incremental Innovation' : (problem.category || 'General') %>
+                </p>
+
+                <div class="corporate-problem-card__tags">
+                    <% if (isFeaturedCard) { %>
+                    <span class="corporate-problem-card__tag">Ideation</span>
+                    <span class="corporate-problem-card__tag">Market Research</span>
+                    <span class="corporate-problem-card__tag">Strategy</span>
+                    <% } else { %>
+                        <% const tagsToRender = (problem.tags && problem.tags.length > 0) ? problem.tags.slice(0, 3) : [problem.category || 'General']; %>
+                        <% tagsToRender.forEach(tag => { %>
+                        <span class="corporate-problem-card__tag"><%= tag %></span>
+                        <% }); %>
+                    <% } %>
+                </div>
+
+                <p class="corporate-problem-card__description">
+                    <%= isFeaturedCard
+                        ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+                        : (problem.description.length > 210 ? problem.description.substring(0, 210) + '...' : problem.description) %>
+                </p>
+
+                <div class="corporate-problem-card__footer">
+                    <form action="/corporate-problems/<%= problem._id %>/adopt" method="POST" class="corporate-problem-card__adopt-form">
+                        <button type="submit" class="corporate-problem-card__adopt-btn">
+                            <img src="/images/adopt-icon.png" alt="" class="corporate-problem-card__adopt-icon" aria-hidden="true">
+                            <span>Adopt</span>
+                        </button>
+                    </form>
+                    <p class="corporate-problem-card__adopted-copy">
+                        <%= isFeaturedCard ? '10+ students have adopted this mission' : ('Created by ' + (problem.createdBy && problem.createdBy.username ? problem.createdBy.username : 'Team')) %>
+                    </p>
+                </div>
+            </article>
+            <% }); %>
+        </div>
+    <% } %>
+</div>

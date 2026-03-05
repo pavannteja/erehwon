@@ -1,70 +1,52 @@
 <% layout('layouts/boilerplate')%>
 
-<div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
-            <div class="card shadow">
-                <div class="card-img-top d-flex justify-content-center align-items-center bg-dark" style="min-height: 150px; padding: 20px;">
-                    <img src="/images/logo-tranparent.png" alt="Erehwon Logo" class="img-fluid" style="max-height: 120px; width: auto; object-fit: contain;">
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-center">
-                        <img src="/images/logo-tranparent.png" alt="Erehwon" style="height: 32px; width: auto; margin-right: 8px; vertical-align: middle;">
-                        Register
-                    </h5>
-                    
-                    <!-- Google OAuth Button (only show if configured) -->
-                    <% if (process.env.GOOGLE_CLIENT_ID) { %>
-                    <div class="d-grid mb-3">
-                        <a href="/auth/google" class="btn btn-outline-danger">
-                            <i class="fab fa-google me-2"></i>Register with Google
-                        </a>
-                    </div>
-                    
-                    <div class="text-center mb-3">
-                        <span class="text-muted">or</span>
-                    </div>
-                    <% } else { %>
-                    <div class="alert alert-info">
-                        <small><i class="fas fa-info-circle me-1"></i>Google OAuth not configured. Please set up GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment variables.</small>
-                    </div>
-                    <% } %>
-                    
-                    <form action="/register" method="POST" class="validated-form" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" autofocus required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
-                        </div>
+<div class="register-page">
+    <div class="register-page__inner">
+        <div class="register-card">
+            <h1 class="register-card-title">Welcome to Erehwon</h1>
+            <p class="register-card-subtitle">Start your innovation journey with real industry problems.</p>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="email">Email</label>
-                            <input class="form-control" type="email" id="email" name="email" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" for="password">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <button class="btn btn-success">Register</button>
-                        </div>
-                    </form>
-                    
-                    <div class="text-center mt-3">
-                        <small class="text-muted">Already have an account? <a href="/login" class="text-decoration-none">Login here</a></small>
-                    </div>
-                </div>
+            <% if (process.env.GOOGLE_CLIENT_ID) { %>
+            <div class="register-google-wrap">
+                <a href="/auth/google" class="register-btn register-btn--google">
+                    <i class="fab fa-google register-btn__icon"></i>
+                    <span>Continue with Google</span>
+                </a>
+                <div class="register-google-stroke" aria-hidden="true"></div>
             </div>
+
+            <p class="register-or">or</p>
+            <% } else { %>
+            <div class="alert alert-info register-alert">
+                <small><i class="fas fa-info-circle me-1"></i>Google OAuth not configured.</small>
+            </div>
+            <% } %>
+
+            <form action="/register" method="POST" class="validated-form register-form" novalidate>
+                <div class="register-field">
+                    <label class="register-label" for="username">Username</label>
+                    <input class="register-input form-control" type="text" id="username" name="username" placeholder="Type your username" autofocus required>
+                    <div class="valid-feedback">Looks good!</div>
+                </div>
+                <div class="register-field">
+                    <label class="register-label" for="email">Email</label>
+                    <input class="register-input form-control" type="email" id="email" name="email" placeholder="Type your email" required>
+                    <div class="valid-feedback">Looks good!</div>
+                </div>
+                <div class="register-field">
+                    <label class="register-label" for="password">Password</label>
+                    <input class="register-input form-control" type="password" id="password" name="password" placeholder="Type your password" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="register-forgot-wrap">
+                        <a href="/forgot-password" class="register-forgot-link">Forgot password?</a>
+                    </div>
+                </div>
+                <button type="submit" class="register-btn register-btn--primary">Register</button>
+            </form>
+
+            <p class="register-have-account">
+                Already have an account? <a href="/login" class="register-link">Login here</a>
+            </p>
         </div>
     </div>
 </div>

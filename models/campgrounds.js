@@ -93,6 +93,32 @@ const campgroundSchema = new Schema ({
         type: String,
         default: ''
     },
+    // Analysis outputs (used by later process stages)
+    analysisData: {
+        functionalRequirements: [String],
+        nonFunctionalRequirements: [String]
+    },
+    // Converge ideas outputs
+    convergeIdeasData: {
+        shortlistedIdeaIds: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Idea'
+        }],
+        requirementIdeaMap: [{
+            requirementType: { type: String, enum: ['functional', 'nonFunctional'] },
+            requirementText: String,
+            ideaIds: [{
+                type: Schema.Types.ObjectId,
+                ref: 'Idea'
+            }]
+        }],
+        finalChosenIdeaId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Idea'
+        },
+        finalChosenIdeaText: String,
+        definedFeatures: [String]
+    },
     // Reference to corporate problem if adopted
     adoptedFromCorporateProblem: {
         type: Schema.Types.ObjectId,

@@ -1,0 +1,173 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+    .idea-chip { cursor: grab; user-select: none; }
+    .dropzone { min-height: 64px; border: 1px dashed #555; border-radius: 8px; padding: 8px; background: #111; }
+    .dropzone.over { border-color: #ffde00; background: rgba(255, 222, 0, 0.08); }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white mb-1"><i class="fas fa-table-columns text-warning"></i> Map Ideas to Functional and Non Functional Requirements</h3>
+            <p class="text-muted mb-0">Drag shortlisted ideas and drop them onto requirements.</p>
+        </div>
+        <a href="/process/<%= problem._id %>/converge-ideas" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Converge Ideas
+        </a>
+    </div>
+
+    <div class="alert alert-dark border border-warning mb-3">
+        <small class="text-muted">
+            <strong class="text-warning">Tip:</strong> Requirements come from Analysis -> Must Have Definition.
+            <% if ((!functionalRequirements || functionalRequirements.length === 0) && (!nonFunctionalRequirements || nonFunctionalRequirements.length === 0)) { %>
+            <a href="/process/<%= problem._id %>/analysis/must-have-definition-functional-non-functional" class="ms-2">Add requirements first</a>.
+            <% } %>
+        </small>
+    </div>
+
+    <div class="card border-secondary mb-3">
+        <div class="card-body">
+            <h6 class="text-white">Shortlisted Ideas</h6>
+            <div id="ideaPool" class="d-flex flex-wrap gap-2">
+                <% if (!shortlistedIdeas || shortlistedIdeas.length === 0) { %>
+                    <span class="text-muted">No shortlisted ideas yet. Complete Idea Shortlisting first.</span>
+                <% } else { %>
+                    <% shortlistedIdeas.forEach((idea) => { %>
+                        <div class="badge bg-secondary p-2 idea-chip" draggable="true" data-idea-id="<%= idea._id %>" data-idea-text="<%= (idea.content || '').replace(/"/g, '&quot;') %>">
+                            <%= idea.content || '(No idea text)' %>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="/process/<%= problem._id %>/converge-ideas/map-ideas-to-functional-and-non-functional-requirements" id="mappingForm">
+        <input type="hidden" name="requirementIdeaMap" id="requirementIdeaMapInput">
+
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card border-secondary h-100">
+                    <div class="card-header bg-dark text-white">Functional Requirements</div>
+                    <div class="card-body">
+                        <% if (!functionalRequirements || functionalRequirements.length === 0) { %>
+                            <p class="text-muted mb-0">No functional requirements defined.</p>
+                        <% } else { %>
+                            <% functionalRequirements.forEach((reqText, idx) => { %>
+                                <div class="mb-3">
+                                    <label class="form-label text-white"><%= idx + 1 %>. <%= reqText %></label>
+                                    <div class="dropzone" data-req-type="functional" data-req-text="<%= reqText.replace(/"/g, '&quot;') %>"></div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="card border-secondary h-100">
+                    <div class="card-header bg-dark text-white">Non Functional Requirements</div>
+                    <div class="card-body">
+                        <% if (!nonFunctionalRequirements || nonFunctionalRequirements.length === 0) { %>
+                            <p class="text-muted mb-0">No non-functional requirements defined.</p>
+                        <% } else { %>
+                            <% nonFunctionalRequirements.forEach((reqText, idx) => { %>
+                                <div class="mb-3">
+                                    <label class="form-label text-white"><%= idx + 1 %>. <%= reqText %></label>
+                                    <div class="dropzone" data-req-type="nonFunctional" data-req-text="<%= reqText.replace(/"/g, '&quot;') %>"></div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-save"></i> Save Mapping
+            </button>
+            <a href="/process/<%= problem._id %>/converge-ideas/finalise-chose-idea-define-features" class="btn btn-outline-light">
+                Next: Finalise Idea <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const existingMap = <%- JSON.stringify(existingMap || []) %>;
+
+    function createChip(ideaId, ideaText) {
+        const chip = document.createElement('div');
+        chip.className = 'badge bg-secondary p-2 idea-chip';
+        chip.draggable = true;
+        chip.dataset.ideaId = ideaId;
+        chip.dataset.ideaText = ideaText || '';
+        chip.textContent = ideaText || '(No idea text)';
+        chip.addEventListener('dragstart', onDragStart);
+        return chip;
+    }
+
+    function onDragStart(e) {
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            ideaId: e.target.dataset.ideaId,
+            ideaText: e.target.dataset.ideaText
+        }));
+    }
+
+    function setupDropzones() {
+        document.querySelectorAll('.idea-chip').forEach((chip) => chip.addEventListener('dragstart', onDragStart));
+
+        document.querySelectorAll('.dropzone, #ideaPool').forEach((zone) => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('over');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('over');
+                const payload = JSON.parse(e.dataTransfer.getData('text/plain') || '{}');
+                if (!payload.ideaId) return;
+                const chip = createChip(payload.ideaId, payload.ideaText);
+                zone.appendChild(chip);
+            });
+        });
+    }
+
+    function hydrateExistingMap() {
+        if (!Array.isArray(existingMap)) return;
+        existingMap.forEach((entry) => {
+            const zone = Array.from(document.querySelectorAll('.dropzone')).find((z) => (
+                z.dataset.reqType === entry.requirementType &&
+                z.dataset.reqText === (entry.requirementText || '')
+            ));
+            if (!zone) return;
+            (entry.ideaIds || []).forEach((ideaId) => {
+                const fromPool = document.querySelector(`#ideaPool .idea-chip[data-idea-id="${ideaId}"]`);
+                if (fromPool) {
+                    zone.appendChild(fromPool);
+                } else {
+                    zone.appendChild(createChip(String(ideaId), String(ideaId)));
+                }
+            });
+        });
+    }
+
+    document.getElementById('mappingForm').addEventListener('submit', (e) => {
+        const map = [];
+        document.querySelectorAll('.dropzone').forEach((zone) => {
+            const ideaIds = Array.from(zone.querySelectorAll('.idea-chip')).map((chip) => chip.dataset.ideaId).filter(Boolean);
+            map.push({
+                requirementType: zone.dataset.reqType,
+                requirementText: zone.dataset.reqText,
+                ideaIds
+            });
+        });
+        document.getElementById('requirementIdeaMapInput').value = JSON.stringify(map);
+    });
+
+    setupDropzones();
+    hydrateExistingMap();
+</script>

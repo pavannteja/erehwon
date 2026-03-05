@@ -6,6 +6,8 @@ package-lock.json
 .env
 .env.local
 .env.*.local
+Problem_Discovery.env
+*.env
 
 # Logs
 logs

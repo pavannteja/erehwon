@@ -619,9 +619,11 @@
 let phaseCompleted = {
     1: false, // Excite & Enrol
     2: false, // Problem Discovery
-    3: false, // Ideation
-    4: false, // Conceptual Solution
-    5: false  // Prototyping
+    3: false, // Analysis
+    4: false, // Creative Ideation
+    5: false, // Converge Ideas
+    6: false, // Conceptual Solution
+    7: false  // Prototyping
 };
 
 // Phase 1: Excite & Enrol - Check if teamInfo exists
@@ -634,39 +636,51 @@ if (campground.problemStatementInfo && campground.problemStatementInfo.problemTy
     phaseCompleted[2] = true;
 }
 
-// Phase 3: Ideation - Check if 10+ ideas exist (ideaCount passed from controller)
-if (typeof ideaCount !== 'undefined' && ideaCount >= 10) {
+// Phase 3: Analysis - currently linked to completion of discovery output
+if (phaseCompleted[2]) {
     phaseCompleted[3] = true;
 }
 
-// Phase 4: Conceptual Solution - Check if solution exists
-if (campground.solution) {
+// Phase 4: Creative Ideation - Check if 10+ ideas exist (ideaCount passed from controller)
+if (typeof ideaCount !== 'undefined' && ideaCount >= 10) {
     phaseCompleted[4] = true;
 }
 
-// Phase 5: Prototyping - Check if prototype exists and has files
-if (typeof prototypeHasFiles !== 'undefined' && prototypeHasFiles) {
+// Phase 5: Converge Ideas - currently linked to completion of ideation output
+if (phaseCompleted[4]) {
     phaseCompleted[5] = true;
 }
 
-// Determine current stage (first incomplete phase, or 5 if all complete)
+// Phase 6: Conceptual Solution - Check if solution exists
+if (campground.solution) {
+    phaseCompleted[6] = true;
+}
+
+// Phase 7: Prototyping - Check if prototype exists and has files
+if (typeof prototypeHasFiles !== 'undefined' && prototypeHasFiles) {
+    phaseCompleted[7] = true;
+}
+
+// Determine current stage (first incomplete phase, or 7 if all complete)
 let currentStage = 1;
-for (let i = 1; i <= 5; i++) {
+for (let i = 1; i <= 7; i++) {
     if (!phaseCompleted[i]) {
         currentStage = i;
         break;
     }
-    if (i === 5 && phaseCompleted[5]) {
-        currentStage = 5;
+    if (i === 7 && phaseCompleted[7]) {
+        currentStage = 7;
     }
 }
 
 const phases = [
-    { name: 'Excite & Enrol', icon: 'fas fa-users', description: 'Build your team and get enrolled' },
-    { name: 'Problem Discovery', icon: 'fas fa-search', description: 'Research and understand the problem' },
-    { name: 'Ideation', icon: 'fas fa-lightbulb', description: 'Generate creative solutions' },
-    { name: 'Conceptual Solution', icon: 'fas fa-tasks', description: 'Define and refine your solution' },
-    { name: 'Prototyping', icon: 'fas fa-tools', description: 'Build and test your prototype' }
+    { key: 'excite-enrol', name: 'Excite & Enrol', icon: 'fas fa-users', description: 'Build your team and get enrolled' },
+    { key: 'problem-discovery', name: 'Problem Discovery', icon: 'fas fa-search', description: 'Research and understand the problem' },
+    { key: 'analysis', name: 'Analysis', icon: 'fas fa-chart-line', description: 'Analyze findings and identify key patterns' },
+    { key: 'ideation', name: 'Creative Ideation', icon: 'fas fa-lightbulb', description: 'Generate creative solutions' },
+    { key: 'converge-ideas', name: 'Converge Ideas', icon: 'fas fa-filter', description: 'Narrow ideas and select the best direction' },
+    { key: 'conceptual-solution', name: 'Conceptual Solution', icon: 'fas fa-tasks', description: 'Define and refine your solution' },
+    { key: 'prototyping', name: 'Prototyping', icon: 'fas fa-tools', description: 'Build and test your prototype' }
 ];
 %>
 
@@ -687,24 +701,7 @@ const phases = [
                 const isCompleted = phaseCompleted[phaseNum];
                 const isActive = phaseNum === currentStage;
                 
-                // Determine route for each phase
-                let phaseRoute = '#';
-                if (phaseNum === 1) {
-                    // Excite & Enrol - go to Excite & Enrol form
-                    phaseRoute = `/excite-and-enrol?campgroundId=${campground._id}`;
-                } else if (phaseNum === 2) {
-                    // Problem Discovery - go to Problem Discovery page
-                    phaseRoute = `/problem-statement/page2?campgroundId=${campground._id}`;
-                } else if (phaseNum === 3) {
-                    // Ideation
-                    phaseRoute = `/ideation/${campground._id}`;
-                } else if (phaseNum === 4) {
-                    // Conceptual Solution
-                    phaseRoute = `/define-solution?campgroundId=${campground._id}`;
-                } else if (phaseNum === 5) {
-                    // Prototyping
-                    phaseRoute = `/prototyping/${campground._id}`;
-                }
+                const phaseRoute = `/process/${campground._id}/${phase.key}`;
             %>
                 <a href="<%= phaseRoute %>" class="phase-item-link" style="text-decoration: none; color: inherit;">
                     <div class="phase-item <%= isCompleted ? 'completed' : '' %> <%= isActive ? 'active' : '' %>">
@@ -743,8 +740,12 @@ const phases = [
                             <% } else if (currentStage === 2) { %>
                                 Conduct user interviews, observations, and research to build empathy with your users. Understand the root cause of the problem.
                             <% } else if (currentStage === 3) { %>
-                                Generate creative ideas and brainstorm solutions. Think outside the box and explore multiple approaches to solving the problem.
+                                Analyze what you discovered. Group insights, identify patterns, and clarify root causes before idea generation.
                             <% } else if (currentStage === 4) { %>
+                                Generate creative ideas and brainstorm solutions. Think outside the box and explore multiple approaches to solving the problem.
+                            <% } else if (currentStage === 5) { %>
+                                Converge on the strongest options by evaluating ideas and selecting the best direction to pursue.
+                            <% } else if (currentStage === 6) { %>
                                 Define your solution concept clearly. Document what your solution should and shouldn't do, and outline key features.
                             <% } else { %>
                                 Build a prototype of your solution. Test it with real users and iterate based on feedback.
@@ -976,6 +977,19 @@ const phases = [
                     <% } else if (currentStage === 3) { %>
                         <div class="activity-item">
                             <div class="activity-checkbox"></div>
+                            <span class="activity-name">Cluster Insights</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
+                            <span class="activity-name">Map Root Causes</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
+                            <span class="activity-name">Draft Opportunities</span>
+                        </div>
+                    <% } else if (currentStage === 4) { %>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
                             <span class="activity-name">Brainstorming Session</span>
                         </div>
                         <div class="activity-item">
@@ -986,7 +1000,20 @@ const phases = [
                             <div class="activity-checkbox"></div>
                             <span class="activity-name">Idea Evaluation</span>
                         </div>
-                    <% } else if (currentStage === 4) { %>
+                    <% } else if (currentStage === 5) { %>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
+                            <span class="activity-name">Shortlist Concepts</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
+                            <span class="activity-name">Decision Matrix</span>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-checkbox"></div>
+                            <span class="activity-name">Select Direction</span>
+                        </div>
+                    <% } else if (currentStage === 6) { %>
                         <div class="activity-item <%= campground.solution ? 'completed' : '' %>">
                             <div class="activity-checkbox"><% if (campground.solution) { %><i class="fas fa-check"></i><% } %></div>
                             <span class="activity-name">Define Solution</span>
@@ -1029,7 +1056,7 @@ const phases = [
                         <div class="activity-checkbox" style="background: #ffde00; border-color: #ffde00;">
                             <i class="fas fa-check" style="color: #000;"></i>
                         </div>
-                        <span class="activity-name">Phase <%= currentStage %> of 5</span>
+                        <span class="activity-name">Phase <%= currentStage %> of 7</span>
                     </div>
                 </div>
             </div>

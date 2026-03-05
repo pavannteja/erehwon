@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="text-white mb-1">
+                <i class="<%= stage.icon %> text-warning"></i> <%= stage.name %>
+            </h2>
+            <p class="text-muted mb-0"><%= stage.subtitle %></p>
+        </div>
+        <a href="/problems/<%= problem._id %>" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Project
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="text-white mb-2"><%= problem.title %></h5>
+            <p class="text-muted mb-0">
+                Choose a subsection below. These pages are designed as extensible entry points so you can keep adding new functionality under each process stage.
+            </p>
+        </div>
+    </div>
+
+    <% if (stageKey === 'problem-discovery') { %>
+        <div class="alert alert-dark border border-warning mb-4">
+            <div class="text-warning mb-1"><i class="fas fa-route"></i> Suggested Order</div>
+            <div class="text-muted">Complete these sections one after another to maintain a strong discovery flow.</div>
+        </div>
+    <% } %>
+
+    <div class="row g-3">
+        <% stage.actions.forEach((action) => { %>
+            <div class="col-12 col-md-6 col-lg-4">
+                <a href="<%= action.href %>" class="text-decoration-none">
+                    <div class="card h-100 border-secondary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="text-white mb-0">
+                                    <i class="<%= action.icon %> text-warning"></i> <%= action.title %>
+                                </h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <% if (action.step) { %>
+                                        <span class="badge bg-warning text-dark">Step <%= action.step %></span>
+                                    <% } %>
+                                    <span class="badge bg-dark border border-secondary"><%= action.badge %></span>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0" style="font-size: 0.9rem;"><%= action.description %></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <% }) %>
+    </div>
+</div>

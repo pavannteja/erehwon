@@ -1,79 +1,71 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="text-white mb-0"><%= corporateProblem.title %></h2>
-            <%
-                const isOwner = currentUser && corporateProblem.createdBy && corporateProblem.createdBy._id && corporateProblem.createdBy._id.toString() === currentUser._id.toString();
-                const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
-            %>
-            <% if (canManageProblem) { %>
-            <div class="d-flex gap-2">
-                <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="btn btn-warning btn-sm">
-                    <i class="fas fa-edit"></i> Edit
-                </a>
-                <form action="/corporate-problems/<%= corporateProblem._id %>?_method=DELETE" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this problem?')">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </form>
-            </div>
-            <% } %>
-        </div>
-        <div class="card-body">
-            <div class="mb-4">
-                <div class="mb-3">
-                    <span class="badge bg-info text-dark" style="font-size: 1rem; padding: 8px 16px;">
-                        <i class="fas fa-building"></i> Company: <strong><%= corporateProblem.companyName %></strong>
-                    </span>
+<div class="container mt-4 corporate-problem-show-page">
+    <article class="corporate-problem-detail-box">
+        <header class="corporate-problem-detail-top">
+            <div class="corporate-problem-detail-brand-wrap">
+                <img src="/images/unilever-logo.png" alt="<%= corporateProblem.companyName %> logo" class="corporate-problem-detail-logo">
+                <span class="corporate-problem-detail-stroke" aria-hidden="true"></span>
+                <div class="corporate-problem-detail-title-wrap">
+                    <h1 class="corporate-problem-detail-heading"><%= corporateProblem.title %></h1>
+                    <p class="corporate-problem-detail-company"><%= corporateProblem.companyName %></p>
                 </div>
-                <h4 class="text-white">Description</h4>
-                <p class="text-muted"><%= corporateProblem.description %></p>
             </div>
+            <a href="/corporate-problems" class="corporate-problem-detail-other-link">Other Problem Statements</a>
+        </header>
 
-            <% if (corporateProblem.problemStatement && (corporateProblem.problemStatement.whoHasProblem || corporateProblem.problemStatement.whatIsProblem || corporateProblem.problemStatement.expectedBenefit)) { %>
-            <div class="mb-4">
-                <h4 class="text-white">Problem Statement Details</h4>
-                <% if (corporateProblem.problemStatement.whoHasProblem) { %>
-                <div class="mb-3">
-                    <strong class="text-white">Who has the problem:</strong>
-                    <p class="text-muted"><%= corporateProblem.problemStatement.whoHasProblem %></p>
-                </div>
-                <% } %>
-                <% if (corporateProblem.problemStatement.whatIsProblem) { %>
-                <div class="mb-3">
-                    <strong class="text-white">What is the problem:</strong>
-                    <p class="text-muted"><%= corporateProblem.problemStatement.whatIsProblem %></p>
-                </div>
-                <% } %>
-                <% if (corporateProblem.problemStatement.expectedBenefit) { %>
-                <div class="mb-3">
-                    <strong class="text-white">Expected benefit:</strong>
-                    <p class="text-muted"><%= corporateProblem.problemStatement.expectedBenefit %></p>
-                </div>
-                <% } %>
-            </div>
-            <% } %>
+        <p class="corporate-problem-detail-date">Created on <%= new Date(corporateProblem.createdAt).toLocaleDateString() %></p>
 
-            <div class="mb-4">
-                <small class="text-muted">
-                    <i class="fas fa-user"></i> Created by <strong><%= corporateProblem.createdBy.username %></strong>
-                    <span class="ms-3"><i class="fas fa-calendar"></i> <%= new Date(corporateProblem.createdAt).toLocaleDateString() %></span>
-                </small>
-            </div>
+        <section class="corporate-problem-detail-meta-block">
+            <h2 class="corporate-problem-detail-label">Innovation Level:</h2>
+            <p class="corporate-problem-detail-value"><%= corporateProblem.category || 'Disruptive' %></p>
+        </section>
 
-            <div class="d-flex gap-2 mt-4">
-                <form action="/corporate-problems/<%= corporateProblem._id %>/adopt" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-rocket"></i> Adopt This Problem & Start Innovation Process
-                    </button>
-                </form>
-                <a href="/corporate-problems" class="btn btn-outline-secondary btn-lg">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
+        <section class="corporate-problem-detail-meta-block">
+            <h2 class="corporate-problem-detail-label">Skills Gained:</h2>
+            <div class="corporate-problem-detail-pills">
+                <% const detailTags = (corporateProblem.tags && corporateProblem.tags.length > 0) ? corporateProblem.tags.slice(0, 3) : ['Ideation', 'Market Research', 'Strategy']; %>
+                <% detailTags.forEach(tag => { %>
+                <span class="corporate-problem-detail-pill"><%= tag %></span>
+                <% }); %>
             </div>
-        </div>
+        </section>
+
+        <section class="corporate-problem-detail-content-block">
+            <h2 class="corporate-problem-detail-content-heading">Challenge:</h2>
+            <p class="corporate-problem-detail-content-body"><%= corporateProblem.description %></p>
+        </section>
+
+        <section class="corporate-problem-detail-content-block">
+            <h2 class="corporate-problem-detail-content-heading">Objective:</h2>
+            <p class="corporate-problem-detail-content-body"><%= (corporateProblem.problemStatement && corporateProblem.problemStatement.expectedBenefit) || corporateProblem.description %></p>
+        </section>
+
+        <footer class="corporate-problem-detail-footer">
+            <form action="/corporate-problems/<%= corporateProblem._id %>/adopt" method="POST" class="corporate-problem-detail-adopt-form">
+                <button type="submit" class="corporate-problem-detail-adopt-btn">
+                    <img src="/images/adopt-icon.png" alt="" aria-hidden="true" class="corporate-problem-detail-adopt-icon">
+                    <span>Adopt</span>
+                </button>
+            </form>
+            <p class="corporate-problem-detail-adopted-copy">10+ students have adopted this mission</p>
+        </footer>
+    </article>
+
+    <%
+        const isOwner = currentUser && corporateProblem.createdBy && corporateProblem.createdBy._id && corporateProblem.createdBy._id.toString() === currentUser._id.toString();
+        const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
+    %>
+    <% if (canManageProblem) { %>
+    <div class="corporate-problem-detail-manage">
+        <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        <form action="/corporate-problems/<%= corporateProblem._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this problem?')">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </form>
     </div>
+    <% } %>
 </div>
-
