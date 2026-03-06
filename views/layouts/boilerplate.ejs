@@ -15,7 +15,7 @@
     const baseUrl = typeof baseURL !== 'undefined' ? baseURL : (process.env.BASE_URL || 'http://localhost:3000');
     const currentUrl = typeof canonicalUrl !== 'undefined' ? canonicalUrl : (baseUrl + (typeof originalUrl !== 'undefined' ? originalUrl : ''));
     // Use logo as Open Graph image for search results
-    const ogImageUrl = typeof ogImage !== 'undefined' ? ogImage : (baseUrl + '/images/logo-tranparent.png');
+    const ogImageUrl = typeof ogImage !== 'undefined' ? ogImage : (baseUrl + '/images/logo-tranparent.webp');
     %>
     <title><%= pageTitle %></title>
     <meta name="title" content="<%= pageTitle %>">
@@ -51,13 +51,13 @@
     
     <!-- Favicon - Erehwon Logo -->
     <link rel="icon" type="image/png" href="<%= baseUrl %>/favicon.ico?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="<%= baseUrl %>/images/logo-tranparent.png?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="<%= baseUrl %>/images/logo-tranparent.png?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= baseUrl %>/images/logo-tranparent.webp?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= baseUrl %>/images/logo-tranparent.webp?v=2">
     <link rel="shortcut icon" type="image/png" href="<%= baseUrl %>/favicon.ico?v=2">
-    <link rel="apple-touch-icon" sizes="180x180" href="<%= baseUrl %>/images/logo-tranparent.png?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= baseUrl %>/images/logo-tranparent.webp?v=2">
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#ffde00">
-    <meta name="msapplication-TileImage" content="<%= baseUrl %>/images/logo-tranparent.png">
+    <meta name="msapplication-TileImage" content="<%= baseUrl %>/images/logo-tranparent.webp">
     <meta name="msapplication-TileColor" content="#ffde00">
     
     <!-- Preconnect for Performance -->
@@ -86,8 +86,8 @@
       "name": "Erehwon",
       "description": "<%= pageDescription %>",
       "url": "<%= baseUrl %>",
-      "image": "<%= baseUrl %>/images/logo-tranparent.png",
-      "logo": "<%= baseUrl %>/images/logo-tranparent.png",
+      "image": "<%= baseUrl %>/images/logo-tranparent.webp",
+      "logo": "<%= baseUrl %>/images/logo-tranparent.webp",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -120,11 +120,11 @@
       "url": "<%= baseUrl %>",
       "logo": {
         "@type": "ImageObject",
-        "url": "<%= baseUrl %>/images/logo-tranparent.png",
+        "url": "<%= baseUrl %>/images/logo-tranparent.webp",
         "width": "1200",
         "height": "630"
       },
-      "image": "<%= baseUrl %>/images/logo-tranparent.png",
+      "image": "<%= baseUrl %>/images/logo-tranparent.webp",
       "sameAs": []
     }
     </script>

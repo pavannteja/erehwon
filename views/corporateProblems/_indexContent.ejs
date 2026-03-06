@@ -32,7 +32,7 @@
                 <div class="corporate-problem-card__top">
                     <div class="corporate-problem-card__brand">
                         <% if (isFeaturedCard) { %>
-                        <img src="/images/unilever-logo.png" alt="Unilever logo" class="corporate-problem-card__logo">
+                        <img src="/images/unilever-logo.webp" alt="Unilever logo" class="corporate-problem-card__logo">
                         <% } else { %>
                         <div class="corporate-problem-card__logo-placeholder"><%= (problem.companyName || 'C').charAt(0).toUpperCase() %></div>
                         <% } %>
@@ -70,7 +70,7 @@
                 <div class="corporate-problem-card__footer">
                     <form action="/corporate-problems/<%= problem._id %>/adopt" method="POST" class="corporate-problem-card__adopt-form">
                         <button type="submit" class="corporate-problem-card__adopt-btn">
-                            <img src="/images/adopt-icon.png" alt="" class="corporate-problem-card__adopt-icon" aria-hidden="true">
+                            <img src="/images/adopt-icon.webp" alt="" class="corporate-problem-card__adopt-icon" aria-hidden="true">
                             <span>Adopt</span>
                         </button>
                     </form>

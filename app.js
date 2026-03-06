@@ -69,8 +69,8 @@ app.use(morgan("dev"));
 
 // Favicon route - MUST come before static file serving
 app.get("/favicon.ico", (req, res) => {
-  res.type("image/png");
-  res.sendFile(path.join(__dirname, "public/images/logo-tranparent.png"));
+  res.type("image/webp");
+  res.sendFile(path.join(__dirname, "public/images/logo-tranparent.webp"));
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -294,7 +294,7 @@ app.get("/", async (req, res) => {
   const seoData = {
     title: "Erehwon - Innovation Process Made Collaborative",
     description: "Start your innovation Journey. Guide your team through the complete innovation process. Discover problems, define solutions, ideate concepts, prototype ideas, and test with structured workflows.",
-    ogImage: (process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`) + "/images/logo-tranparent.png"
+    ogImage: (process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`) + "/images/logo-tranparent.webp"
   };
   
   res.render("home", { campgrounds, programs, corporateProblemsHome, ...seoData });
