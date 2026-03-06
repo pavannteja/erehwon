@@ -22,39 +22,83 @@
             </div>
             <% } %>
 
-            <!-- Individual Login -->
-            <form action="/login" method="POST" class="validated-form register-form" novalidate>
-                <div class="register-field">
-                    <label class="register-label" for="username">Username</label>
-                    <input class="register-input form-control" type="text" id="username" name="username" placeholder="Type your username" autofocus required>
-                    <div class="valid-feedback">Looks good!</div>
+            <!-- Individual / Team segmented control -->
+            <div class="login-segment-wrap">
+                <div class="login-segment" role="tablist" aria-label="Login type">
+                    <button type="button" class="login-segment__option login-segment__option--active" data-login-type="individual" role="tab" aria-selected="true" aria-controls="login-panel-individual" id="segment-individual">Individual</button>
+                    <button type="button" class="login-segment__option" data-login-type="team" role="tab" aria-selected="false" aria-controls="login-panel-team" id="segment-team">Team</button>
                 </div>
-                <div class="register-field">
-                    <label class="register-label" for="password">Password</label>
-                    <input class="register-input form-control" type="password" id="password" name="password" placeholder="Type your password" required>
-                    <div class="valid-feedback">Looks good!</div>
-                    <div class="register-forgot-wrap">
-                        <a href="/forgot-password" class="register-forgot-link">Forgot password?</a>
-                    </div>
-                </div>
-                <button type="submit" class="register-btn register-btn--primary">Login</button>
-            </form>
+            </div>
 
-            <hr class="login-divider">
+            <!-- Individual Login -->
+            <div id="login-panel-individual" class="login-panel login-panel--active" role="tabpanel" aria-labelledby="segment-individual">
+                <form action="/login" method="POST" class="validated-form register-form" novalidate>
+                    <div class="register-field">
+                        <label class="register-label" for="username">Username</label>
+                        <input class="register-input form-control" type="text" id="username" name="username" placeholder="Enter your username" autofocus required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="register-field">
+                        <label class="register-label" for="password">Password</label>
+                        <input class="register-input form-control" type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <div class="valid-feedback">Looks good!</div>
+                        <div class="register-forgot-wrap">
+                            <a href="/forgot-password" class="register-forgot-link">Forgot password?</a>
+                        </div>
+                    </div>
+                    <button type="submit" class="register-btn register-btn--primary">Login</button>
+                </form>
+            </div>
 
             <!-- Team Login -->
-            <p class="register-card-subtitle login-team-label">Team Login</p>
-            <form action="/login" method="POST" class="register-form" novalidate>
-                <div class="register-field">
-                    <label class="register-label" for="teamUsername">Team Username</label>
-                    <input class="register-input form-control" type="text" id="teamUsername" name="username" placeholder="Type your team username" required>
-                </div>
-                <div class="register-field">
-                    <label class="register-label" for="teamPassword">Team Password</label>
-                    <input class="register-input form-control" type="password" id="teamPassword" name="password" placeholder="Type your password" required>
-                </div>
-                <button type="submit" class="register-btn register-btn--secondary">Login as Team</button>
-            </form>
+            <div id="login-panel-team" class="login-panel" role="tabpanel" aria-labelledby="segment-team" hidden>
+                <form action="/login" method="POST" class="register-form" novalidate>
+                    <div class="register-field">
+                        <label class="register-label" for="teamUsername">Team Username</label>
+                        <input class="register-input form-control" type="text" id="teamUsername" name="username" placeholder="Enter your team username" required>
+                    </div>
+                    <div class="register-field">
+                        <label class="register-label" for="teamPassword">Team Password</label>
+                        <input class="register-input form-control" type="password" id="teamPassword" name="password" placeholder="Enter your password" required>
+                        <div class="register-forgot-wrap">
+                            <a href="/forgot-password" class="register-forgot-link">Forgot password?</a>
+                        </div>
+                    </div>
+                    <button type="submit" class="register-btn register-btn--primary">Login as Team</button>
+                </form>
+            </div>
+
+            <script>
+            (function() {
+                var segment = document.querySelector('.login-segment');
+                var options = segment && segment.querySelectorAll('.login-segment__option');
+                var panelIndividual = document.getElementById('login-panel-individual');
+                var panelTeam = document.getElementById('login-panel-team');
+                if (!options || !panelIndividual || !panelTeam) return;
+                options.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var type = btn.getAttribute('data-login-type');
+                        options.forEach(function(o) {
+                            o.classList.remove('login-segment__option--active');
+                            o.setAttribute('aria-selected', 'false');
+                        });
+                        btn.classList.add('login-segment__option--active');
+                        btn.setAttribute('aria-selected', 'true');
+                        if (type === 'individual') {
+                            panelIndividual.classList.add('login-panel--active');
+                            panelIndividual.removeAttribute('hidden');
+                            panelTeam.classList.remove('login-panel--active');
+                            panelTeam.setAttribute('hidden', '');
+                        } else {
+                            panelTeam.classList.add('login-panel--active');
+                            panelTeam.removeAttribute('hidden');
+                            panelIndividual.classList.remove('login-panel--active');
+                            panelIndividual.setAttribute('hidden', '');
+                        }
+                    });
+                });
+            })();
+            </script>
 
             <p class="register-have-account">
                 Don't have an account? <a href="/register" class="register-link">Register here</a>

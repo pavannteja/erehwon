@@ -1389,7 +1389,7 @@ body.login-page-body main.container {
 .register-page {
     min-height: calc(100vh - 80px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 1.5rem 1.5rem 1.5rem;
     color: #000;
@@ -1481,6 +1481,12 @@ body.login-page-body main.container {
     color: rgba(0, 0, 0, 0.6);
     margin-bottom: 0.35rem;
 }
+.register-form-hint {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-top: 0.35rem;
+}
 .register-input,
 .register-page .register-input.form-control {
     display: block;
@@ -1540,6 +1546,51 @@ body.login-page-body main.container {
     background: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.35);
 }
+/* Login page – Individual / Team segmented control */
+.login-segment-wrap {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+.login-segment {
+    display: inline-flex;
+    width: 100%;
+    max-width: 280px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.login-segment__option {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.5);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    appearance: none;
+}
+.login-segment__option:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+.login-segment__option--active {
+    background: rgba(248, 220, 0, 0.15);
+    color: #1d1f21;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.login-panel {
+    display: none;
+    text-align: left;
+}
+.login-panel.login-panel--active {
+    display: block;
+}
+
 .login-divider {
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.12);

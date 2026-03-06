@@ -139,6 +139,7 @@ module.exports.googleCallback = (req, res) => {
 
 // Forgot password - render form
 module.exports.renderForgotPassword = (req, res) => {
+    res.locals.bodyClass = 'register-page-body';
     res.render('users/forgot-password');
 }
 

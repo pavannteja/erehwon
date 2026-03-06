@@ -1,6 +1,6 @@
-<nav class="site-nav <%= typeof currentPath !== 'undefined' && (currentPath === '/register' || currentPath === '/login') ? 'site-nav--minimal' : '' %>" aria-label="Primary">
+<nav class="site-nav <%= typeof currentPath !== 'undefined' && (currentPath === '/register' || currentPath === '/login' || currentPath === '/forgot-password') ? 'site-nav--minimal' : '' %>" aria-label="Primary">
     <div class="site-nav__inner">
-        <% if (typeof currentPath !== 'undefined' && (currentPath === '/register' || currentPath === '/login')) { %>
+        <% if (typeof currentPath !== 'undefined' && (currentPath === '/register' || currentPath === '/login' || currentPath === '/forgot-password')) { %>
             <a class="site-nav__logo-link site-nav__logo-link--center" href="/">
                 <img src="/images/navbar-erehwon-logo.png" alt="Erehwon" class="site-nav__logo" />
             </a>
