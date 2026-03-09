@@ -487,6 +487,48 @@ main.container {
     margin-bottom: 0;
 }
 
+/* New Problem button – same fill and hover as Start Innovating (hero-minimal-btn) */
+.corporate-new-problem-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.03em;
+    color: #1d1f21;
+    text-decoration: none;
+    overflow: hidden;
+    z-index: 0;
+    white-space: nowrap;
+}
+.corporate-new-problem-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, #f7f7f7 0%, rgba(255, 215, 0, 0.6) 100%);
+    z-index: -1;
+}
+.corporate-new-problem-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, #f7f7f7 0%, rgba(255, 215, 0, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+.corporate-new-problem-btn:hover::after {
+    opacity: 1;
+}
+.corporate-new-problem-btn:hover {
+    color: #1d1f21;
+    text-decoration: none;
+}
+
 .corporate-problems-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -676,6 +718,11 @@ main.container {
     position: relative;
     overflow: hidden;
     z-index: 0;
+    text-decoration: none;
+}
+.corporate-problem-card__adopt-btn:hover {
+    color: #1d1f21;
+    text-decoration: none;
 }
 
 .corporate-problem-card__adopt-btn::before,
@@ -730,7 +777,7 @@ main.container {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 30px;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     position: relative;
     overflow: hidden;
 }
@@ -914,7 +961,7 @@ main.container {
     font-weight: 500;
     font-size: 22px;
     line-height: 1;
-    padding: 10px 14px;
+    padding: 14px 14px;
     display: inline-flex;
     align-items: center;
     gap: 15px;
@@ -931,6 +978,57 @@ main.container {
     object-fit: contain;
 }
 
+/* Edit button – same style as adopt button */
+.corporate-problem-detail-edit-btn {
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #1d1f21;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1;
+    padding: 14px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    text-decoration: none;
+}
+.corporate-problem-detail-edit-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.6) 100%);
+    z-index: -1;
+}
+.corporate-problem-detail-edit-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+.corporate-problem-detail-edit-btn:hover {
+    color: #1d1f21;
+    text-decoration: none;
+}
+.corporate-problem-detail-edit-btn:hover::after {
+    opacity: 1;
+}
+
+.corporate-problem-detail-edit-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+}
+
 .corporate-problem-detail-adopted-copy {
     margin: 0 0 0 auto;
     font-family: 'Satoshi', sans-serif;
@@ -941,9 +1039,320 @@ main.container {
 }
 
 .corporate-problem-detail-manage {
-    margin-top: 16px;
+    margin-top: 0;
     display: flex;
     gap: 10px;
+}
+
+/* Delete button – no fill, 2px red border and content (#DC3545) */
+.corporate-problem-detail-delete-btn {
+    border: 2px solid #DC3545;
+    border-radius: 8px;
+    background: transparent;
+    color: #DC3545;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1;
+    padding: 14px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.corporate-problem-detail-delete-btn:hover {
+    color: #DC3545;
+    background: transparent;
+    border-color: #DC3545;
+}
+.corporate-problem-detail-delete-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+}
+
+/* Delete confirmation modal – overlay with blur and dim, 300×200 white dialog */
+.delete-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.delete-confirm-overlay[hidden] {
+    display: none;
+}
+.delete-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.delete-confirm-dialog {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+}
+.delete-confirm-title {
+    margin: 0;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.2;
+    color: #1d1f21;
+}
+.delete-confirm-question {
+    margin: 0;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.2;
+    color: #1d1f21;
+}
+.delete-confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+.delete-confirm-cancel,
+.delete-confirm-delete {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+.delete-confirm-cancel {
+    background: #e5e5e5;
+    color: #1d1f21;
+}
+.delete-confirm-cancel:hover {
+    background: #d0d0d0;
+}
+.delete-confirm-delete {
+    background: #DC3545;
+    color: #ffffff;
+}
+.delete-confirm-delete:hover {
+    background: #c82333;
+}
+
+/* Adopters working on this problem – 60px below delete button, admin only */
+.corporate-problem-adopters-section {
+    margin-top: 60px;
+    padding: 40px 0 40px 0;
+    background: #f5f5f5;
+}
+
+.corporate-problem-adopters-heading {
+    margin: 0 0 24px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 50px;
+    line-height: 1.1;
+    letter-spacing: -0.07em;
+    color: #1d1f21;
+    text-align: left;
+}
+
+.corporate-problem-adopters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.corporate-problem-adopter-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    text-align: left;
+    align-items: flex-start;
+}
+
+.corporate-problem-adopter-card__user {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.corporate-problem-adopter-card__avatar {
+    height: 20px;
+    width: auto;
+    min-width: 0;
+    display: block;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.corporate-problem-adopter-card__meta {
+    min-width: 0;
+}
+
+.corporate-problem-adopter-card__name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.corporate-problem-adopter-card__name {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.2;
+    color: #1d1f21;
+}
+
+.corporate-problem-adopter-card__tag {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    color: rgba(29, 31, 33, 0.7);
+    background: #e5e5e5;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.corporate-problem-adopter-card__line {
+    margin: 0 0 2px 0;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.3;
+    color: rgba(29, 31, 33, 0.7);
+    width: 100%;
+}
+.corporate-problem-adopter-card__line:first-of-type {
+    margin-top: 0;
+}
+.corporate-problem-adopter-card__line:last-of-type {
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.corporate-problem-adopter-card__completed-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.corporate-problem-adopter-card__completed-text {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.3;
+    color: rgba(29, 31, 33, 0.7);
+}
+
+.corporate-problem-adopter-card__progress-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.corporate-problem-adopter-card__progress-track {
+    flex: 1;
+    min-width: 0;
+    height: 8px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.corporate-problem-adopter-card__progress-fill {
+    height: 100%;
+    background: #f8dc00;
+    border-radius: 4px;
+    transition: width 0.2s ease;
+}
+
+.corporate-problem-adopter-card__progress-pct {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    color: rgba(29, 31, 33, 0.7);
+    flex-shrink: 0;
+}
+
+.corporate-problem-adopter-card__open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: transparent;
+    color: #1d1f21;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    margin-top: 0;
+}
+.corporate-problem-adopter-card__open-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.6) 100%);
+    z-index: -1;
+}
+.corporate-problem-adopter-card__open-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(247, 247, 247, 1) 0%, rgba(255, 215, 0, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+.corporate-problem-adopter-card__open-btn:hover {
+    color: #1d1f21;
+    text-decoration: none;
+}
+.corporate-problem-adopter-card__open-btn:hover::after {
+    opacity: 1;
+}
+
+.corporate-problem-adopter-card__open-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
 }
 
 /* Links */

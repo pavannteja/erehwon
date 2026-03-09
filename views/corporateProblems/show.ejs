@@ -1,5 +1,9 @@
 <% layout('layouts/boilerplate') %>
 
+<%
+    const isOwner = currentUser && corporateProblem.createdBy && corporateProblem.createdBy._id && corporateProblem.createdBy._id.toString() === currentUser._id.toString();
+    const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
+%>
 <div class="container mt-4 corporate-problem-show-page">
     <article class="corporate-problem-detail-box">
         <header class="corporate-problem-detail-top">
@@ -42,30 +46,105 @@
         </section>
 
         <footer class="corporate-problem-detail-footer">
-            <form action="/corporate-problems/<%= corporateProblem._id %>/adopt" method="POST" class="corporate-problem-detail-adopt-form">
-                <button type="submit" class="corporate-problem-detail-adopt-btn">
-                    <img src="/images/adopt-icon.webp" alt="" aria-hidden="true" class="corporate-problem-detail-adopt-icon">
-                    <span>Adopt</span>
-                </button>
-            </form>
+            <% if (canManageProblem) { %>
+            <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="corporate-problem-detail-edit-btn">
+                <img src="/images/edit-icon.png" alt="" class="corporate-problem-detail-edit-icon" aria-hidden="true"><span>Edit</span>
+            </a>
+            <% } %>
             <p class="corporate-problem-detail-adopted-copy">10+ students have adopted this mission</p>
         </footer>
     </article>
 
-    <%
-        const isOwner = currentUser && corporateProblem.createdBy && corporateProblem.createdBy._id && corporateProblem.createdBy._id.toString() === currentUser._id.toString();
-        const canManageProblem = currentUser && (currentUser.isAdmin || isOwner);
-    %>
     <% if (canManageProblem) { %>
     <div class="corporate-problem-detail-manage">
-        <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="btn btn-warning btn-sm">
-            <i class="fas fa-edit"></i> Edit
-        </a>
-        <form action="/corporate-problems/<%= corporateProblem._id %>?_method=DELETE" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this problem?')">
-                <i class="fas fa-trash"></i> Delete
+        <form id="delete-problem-form" action="/corporate-problems/<%= corporateProblem._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button type="button" class="corporate-problem-detail-delete-btn" id="delete-problem-trigger" aria-haspopup="dialog" aria-controls="delete-confirm-modal">
+                <img src="/images/delete-icon.png" alt="" class="corporate-problem-detail-delete-icon" aria-hidden="true"><span>Delete</span>
             </button>
         </form>
     </div>
+
+    <div id="delete-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title" aria-describedby="delete-confirm-desc" hidden>
+        <div class="delete-confirm-backdrop"></div>
+        <div class="delete-confirm-dialog">
+            <h3 id="delete-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+            <p id="delete-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this problem statement?</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="delete-confirm-cancel" id="delete-confirm-cancel">Cancel</button>
+                <button type="button" class="delete-confirm-delete" id="delete-confirm-delete">Delete</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            var overlay = document.getElementById('delete-confirm-modal');
+            var trigger = document.getElementById('delete-problem-trigger');
+            var form = document.getElementById('delete-problem-form');
+            var cancelBtn = document.getElementById('delete-confirm-cancel');
+            var deleteBtn = document.getElementById('delete-confirm-delete');
+
+            function openModal() {
+                overlay.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeModal() {
+                overlay.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            if (trigger) trigger.addEventListener('click', function(e) { e.preventDefault(); openModal(); });
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            if (deleteBtn) deleteBtn.addEventListener('click', function() { closeModal(); form.submit(); });
+            overlay.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-confirm-backdrop')) closeModal();
+            });
+        })();
+    </script>
+    <% } %>
+
+    <% if (currentUser && currentUser.isAdmin && typeof adoptedProjects !== 'undefined' && adoptedProjects.length > 0) { %>
+    <section class="corporate-problem-adopters-section">
+        <h2 class="corporate-problem-adopters-heading">Adopters working on this problem</h2>
+        <div class="corporate-problem-adopters-grid">
+            <% adoptedProjects.forEach((project) => { %>
+            <%
+                const author = project.author || {};
+                const displayName = author.username || 'Unknown';
+                const adopterType = author.isTeam ? 'Team' : 'Individual';
+                const school = author.schoolName || 'N/A';
+                const program = author.programName || 'N/A';
+                const progress = typeof project.progress === 'number' ? project.progress : 0;
+                const stageProgress = project.stageProgress || {};
+                const completedPhases = [1,2,3,4,5].filter(k => stageProgress[k] === 20).length;
+                const totalPhases = 5;
+            %>
+            <div class="corporate-problem-adopter-card">
+                <div class="corporate-problem-adopter-card__user">
+                    <img src="/images/person-icon.png" alt="" class="corporate-problem-adopter-card__avatar" aria-hidden="true">
+                    <div class="corporate-problem-adopter-card__meta">
+                        <div class="corporate-problem-adopter-card__name-row">
+                            <span class="corporate-problem-adopter-card__name"><%= displayName %></span>
+                            <span class="corporate-problem-adopter-card__tag"><%= adopterType %></span>
+                        </div>
+                    </div>
+                </div>
+                <p class="corporate-problem-adopter-card__line">School: <%= school %></p>
+                <p class="corporate-problem-adopter-card__line">Program: <%= program %></p>
+                <div class="corporate-problem-adopter-card__completed-row">
+                    <span class="corporate-problem-adopter-card__completed-text">Completed: <%= completedPhases %>/<%= totalPhases %> phases</span>
+                    <span class="corporate-problem-adopter-card__progress-pct"><%= Math.round(progress) %>%</span>
+                </div>
+                <div class="corporate-problem-adopter-card__progress-wrap">
+                    <div class="corporate-problem-adopter-card__progress-track">
+                        <div class="corporate-problem-adopter-card__progress-fill" style="width: <%= progress %>%"></div>
+                    </div>
+                </div>
+                <a href="/campgrounds/<%= project._id %>" class="corporate-problem-adopter-card__open-btn">
+                    <img src="/images/open-project-icon.png" alt="" class="corporate-problem-adopter-card__open-icon" aria-hidden="true"><span>Open Project</span>
+                </a>
+            </div>
+            <% }); %>
+        </div>
+    </section>
     <% } %>
 </div>

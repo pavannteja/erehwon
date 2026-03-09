@@ -5,8 +5,8 @@
             <p class="corporate-index-subheading">Browse and adopt corporate problem statements to start your innovation journey</p>
         </div>
         <% if (currentUser && (currentUser.isProblemCreator || currentUser.isAdmin)) { %>
-        <a href="/corporate-problems/new" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Create New Problem
+        <a href="/corporate-problems/new" class="corporate-new-problem-btn">
+            <span class="corporate-new-problem-btn-plus">+</span><span>New Problem</span>
         </a>
         <% } %>
     </div>
@@ -68,12 +68,19 @@
                 </p>
 
                 <div class="corporate-problem-card__footer">
+                    <% if (currentUser && currentUser.isAdmin) { %>
+                    <a href="/corporate-problems/<%= problem._id %>/edit" class="corporate-problem-card__adopt-btn">
+                        <img src="/images/edit-icon.png" alt="" class="corporate-problem-card__adopt-icon" aria-hidden="true">
+                        <span>Edit</span>
+                    </a>
+                    <% } else { %>
                     <form action="/corporate-problems/<%= problem._id %>/adopt" method="POST" class="corporate-problem-card__adopt-form">
                         <button type="submit" class="corporate-problem-card__adopt-btn">
                             <img src="/images/adopt-icon.webp" alt="" class="corporate-problem-card__adopt-icon" aria-hidden="true">
                             <span>Adopt</span>
                         </button>
                     </form>
+                    <% } %>
                     <p class="corporate-problem-card__adopted-copy">
                         <%= isFeaturedCard ? '10+ students have adopted this mission' : ('Created by ' + (problem.createdBy && problem.createdBy.username ? problem.createdBy.username : 'Team')) %>
                     </p>
