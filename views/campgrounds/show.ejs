@@ -1,667 +1,51 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/stylesheets/stars.css">
-
-<style>
-/* Project Detail Page Styles */
-.project-detail-page {
-    background: #0a0a0a;
-    min-height: 100vh;
-    color: #fff;
-    padding: 0;
-}
-
-.project-header {
-    padding: 20px 0;
-    border-bottom: 1px solid #2a2a2a;
-    margin-bottom: 30px;
-}
-
-.project-title-section h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
-}
-
-.project-title-section p {
-    color: #888;
-    font-size: 0.95rem;
-    margin: 0;
-}
-
-
-/* Phase Navigation */
-.phase-navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    margin-bottom: 30px;
-    position: relative;
-    flex-wrap: nowrap;
-    gap: 10px;
-}
-
-.phase-navigation::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: #2a2a2a;
-    transform: translateY(-50%);
-    z-index: 0;
-}
-
-.phase-item-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-    z-index: 1;
-    flex: 1;
-    min-width: 0;
-    cursor: pointer;
-}
-
-.phase-item-link:hover {
-    text-decoration: none;
-    color: inherit;
-}
-
-.phase-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    z-index: 1;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.phase-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    font-size: 1.3rem;
-    transition: all 0.3s ease;
-    background: #1a1a1a;
-    border: 2px solid #333;
-}
-
-.phase-item.active .phase-icon {
-    background: #ffde00;
-    border-color: #ffde00;
-    color: #000;
-    box-shadow: 0 0 20px rgba(255, 222, 0, 0.4);
-}
-
-.phase-item.completed .phase-icon {
-    background: #ffde00;
-    border-color: #ffde00;
-    color: #000;
-}
-
-.phase-item:hover .phase-icon {
-    border-color: #ffde00;
-    transform: scale(1.05);
-}
-
-.phase-name {
-    font-size: 0.85rem;
-    color: #888;
-    text-align: center;
-    max-width: 100px;
-}
-
-.phase-item.active .phase-name {
-    color: #ffde00;
-    font-weight: 600;
-}
-
-.phase-item.completed .phase-name {
-    color: #ffde00;
-}
-
-/* Main Content Layout */
-.content-layout {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 30px;
-}
-
-/* Phase Detail Card */
-.phase-detail-card {
-    background: #111;
-    border-radius: 16px;
-    padding: 30px;
-    border: 1px solid #2a2a2a;
-}
-
-.phase-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.phase-header-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #ffde00;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #000;
-}
-
-.phase-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0;
-}
-
-.phase-description {
-    color: #888;
-    font-size: 0.95rem;
-    margin-bottom: 25px;
-}
-
-.phase-instructions {
-    background: #3d380d;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-    border-left: 4px solid #ffde00;
-}
-
-.phase-instructions p {
-    color: #aaa;
-    font-size: 0.9rem;
-    margin: 0;
-    line-height: 1.6;
-}
-
-/* Problem Info Card */
-.problem-info-card {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-.problem-info-card h3 {
-    color: #fff;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.problem-info-card h3 i {
-    color: #ffde00;
-}
-
-.problem-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #888;
-    font-size: 0.85rem;
-}
-
-.meta-item i {
-    color: #ffde00;
-}
-
-/* Content Tabs */
-.content-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #2a2a2a;
-    padding-bottom: 15px;
-}
-
-.tab-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #888;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn:hover, .tab-btn.active {
-    background: #1a1a1a;
-    border-color: #ffde00;
-    color: #fff;
-}
-
-.tab-btn.active {
-    background: #ffde00;
-    color: #000;
-    border-color: #ffde00;
-}
-
-.tab-content {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 30px;
-    min-height: 200px;
-    text-align: center;
-    color: #666;
-}
-
-.empty-state {
-    padding: 40px;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.empty-state p {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.add-btn {
-    background: #1a1a1a;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.add-btn:hover {
-    background: #ffde00;
-    color: #000;
-    border-color: #ffde00;
-}
-
-/* Sidebar */
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.sidebar-card {
-    background: #111;
-    border-radius: 16px;
-    padding: 25px;
-    border: 1px solid #2a2a2a;
-}
-
-.sidebar-card h3 {
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-/* Phase Activities */
-.activity-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    background: #1a1a1a;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.activity-item:hover {
-    background: #222;
-}
-
-.activity-checkbox {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #444;
-    border-radius: 4px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: transparent;
-    transition: all 0.3s ease;
-}
-
-.activity-item.completed .activity-checkbox {
-    background: #ffde00;
-    border-color: #ffde00;
-    color: #000;
-}
-
-.activity-name {
-    color: #ccc;
-    font-size: 0.9rem;
-}
-
-/* Resources */
-.add-resource-btn {
-    width: 100%;
-    padding: 15px;
-    background: transparent;
-    border: 1px dashed #444;
-    border-radius: 8px;
-    color: #888;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.add-resource-btn:hover {
-    border-color: #ffde00;
-    color: #ffde00;
-}
-
-.resource-hint {
-    color: #555;
-    font-size: 0.8rem;
-    margin-top: 10px;
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-}
-
-.action-btn.primary {
-    background: #ffde00;
-    color: #000;
-}
-
-.action-btn.primary:hover {
-    background: #e6c800;
-    transform: translateY(-2px);
-}
-
-.action-btn.secondary {
-    background: transparent;
-    border: 1px solid #444;
-    color: #fff;
-}
-
-.action-btn.secondary:hover {
-    border-color: #ffde00;
-    color: #ffde00;
-}
-
-.action-btn.success {
-    background: #ffde00;
-    color: #000;
-}
-
-.action-btn.success:hover {
-    background: #e6c800;
-}
-
-.action-btn.danger {
-    background: transparent;
-    border: 1px solid #dc3545;
-    color: #dc3545;
-}
-
-.action-btn.danger:hover {
-    background: #dc3545;
-    color: #fff;
-}
-
-/* Reviews Section */
-.reviews-section {
-    margin-top: 30px;
-}
-
-.reviews-section h3 {
-    color: #fff;
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.reviews-section h3 i {
-    color: #ffde00;
-}
-
-.review-form {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.review-form textarea {
-    background: #111;
-    border: 1px solid #333;
-    color: #fff;
-    border-radius: 8px;
-    padding: 15px;
-    width: 100%;
-    resize: vertical;
-    min-height: 100px;
-}
-
-.review-form textarea:focus {
-    outline: none;
-    border-color: #ffde00;
-}
-
-.review-card {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
-    border: 1px solid #2a2a2a;
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.review-author {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.author-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ffde00, #ffed4e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-    font-weight: 600;
-}
-
-.author-name {
-    color: #fff;
-    font-weight: 500;
-}
-
-.review-rating {
-    color: #ffde00;
-}
-
-.review-body {
-    color: #aaa;
-    line-height: 1.6;
-}
-
-/* Image Gallery */
-.image-gallery {
-    margin-bottom: 25px;
-}
-
-.gallery-main {
-    width: 100%;
-    height: 250px;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.gallery-main img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.gallery-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.gallery-placeholder i {
-    font-size: 4rem;
-    color: #ffde00;
-}
-
-/* Solution Preview */
-.solution-preview-card {
-    background: #3d380d;
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 20px;
-    border: 1px solid #ffde00;
-}
-
-.solution-preview-card h4 {
-    color: #ffde00;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-    .content-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .phase-navigation {
-        overflow-x: auto;
-        padding: 20px 10px;
-    }
-    
-    .phase-name {
-        font-size: 0.75rem;
-    }
-}
-</style>
 
 <%
 // Check which phases are actually completed
 let phaseCompleted = {
-    1: false, // Excite & Enrol
-    2: false, // Problem Discovery
-    3: false, // Analysis
-    4: false, // Creative Ideation
-    5: false, // Converge Ideas
-    6: false, // Conceptual Solution
-    7: false  // Prototyping
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false
 };
 
-// Phase 1: Excite & Enrol - Check if teamInfo exists
-if (campground.teamInfo && campground.teamInfo.schoolName) {
+if ((campground.teamInfo && campground.teamInfo.schoolName) ||
+    (campground.missionLaunchGroundworkInfo && campground.missionLaunchGroundworkInfo.schoolName)) {
     phaseCompleted[1] = true;
 }
 
-// Phase 2: Problem Discovery - Check if problemStatementInfo exists
 if (campground.problemStatementInfo && campground.problemStatementInfo.problemType) {
     phaseCompleted[2] = true;
 }
 
-// Phase 3: Analysis - currently linked to completion of discovery output
 if (phaseCompleted[2]) {
     phaseCompleted[3] = true;
 }
 
-// Phase 4: Creative Ideation - Check if 10+ ideas exist (ideaCount passed from controller)
 if (typeof ideaCount !== 'undefined' && ideaCount >= 10) {
     phaseCompleted[4] = true;
 }
 
-// Phase 5: Converge Ideas - currently linked to completion of ideation output
 if (phaseCompleted[4]) {
     phaseCompleted[5] = true;
 }
 
-// Phase 6: Conceptual Solution - Check if solution exists
 if (campground.solution) {
     phaseCompleted[6] = true;
 }
 
-// Phase 7: Prototyping - Check if prototype exists and has files
 if (typeof prototypeHasFiles !== 'undefined' && prototypeHasFiles) {
     phaseCompleted[7] = true;
 }
 
-// Determine current stage (first incomplete phase, or 7 if all complete)
 let currentStage = 1;
 for (let i = 1; i <= 7; i++) {
     if (!phaseCompleted[i]) {
@@ -674,415 +58,878 @@ for (let i = 1; i <= 7; i++) {
 }
 
 const phases = [
-    { key: 'excite-enrol', name: 'Excite & Enrol', icon: 'fas fa-users', description: 'Build your team and get enrolled' },
-    { key: 'problem-discovery', name: 'Problem Discovery', icon: 'fas fa-search', description: 'Research and understand the problem' },
-    { key: 'analysis', name: 'Analysis', icon: 'fas fa-chart-line', description: 'Analyze findings and identify key patterns' },
-    { key: 'ideation', name: 'Creative Ideation', icon: 'fas fa-lightbulb', description: 'Generate creative solutions' },
-    { key: 'converge-ideas', name: 'Converge Ideas', icon: 'fas fa-filter', description: 'Narrow ideas and select the best direction' },
-    { key: 'conceptual-solution', name: 'Conceptual Solution', icon: 'fas fa-tasks', description: 'Define and refine your solution' },
-    { key: 'prototyping', name: 'Prototyping', icon: 'fas fa-tools', description: 'Build and test your prototype' }
+    { key: 'excite-enrol', name: 'Mission Launch', iconFile: 'mission-launch-icon.png', description: 'Build your team and get enrolled' },
+    { key: 'problem-discovery', name: 'Problem Discovery', iconFile: 'problem-discovery-icon.png', description: 'Research and understand the problem' },
+    { key: 'analysis', name: 'Analysis', iconFile: 'analysis-icon.png', description: 'Analyze findings and identify key patterns' },
+    { key: 'ideation', name: 'Ideation', iconFile: 'ideation-icon.png', description: 'Generate creative solutions' },
+    { key: 'converge-ideas', name: 'Converge', iconFile: 'converge-icon.png', description: 'Narrow ideas and select the best direction' },
+    { key: 'conceptual-solution', name: 'Solution', iconFile: 'solution-icon.png', description: 'Define and refine your solution' },
+    { key: 'prototyping', name: 'Prototype', iconFile: 'prototype-icon.png', description: 'Build and test your prototype' }
 ];
+
+function overviewPhaseHref(key) {
+    if (!campground || !campground._id) return '#';
+    if (key === 'excite-enrol') return '/excite-and-enrol?campgroundId=' + campground._id;
+    return '/process/' + campground._id + '/' + key;
+}
+
+const resumeHref = overviewPhaseHref(phases[currentStage - 1].key);
+const gwShow = campground.missionLaunchGroundworkInfo || {};
+const tiShow = campground.teamInfo || {};
+const corp = campground.adoptedFromCorporateProblem;
+const subtitle = (corp && corp.companyName)
+    ? corp.companyName
+    : (gwShow.schoolName || tiShow.schoolName || 'Innovation project');
+const challengeText = campground.problem || campground.description || 'Describe the challenge your team is working on.';
+const ps = campground.problemStatementInfo || {};
+const customPs = ps.customProblem || {};
+const objectiveText = customPs.expectedBenefit || campground.description || challengeText;
+const notesRaw = campground.notes || '';
+let noteSlots = [];
+if (typeof notesRaw === 'string') {
+    try {
+        const parsedNotes = JSON.parse(notesRaw);
+        if (Array.isArray(parsedNotes)) {
+            noteSlots = parsedNotes.map(function (slot) {
+                return typeof slot === 'string' ? slot : '';
+            });
+        }
+    } catch (e) {
+        noteSlots = [];
+    }
+}
+if (!noteSlots.length) noteSlots = [String(notesRaw || '')];
+const reviewCount = campground.reviews ? campground.reviews.length : 0;
+const canEditProject = currentUser && (
+    (campground.author && typeof campground.author.equals === 'function' && campground.author.equals(currentUser._id))
+    || currentUser.isAdmin
+);
 %>
 
-<div class="project-detail-page">
-    <div class="container py-4">
-        <!-- Project Header -->
-        <div class="project-header">
-            <div class="project-title-section">
-                <h1><%= campground.title %></h1>
-                <p><%= campground.description || 'Innovation project for solving real-world problems' %></p>
+<div class="mission-launch-page project-overview-page">
+    <div class="po-stack">
+        <header class="po-card po-hero" aria-label="Project header">
+            <div class="po-hero-brand">
+                <% if (brandMark.kind === 'image') { %>
+                <img src="<%= brandMark.src %>" alt="<%= brandMark.alt %>" class="po-hero-logo" width="52" height="52"<%= brandMark.alt ? '' : ' aria-hidden="true"' %>>
+                <% } else { %>
+                <div class="po-hero-logo po-hero-logo--initial" role="img" aria-label="<%= subtitle %> logo"><%= brandMark.letter %></div>
+                <% } %>
+                <div class="po-hero-titles">
+                    <h1 class="po-hero-title"><%= campground.title %></h1>
+                    <p class="po-hero-sub"><%= subtitle %></p>
+                </div>
             </div>
-        </div>
+            <a href="<%= resumeHref %>" class="po-resume-btn groundwork-submit-btn"><span class="groundwork-submit-btn__text">Resume project</span></a>
+        </header>
 
-        <!-- Phase Navigation -->
-        <div class="phase-navigation">
-            <% phases.forEach((phase, index) => { 
-                const phaseNum = index + 1;
-                const isCompleted = phaseCompleted[phaseNum];
-                const isActive = phaseNum === currentStage;
-                
-                const phaseRoute = `/process/${campground._id}/${phase.key}`;
-            %>
-                <a href="<%= phaseRoute %>" class="phase-item-link" style="text-decoration: none; color: inherit;">
-                    <div class="phase-item <%= isCompleted ? 'completed' : '' %> <%= isActive ? 'active' : '' %>">
-                        <div class="phase-icon">
-                            <% if (isCompleted) { %>
-                                <i class="fas fa-check"></i>
-                            <% } else { %>
-                                <i class="<%= phase.icon %>"></i>
-                            <% } %>
-                        </div>
-                        <span class="phase-name"><%= phase.name %></span>
+        <section class="po-card" aria-labelledby="po-challenge-heading">
+            <h2 class="po-label" id="po-challenge-heading">Challenge:</h2>
+            <p class="po-body"><%= challengeText %></p>
+            <h2 class="po-label">Objective:</h2>
+            <p class="po-body"><%= objectiveText %></p>
+        </section>
+
+        <section class="po-card" aria-labelledby="po-status-heading">
+            <h2 class="po-section-title" id="po-status-heading">Project Status</h2>
+            <nav class="po-status-track" aria-label="Phase progress">
+                <ul class="po-status-track__list">
+                    <% phases.forEach((phase, index) => {
+                        const phaseNum = index + 1;
+                        const inProgress = phaseNum <= currentStage;
+                        const href = overviewPhaseHref(phase.key);
+                    %>
+                    <% if (index > 0) { %>
+                    <li class="po-status-track__gap" aria-hidden="true"></li>
+                    <% } %>
+                    <li class="po-status-track__label">
+                        <a href="<%= href %>" class="po-status-track__link<%= inProgress ? ' po-status-track__link--progress' : '' %>"><%= phase.name %></a>
+                    </li>
+                    <% }); %>
+                </ul>
+            </nav>
+            <p class="po-status-meta"><%= reviewCount %> <%= reviewCount === 1 ? 'review' : 'reviews' %> | You are in Phase <%= currentStage %> of 7</p>
+        </section>
+
+        <section class="po-card" aria-labelledby="po-images-heading">
+            <h2 class="po-section-title" id="po-images-heading">Problem Images</h2>
+            <p class="po-section-lead po-section-lead--full">Document the problem. Upload visual evidence showing the problem&rsquo;s nature, its real-world occurrence, and the specific hurdles preventing a breakthrough.</p>
+            <% if (canEditProject) { %>
+            <form action="/problems/<%= campground._id %>/images" method="POST" enctype="multipart/form-data" id="po-image-upload-form">
+                <section class="prototype-upload-card">
+                    <div class="prototype-dropzone" id="poProblemImageDropzone">
+                        <input type="file" id="po-image-input" name="image" multiple accept="image/jpeg,image/png,.jpg,.jpeg,.png" hidden aria-label="Choose images to upload">
+                        <i class="bi bi-cloud-arrow-up prototype-dropzone__icon" aria-hidden="true"></i>
+                        <i class="bi bi-file-earmark-text prototype-dropzone__file-icon" aria-hidden="true"></i>
+                        <p class="prototype-dropzone__file-name" id="poDropzoneFileName"></p>
+                        <p class="prototype-dropzone__title">Choose a file or drag &amp; drop it here.</p>
+                        <p class="prototype-dropzone__subtitle">JPEG, PNG formats, up to 5MB.</p>
+                        <button type="button" class="prototype-dropzone__btn groundwork-submit-btn" id="poProblemBrowseBtn">Browse File</button>
                     </div>
-                </a>
-            <% }); %>
-        </div>
+                </section>
+                <p class="prototype-file-error" id="poProblemFileError" role="alert" aria-live="polite"></p>
+                <ul class="prototype-selected-files" id="poProblemSelectedFiles" aria-live="polite"></ul>
+                <div class="prototype-save-wrap">
+                    <button type="submit" class="groundwork-submit-btn prototype-save-btn"><span class="groundwork-submit-btn__text">Upload</span></button>
+                </div>
+            </form>
+            <% } else { %>
+            <section class="prototype-upload-card">
+                <div class="prototype-dropzone po-prototype-dropzone--locked" aria-disabled="true">
+                    <i class="bi bi-lock prototype-dropzone__icon" aria-hidden="true"></i>
+                    <p class="prototype-dropzone__title">Only the project owner can upload images</p>
+                    <p class="prototype-dropzone__subtitle">Sign in as the project owner to add problem images.</p>
+                </div>
+            </section>
+            <% } %>
 
-        <!-- Main Content -->
-        <div class="content-layout">
-            <!-- Left Column - Phase Details -->
-            <div class="main-content">
-                <div class="phase-detail-card">
-                    <!-- Current Phase Header -->
-                    <div class="phase-header">
-                        <div class="phase-header-icon">
-                            <i class="<%= phases[currentStage - 1].icon %>"></i>
-                        </div>
-                        <h2><%= phases[currentStage - 1].name %></h2>
-                    </div>
-                    
-                    <p class="phase-description"><%= phases[currentStage - 1].description %></p>
-                    
-                    <div class="phase-instructions">
-                        <p>
-                            <% if (currentStage === 1) { %>
-                                Complete team enrollment and understand the innovation process. Gather your team members and prepare for the problem discovery phase.
-                            <% } else if (currentStage === 2) { %>
-                                Conduct user interviews, observations, and research to build empathy with your users. Understand the root cause of the problem.
-                            <% } else if (currentStage === 3) { %>
-                                Analyze what you discovered. Group insights, identify patterns, and clarify root causes before idea generation.
-                            <% } else if (currentStage === 4) { %>
-                                Generate creative ideas and brainstorm solutions. Think outside the box and explore multiple approaches to solving the problem.
-                            <% } else if (currentStage === 5) { %>
-                                Converge on the strongest options by evaluating ideas and selecting the best direction to pursue.
-                            <% } else if (currentStage === 6) { %>
-                                Define your solution concept clearly. Document what your solution should and shouldn't do, and outline key features.
-                            <% } else { %>
-                                Build a prototype of your solution. Test it with real users and iterate based on feedback.
-                            <% } %>
-                        </p>
-                    </div>
-
-                    <!-- Problem Info -->
-                    <div class="problem-info-card">
-                        <h3><i class="fas fa-info-circle"></i> Problem Details</h3>
-                        
-                        <div class="problem-meta">
-                            <% if (campground.teamInfo && campground.teamInfo.schoolName) { %>
-                                <div class="meta-item">
-                                    <i class="fas fa-school"></i>
-                                    <span><%= campground.teamInfo.schoolName %></span>
-                                </div>
-                            <% } %>
-                            <% if (campground.teamInfo && campground.teamInfo.groupName) { %>
-                                <div class="meta-item">
-                                    <i class="fas fa-users"></i>
-                                    <span><%= campground.teamInfo.groupName %></span>
-                                </div>
-                            <% } %>
-                            <% if (campground.teamInfo && campground.teamInfo.sdgGoal) { %>
-                                <div class="meta-item">
-                                    <i class="fas fa-bullseye"></i>
-                                    <span><%= campground.teamInfo.sdgGoal %></span>
-                                </div>
-                            <% } %>
-                            <% if (campground.location) { %>
-                                <div class="meta-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span><%= campground.location %></span>
-                                </div>
-                            <% } %>
-                        </div>
-
-                        <% if (campground.problem) { %>
-                            <p style="color: #aaa; font-size: 0.9rem; line-height: 1.6; margin-top: 16px;">
-                                <%= campground.problem %>
-                            </p>
-                        <% } %>
-                    </div>
-
-                    <!-- Images Section - Moved above Notes -->
-                    <div class="images-section" style="background: #1a1a1a; border-radius: 12px; padding: 30px; margin-top: 25px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-images" style="color: #ffde00;"></i> Problem Images
-                            </h3>
-                            <% if (currentUser && (campground.author && campground.author.equals(currentUser._id) || currentUser.isAdmin)) { %>
-                                <!-- Image Upload Form - Compact version next to title -->
-                                <form action="/problems/<%= campground._id %>/images" method="POST" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 10px;">
-                                    <input class="form-control" type="file" id="image" name="image" multiple accept="image/*" style="background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; width: auto;">
-                                    <button type="submit" class="action-btn primary" style="background: #ffde00; color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; white-space: nowrap;">
-                                        <i class="fas fa-upload"></i> Upload
-                                    </button>
-                                </form>
-                            <% } %>
-                        </div>
-                        
-                        <% if (campground.images && campground.images.length > 0) { %>
-                            <div class="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
-<% campground.images.forEach((img, i) => { %>
-                                    <div style="position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #2a2a2a;">
-                                        <img src="<%= img.url %>" alt="Problem image" style="width: 100%; height: 200px; object-fit: cover;">
-                                        <% if (currentUser && (campground.author && campground.author.equals(currentUser._id) || currentUser.isAdmin)) { %>
-                                            <form action="/problems/<%= campground._id %>/images/<%= img.filename %>?_method=DELETE" method="POST" style="position: absolute; top: 8px; right: 8px;">
-                                                <button type="submit" onclick="return confirm('Are you sure you want to delete this image?')" style="background: rgba(220, 53, 69, 0.9); color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        <% } %>
-                                    </div>
-                                <% }); %>
-                            </div>
-                        <% } else { %>
-                            <p style="color: #888; margin-bottom: 20px;">No images uploaded yet.</p>
-                        <% } %>
-                    </div>
-
-                    <!-- Notes Section - Below Images -->
-                    <div class="tab-content" id="tab-notes" style="display: block;">
-                        <div class="notes-section" style="background: #1a1a1a; border-radius: 12px; padding: 30px; margin-top: 25px;">
-                            <h3 style="color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-sticky-note" style="color: #ffde00;"></i> Notes
-                            </h3>
-                            <form action="/problems/<%= campground._id %>/notes" method="POST" id="notesForm">
-                                <textarea name="notes" class="form-control" rows="8" style="background: #0a0a0a; border: 1px solid #333; color: #fff; padding: 16px; border-radius: 8px; width: 100%; margin-bottom: 16px; font-family: inherit; resize: vertical;" placeholder="Add your notes here..."><%= campground.notes || '' %></textarea>
-                                <button type="submit" class="action-btn primary" style="background: #ffde00; color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                                    <i class="fas fa-save"></i> Save Notes
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Solution Preview if exists -->
-                    <% if (campground.solution) { %>
-                        <div class="solution-preview-card">
-                            <h4><i class="fas fa-check-circle"></i> Solution Defined</h4>
-                            <p style="color: #aaa; margin-bottom: 15px;"><%= campground.solution.title || 'Your conceptual solution has been defined.' %></p>
-                            <a href="/solution-details?campgroundId=<%= campground._id %>" class="action-btn success">
-                                <i class="fas fa-eye"></i> View Full Solution
-                            </a>
+            <% if (campground.images && campground.images.length > 0) { %>
+            <ul class="po-file-list" aria-label="Uploaded files">
+                <% campground.images.forEach((img) => { %>
+                <li><a href="<%= img.url %>" target="_blank" rel="noopener noreferrer"><%= img.filename || 'Image' %></a></li>
+                <% }); %>
+            </ul>
+            <div class="po-images-grid">
+                <% campground.images.forEach((img) => { %>
+                <div class="po-image-tile">
+                    <img src="<%= img.url %>" alt="Problem image">
+                    <% if (canEditProject) { %>
+                    <form class="po-image-delete" action="/problems/<%= campground._id %>/images/<%= img.filename %>?_method=DELETE" method="POST">
+                        <button type="submit" class="po-delete-icon-btn" onclick="return confirm('Delete this image?')" aria-label="Delete image">
+                            <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true">
+                        </button>
+                    </form>
+                    <% } %>
+                </div>
+                <% }); %>
             </div>
+            <% } %>
+        </section>
+
+        <% if (currentUser) { %>
+        <section class="po-card" aria-labelledby="po-notes-heading">
+            <h2 class="po-section-title" id="po-notes-heading">Notes</h2>
+            <% if (canEditProject) { %>
+            <div class="po-notes-toolbar">
+                <div class="po-notes-select-shell">
+                    <label class="visually-hidden" for="po-note-slot">Note</label>
+                    <select class="form-select po-notes-select" id="po-note-slot" name="noteSlot" aria-label="Note slot">
+                        <% noteSlots.forEach(function (_, idx) { %>
+                        <option value="<%= idx + 1 %>">Note <%= idx + 1 %></option>
+                        <% }); %>
+                    </select>
+                    <span class="po-notes-select-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+                </div>
+                <div class="po-notes-actions">
+                    <button type="button" class="po-notes-add-btn" id="po-add-note-btn">Add Note</button>
+                    <span class="po-notes-action-divider" aria-hidden="true">|</span>
+                    <button
+                        type="button"
+                        class="po-notes-delete-btn"
+                        id="po-delete-note-btn"
+                        aria-haspopup="dialog"
+                        aria-controls="delete-note-confirm-modal"
+                    >Delete</button>
+                </div>
+            </div>
+            <form action="/problems/<%= campground._id %>/notes" method="POST" id="notesForm">
+                <textarea name="notes" class="po-textarea" rows="6" placeholder="Add your notes here..."><%= noteSlots[0] || '' %></textarea>
+                <input type="hidden" name="notesPayload" id="po-notes-payload" value="">
+                <div class="po-notes-footer">
+                    <button type="submit" class="groundwork-submit-btn">
+                        <span class="groundwork-submit-btn__text">Save note</span>
+                        <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+                    </button>
+                    <a href="/ideation/my-brainstorms?problemId=<%= campground._id %>" class="po-link-muted">View my brainstorm</a>
+                </div>
+            </form>
+            <script type="application/json" id="po-notes-initial-state"><%- JSON.stringify(noteSlots) %></script>
+            <div id="delete-note-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-note-confirm-title" aria-describedby="delete-note-confirm-desc" hidden>
+                <div class="delete-confirm-backdrop"></div>
+                <div class="delete-confirm-dialog">
+                    <h3 id="delete-note-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+                    <p id="delete-note-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this note?</p>
+                    <div class="delete-confirm-actions">
+                        <button type="button" class="delete-confirm-cancel" id="delete-note-confirm-cancel">Cancel</button>
+                        <button type="button" class="delete-confirm-delete" id="delete-note-confirm-delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <% } else { %>
+            <% const nonEmptyNotes = noteSlots.filter(function (slot) { return String(slot || '').trim().length > 0; }); %>
+            <% if (nonEmptyNotes.length) { %>
+            <div class="po-notes-readonly-list">
+                <% nonEmptyNotes.forEach(function (slot, idx) { %>
+                <p class="po-body" style="white-space:pre-wrap; margin-bottom:0.6rem;"><strong>Note <%= idx + 1 %>:</strong> <%= slot %></p>
+                <% }); %>
+            </div>
+            <% } else { %>
+            <p class="po-body" style="white-space:pre-wrap">No notes yet.</p>
+            <% } %>
+            <% } %>
+        </section>
         <% } %>
 
-                    <!-- Action Buttons -->
-                    <div class="action-buttons">
-                        <a href="/ideation/my-brainstorms?problemId=<%= campground._id %>" class="action-btn secondary">
-                            <i class="fas fa-brain"></i> View My Brainstorm
-                        </a>
-                        <% if (campground.solution) { %>
-                            <a href="/solution-details?campgroundId=<%= campground._id %>" class="action-btn success">
-                                <i class="fas fa-eye"></i> View My Solution
-                            </a>
-                        <% } %>
-                        <% if (currentUser && (campground.author && campground.author.equals(currentUser._id) || currentUser.isAdmin)) { %>
-                            <a href="/problems/<%= campground._id %>/edit" class="action-btn secondary">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form class="d-inline" action="/problems/<%= campground._id %>?_method=DELETE" method="POST">
-                                <button type="submit" class="action-btn danger" onclick="return confirm('Are you sure you want to delete this problem statement?')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        <% } %>
-                    </div>
-    </div>
+        <section class="po-card" aria-labelledby="po-reviews-heading">
+            <h2 class="po-section-title" id="po-reviews-heading">Reviews &amp; Feedback</h2>
 
-                <!-- Reviews Section -->
-                <div class="reviews-section">
-                    <h3><i class="fas fa-comments"></i> Reviews & Feedback (<%= campground.reviews ? campground.reviews.length : 0 %>)</h3>
-                    
-                    <% if (currentUser) { %>
-                        <div class="review-form">
-                            <form action="/problems/<%= campground._id %>/reviews" method="POST" class="validated-form" novalidate>
-                                <fieldset class="starability-basic mb-3">
-                                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
-                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-                <label for="first-rate1" title="Terrible">1 star</label>
-                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-                <label for="first-rate2" title="Not good">2 stars</label>
-                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-                <label for="first-rate3" title="Average">3 stars</label>
-                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-                <label for="first-rate4" title="Very good">4 stars</label>
-                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-                <label for="first-rate5" title="Amazing">5 stars</label>
-            </fieldset>
-                                <textarea name="review[body]" placeholder="Share your thoughts and feedback..." required></textarea>
-                                <button type="submit" class="action-btn primary mt-3">
-                                    <i class="fas fa-paper-plane"></i> Submit Review
-                                </button>
-                            </form>
-                        </div>
-                    <% } %>
+            <% if (currentUser) { %>
+            <div class="po-review-form-wrap">
+                <form action="/problems/<%= campground._id %>/reviews" method="POST" class="validated-form" novalidate>
+                    <fieldset class="starability-basic mb-2">
+                        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                        <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                        <label for="first-rate3" title="Average">3 stars</label>
+                        <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                        <label for="first-rate5" title="Amazing">5 stars</label>
+                    </fieldset>
+                    <textarea name="review[body]" class="po-textarea" placeholder="Share your thoughts and feedback..." required></textarea>
+                    <button type="submit" class="groundwork-submit-btn">
+                        <span class="groundwork-submit-btn__text">Submit review</span>
+                        <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+                    </button>
+                </form>
+            </div>
+            <% } %>
 
-                    <% if (campground.reviews && campground.reviews.length > 0) { %>
-                        <% campground.reviews.forEach(review => { %>
-                            <div class="review-card">
-                                <div class="review-header">
-                                    <div class="review-author">
-                                        <div class="author-avatar">
-                                            <%= review.author.username.charAt(0).toUpperCase() %>
-                                        </div>
-                                        <span class="author-name"><%= review.author.username %></span>
-                                    </div>
-                                    <div class="review-rating">
-                                        <% for (let i = 1; i <= 5; i++) { %>
-                                            <i class="fas fa-star <%= i <= review.rating ? '' : 'text-muted' %>"></i>
-                                        <% } %>
-                                    </div>
+            <% if (campground.reviews && campground.reviews.length > 0) { %>
+            <div class="po-reviews-carousel">
+                <button type="button" class="po-scroll-btn po-scroll-btn--prev" aria-label="Scroll reviews left"><i class="fas fa-chevron-left"></i></button>
+                <div class="po-reviews-track" id="po-reviews-track">
+                    <% campground.reviews.forEach(review => { %>
+                    <article class="po-review-card">
+                        <div class="po-review-card-top">
+                            <div class="po-review-user">
+                                <div class="po-review-avatar" aria-hidden="true"><%= review.author.username.charAt(0).toUpperCase() %></div>
+                                <div class="po-review-identity">
+                                    <span class="po-review-name"><%= review.author.username %></span>
                                 </div>
-                                <p class="review-body"><%= review.body %></p>
-                                <% if (currentUser && review.author.equals(currentUser._id)) { %>
-                                    <form action="/problems/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="mt-2">
-                                        <button type="submit" class="action-btn danger" style="padding: 6px 12px; font-size: 0.8rem;">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </form>
+                            </div>
+                            <div class="po-review-stars" aria-label="Rating <%= review.rating %> out of 5">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                <i class="fas fa-star<%= i <= review.rating ? '' : ' text-muted' %>"></i>
                                 <% } %>
                             </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="review-card">
-                            <p style="color: #666; text-align: center; padding: 20px;">No reviews yet. Be the first to share your feedback!</p>
                         </div>
-                    <% } %>
+                        <p class="po-review-text"><%= review.body %></p>
+                        <% if (currentUser && review.author && typeof review.author.equals === 'function' && review.author.equals(currentUser._id)) { %>
+                        <form action="/problems/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                            <button type="submit" class="po-btn-danger-outline po-btn-delete-with-icon">
+                                <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true">
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                        <% } %>
+                    </article>
+                    <% }); %>
                 </div>
+                <button type="button" class="po-scroll-btn po-scroll-btn--next" aria-label="Scroll reviews right"><i class="fas fa-chevron-right"></i></button>
             </div>
+            <% } else { %>
+            <p class="po-section-lead" style="margin-bottom:0">No reviews yet. Be the first to share feedback.</p>
+            <% } %>
+        </section>
 
-            <!-- Right Sidebar -->
-            <div class="sidebar">
-                <!-- Phase Activities -->
-                <div class="sidebar-card">
-                    <h3>Phase Activities</h3>
-                    <% if (currentStage === 1) { %>
-                        <div class="activity-item completed">
-                            <div class="activity-checkbox"><i class="fas fa-check"></i></div>
-                            <span class="activity-name">Team Registration</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Program Enrollment</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Orientation</span>
-                        </div>
-                    <% } else if (currentStage === 2) { %>
-                        <div class="activity-item completed">
-                            <div class="activity-checkbox"><i class="fas fa-check"></i></div>
-                            <span class="activity-name">User Interviews</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Observations</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Research</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Surveys</span>
-                        </div>
-                    <% } else if (currentStage === 3) { %>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Cluster Insights</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Map Root Causes</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Draft Opportunities</span>
-                        </div>
-                    <% } else if (currentStage === 4) { %>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Brainstorming Session</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Mind Mapping</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Idea Evaluation</span>
-                        </div>
-                    <% } else if (currentStage === 5) { %>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Shortlist Concepts</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Decision Matrix</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Select Direction</span>
-                        </div>
-                    <% } else if (currentStage === 6) { %>
-                        <div class="activity-item <%= campground.solution ? 'completed' : '' %>">
-                            <div class="activity-checkbox"><% if (campground.solution) { %><i class="fas fa-check"></i><% } %></div>
-                            <span class="activity-name">Define Solution</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Feature Specification</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">User Journey Mapping</span>
-                        </div>
-                    <% } else { %>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Build Prototype</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">User Testing</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-checkbox"></div>
-                            <span class="activity-name">Iterate & Improve</span>
-                        </div>
+        <% if (canEditProject) { %>
+        <section class="po-card" aria-label="Problem statement actions">
+            <div class="po-statement-actions">
+                <a href="/problems/<%= campground._id %>/edit" class="groundwork-submit-btn"><span class="groundwork-submit-btn__text">Edit problem statement</span></a>
+                <form class="d-inline" action="/problems/<%= campground._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this problem statement?');">
+                    <button type="submit" class="ideation-theme-delete-btn">
+                        <img src="/images/delete-icon.png" alt="" class="ideation-delete-btn__icon" width="14" height="14" aria-hidden="true">
+                        <span>Delete problem statement</span>
+                    </button>
+                </form>
+            </div>
+        </section>
         <% } %>
+
+        <% if (campground.solution) { %>
+        <div class="po-solution-banner">
+            <p>Your conceptual solution is saved.</p>
+            <a href="/solution-details?campgroundId=<%= campground._id %>" class="groundwork-submit-btn"><span class="groundwork-submit-btn__text">View solution</span></a>
+        </div>
+        <% } %>
+
+        <section class="po-card" aria-labelledby="po-expert-heading">
+            <h2 class="po-section-title" id="po-expert-heading">Expert Consultation</h2>
+            <p class="po-section-lead po-section-lead--full">Need clarity on the mission? Schedule a session with the problem owners or our innovation mentors to refine your discovery.</p>
+            <div class="po-expert-grid">
+                <div class="po-expert-column">
+                    <button type="button" class="po-expert-card" disabled aria-label="Consult Problem Owner (coming soon)">
+                        <span class="po-expert-card-title">Consult Problem Owner</span>
+                        <span class="po-expert-status"><span class="po-expert-status-dot" aria-hidden="true"></span> Available</span>
+                    </button>
+                    <p class="po-expert-hint">Hint: Sync with the industry team to understand the real-world stakes.</p>
                 </div>
-
-
-                <!-- Quick Stats -->
-                <div class="sidebar-card">
-                    <h3>Project Stats</h3>
-                    <div class="activity-item">
-                        <div class="activity-checkbox" style="background: #ffde00; border-color: #ffde00;">
-                            <i class="fas fa-comments" style="color: #000;"></i>
-                        </div>
-                        <span class="activity-name"><%= campground.reviews ? campground.reviews.length : 0 %> Reviews</span>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-checkbox" style="background: #ffde00; border-color: #ffde00;">
-                            <i class="fas fa-check" style="color: #000;"></i>
-                        </div>
-                        <span class="activity-name">Phase <%= currentStage %> of 7</span>
-                    </div>
+                <div class="po-expert-column">
+                    <button type="button" class="po-expert-card" disabled aria-label="Talk to Innovation Mentor (coming soon)">
+                        <span class="po-expert-card-title">Talk to Innovation Mentor</span>
+                        <span class="po-expert-status"><span class="po-expert-status-dot" aria-hidden="true"></span> Available</span>
+                    </button>
+                    <p class="po-expert-hint">Hint: Get help applying the 7-phase methodology to your research.</p>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </div>
 
 <script>
-// Tab switching functionality
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
+(function () {
+    var MAX = 5 * 1024 * 1024;
+    var form = document.getElementById('po-image-upload-form');
+    if (!form) return;
+    var input = document.getElementById('po-image-input');
+    var dropzone = document.getElementById('poProblemImageDropzone');
+    var browseBtn = document.getElementById('poProblemBrowseBtn');
+    var fileError = document.getElementById('poProblemFileError');
+    var dropzoneFileName = document.getElementById('poDropzoneFileName');
+    if (!input || !dropzone) return;
 
-// Activity item click
-document.querySelectorAll('.activity-item').forEach(item => {
-    item.addEventListener('click', function() {
-        this.classList.toggle('completed');
-        const checkbox = this.querySelector('.activity-checkbox');
-        if (this.classList.contains('completed')) {
-            checkbox.innerHTML = '<i class="fas fa-check"></i>';
-        } else {
-            checkbox.innerHTML = '';
+    function validateFiles(files) {
+        var invalid = [];
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
+            var t = (f.type || '').toLowerCase();
+            var ok = t === 'image/jpeg' || t === 'image/png' || /\.(jpe?g|png)$/i.test(f.name);
+            if (!ok) invalid.push(f.name + ' unsupported format');
+            else if (f.size > MAX) invalid.push(f.name + ' exceeds 5MB');
         }
+        return invalid;
+    }
+
+    function updateDropzonePreview(files) {
+        if (!files || files.length === 0) {
+            dropzone.classList.remove('has-file');
+            if (dropzoneFileName) dropzoneFileName.textContent = '';
+            return;
+        }
+        dropzone.classList.add('has-file');
+        if (dropzoneFileName) {
+            dropzoneFileName.textContent = files.length === 1 ? files[0].name : files.length + ' files selected';
+        }
+    }
+
+    function setFiles(files) {
+        var errors = validateFiles(files);
+        if (errors.length) {
+            input.value = '';
+            updateDropzonePreview([]);
+            if (fileError) fileError.textContent = errors.join(' | ');
+            return false;
+        }
+        var dt = new DataTransfer();
+        files.forEach(function (f) { dt.items.add(f); });
+        input.files = dt.files;
+        updateDropzonePreview(Array.from(input.files));
+        if (fileError) fileError.textContent = '';
+        return true;
+    }
+
+    input.addEventListener('change', function () {
+        setFiles(Array.from(input.files));
     });
-});
+
+    if (browseBtn) browseBtn.addEventListener('click', function () { input.click(); });
+
+    ['dragenter', 'dragover'].forEach(function (ev) {
+        dropzone.addEventListener(ev, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('is-dragover');
+        });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+        dropzone.addEventListener(ev, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('is-dragover');
+        });
+    });
+    dropzone.addEventListener('drop', function (e) {
+        var dropped = Array.from(e.dataTransfer.files || []);
+        if (dropped.length) setFiles(dropped);
+    });
+})();
+
+(function () {
+    var track = document.getElementById('po-reviews-track');
+    if (!track) return;
+    var step = 280;
+    var prev = document.querySelector('.po-scroll-btn--prev');
+    var next = document.querySelector('.po-scroll-btn--next');
+    var epsilon = 2;
+
+    function setBtnVisibility(btn, shouldShow) {
+        if (!btn) return;
+        btn.style.display = shouldShow ? 'flex' : 'none';
+        btn.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        btn.disabled = !shouldShow;
+    }
+
+    function updateChevronState() {
+        var maxScrollLeft = Math.max(0, track.scrollWidth - track.clientWidth);
+        var hasOverflow = maxScrollLeft > epsilon;
+        var canScrollLeft = track.scrollLeft > epsilon;
+        var canScrollRight = track.scrollLeft < (maxScrollLeft - epsilon);
+
+        setBtnVisibility(prev, hasOverflow && canScrollLeft);
+        setBtnVisibility(next, hasOverflow && canScrollRight);
+    }
+
+    if (prev) prev.addEventListener('click', function () {
+        track.scrollBy({ left: -step, behavior: 'smooth' });
+    });
+    if (next) next.addEventListener('click', function () {
+        track.scrollBy({ left: step, behavior: 'smooth' });
+    });
+    track.addEventListener('scroll', updateChevronState, { passive: true });
+    window.addEventListener('resize', updateChevronState);
+    updateChevronState();
+})();
+
+(function () {
+    var form = document.querySelector('.po-review-form-wrap form.validated-form');
+    if (!form) return;
+    var MIN_LOADING_MS = 2000;
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
+    var reviewsSection = document.querySelector('section[aria-labelledby="po-reviews-heading"]');
+
+    function ensureToastEl() {
+        var el = document.getElementById('mission-launch-saved-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'mission-launch-saved-toast';
+            el.className = 'mission-launch-saved-toast';
+            el.setAttribute('role', 'status');
+            el.textContent = 'Submitted Successfully!';
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    function showSavedToast(message) {
+        var el = ensureToastEl();
+        el.textContent = message || 'Submitted Successfully!';
+        el.classList.remove('mission-launch-saved-toast--hide');
+        el.classList.add('mission-launch-saved-toast--show');
+        if (el._hideTimer) clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function () {
+            el.classList.remove('mission-launch-saved-toast--show');
+            el.classList.add('mission-launch-saved-toast--hide');
+        }, 5000);
+    }
+
+    function parseJsonResponse(text) {
+        try {
+            return text ? JSON.parse(text) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setButtonLoading(loading) {
+        submitBtn.disabled = loading;
+        submitBtn.classList.toggle('groundwork-submit-btn--loading', loading);
+        submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+
+    function bindCarouselControls(track, prev, next) {
+        if (!track || track.dataset.poCarouselBound === '1') return;
+        var step = 280;
+        var epsilon = 2;
+        function setBtnVisibility(btn, shouldShow) {
+            if (!btn) return;
+            btn.style.display = shouldShow ? 'flex' : 'none';
+            btn.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+            btn.disabled = !shouldShow;
+        }
+        function updateChevronState() {
+            var maxScrollLeft = Math.max(0, track.scrollWidth - track.clientWidth);
+            var hasOverflow = maxScrollLeft > epsilon;
+            var canScrollLeft = track.scrollLeft > epsilon;
+            var canScrollRight = track.scrollLeft < (maxScrollLeft - epsilon);
+            setBtnVisibility(prev, hasOverflow && canScrollLeft);
+            setBtnVisibility(next, hasOverflow && canScrollRight);
+        }
+        if (prev) prev.addEventListener('click', function () {
+            track.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+        if (next) next.addEventListener('click', function () {
+            track.scrollBy({ left: step, behavior: 'smooth' });
+        });
+        track.addEventListener('scroll', updateChevronState, { passive: true });
+        window.addEventListener('resize', updateChevronState);
+        track.dataset.poCarouselBound = '1';
+        updateChevronState();
+    }
+
+    function ensureReviewsTrack() {
+        if (!reviewsSection) return null;
+        var existingTrack = document.getElementById('po-reviews-track');
+        if (existingTrack) return existingTrack;
+
+        var emptyState = reviewsSection.querySelector('.po-section-lead');
+        if (emptyState) emptyState.remove();
+
+        var carousel = document.createElement('div');
+        carousel.className = 'po-reviews-carousel';
+
+        var prev = document.createElement('button');
+        prev.type = 'button';
+        prev.className = 'po-scroll-btn po-scroll-btn--prev';
+        prev.setAttribute('aria-label', 'Scroll reviews left');
+        prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
+
+        var track = document.createElement('div');
+        track.className = 'po-reviews-track';
+        track.id = 'po-reviews-track';
+
+        var next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'po-scroll-btn po-scroll-btn--next';
+        next.setAttribute('aria-label', 'Scroll reviews right');
+        next.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        carousel.appendChild(prev);
+        carousel.appendChild(track);
+        carousel.appendChild(next);
+        reviewsSection.appendChild(carousel);
+
+        bindCarouselControls(track, prev, next);
+        return track;
+    }
+
+    function addReviewCard(reviewData) {
+        var track = ensureReviewsTrack();
+        if (!track || !reviewData) return;
+
+        var rating = Math.max(0, Math.min(5, parseInt(reviewData.rating, 10) || 0));
+        var body = reviewData.body == null ? '' : String(reviewData.body);
+        var username = reviewData.author && reviewData.author.username ? String(reviewData.author.username) : 'You';
+        var reviewId = reviewData.id ? String(reviewData.id) : '';
+
+        var article = document.createElement('article');
+        article.className = 'po-review-card';
+
+        var top = document.createElement('div');
+        top.className = 'po-review-card-top';
+
+        var user = document.createElement('div');
+        user.className = 'po-review-user';
+
+        var avatar = document.createElement('div');
+        avatar.className = 'po-review-avatar';
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.textContent = username ? username.charAt(0).toUpperCase() : 'U';
+
+        var identity = document.createElement('div');
+        identity.className = 'po-review-identity';
+
+        var name = document.createElement('span');
+        name.className = 'po-review-name';
+        name.textContent = username;
+        identity.appendChild(name);
+
+        user.appendChild(avatar);
+        user.appendChild(identity);
+
+        var stars = document.createElement('div');
+        stars.className = 'po-review-stars';
+        stars.setAttribute('aria-label', 'Rating ' + rating + ' out of 5');
+        for (var i = 1; i <= 5; i++) {
+            var star = document.createElement('i');
+            star.className = 'fas fa-star' + (i <= rating ? '' : ' text-muted');
+            stars.appendChild(star);
+        }
+
+        top.appendChild(user);
+        top.appendChild(stars);
+        article.appendChild(top);
+
+        var text = document.createElement('p');
+        text.className = 'po-review-text';
+        text.textContent = body;
+        article.appendChild(text);
+
+        if (reviewId) {
+            var deleteForm = document.createElement('form');
+            deleteForm.method = 'POST';
+            deleteForm.action = form.getAttribute('action') + '/' + encodeURIComponent(reviewId) + '?_method=DELETE';
+            deleteForm.innerHTML = '<button type="submit" class="po-btn-danger-outline po-btn-delete-with-icon"><img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true"><span>Delete</span></button>';
+            article.appendChild(deleteForm);
+        }
+
+        track.appendChild(article);
+        window.dispatchEvent(new Event('resize'));
+    }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            if (typeof form.reportValidity === 'function') form.reportValidity();
+            return;
+        }
+        form.classList.remove('was-validated');
+
+        var start = Date.now();
+        setButtonLoading(true);
+        var params = new URLSearchParams(new FormData(form));
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: params,
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    return { res: res, data: parseJsonResponse(text) };
+                });
+            })
+            .then(function (ref) {
+                var res = ref.res;
+                var data = ref.data;
+                if (!res.ok || !data || !data.ok) {
+                    var msg = data && data.error ? data.error : 'Could not submit review. Please try again.';
+                    window.alert(msg);
+                    return;
+                }
+                var elapsed = Date.now() - start;
+                var waitMore = Math.max(0, MIN_LOADING_MS - elapsed);
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, waitMore);
+                }).then(function () {
+                    form.reset();
+                    addReviewCard(data.review);
+                    showSavedToast('Submitted Successfully!');
+                });
+            })
+            .catch(function () {
+                window.alert('Network error. Please try again.');
+            })
+            .finally(function () {
+                setButtonLoading(false);
+            });
+    });
+})();
+
+(function () {
+    var form = document.getElementById('notesForm');
+    if (!form) return;
+    var MIN_LOADING_MS = 2000;
+    var select = document.getElementById('po-note-slot');
+    var addBtn = document.getElementById('po-add-note-btn');
+    var deleteBtn = document.getElementById('po-delete-note-btn');
+    var textarea = form.querySelector('textarea[name="notes"]');
+    var payload = document.getElementById('po-notes-payload');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var initialStateEl = document.getElementById('po-notes-initial-state');
+    var deleteModal = document.getElementById('delete-note-confirm-modal');
+    var deleteCancel = document.getElementById('delete-note-confirm-cancel');
+    var deleteConfirm = document.getElementById('delete-note-confirm-delete');
+    if (!select || !addBtn || !deleteBtn || !textarea || !payload || !submitBtn || !deleteModal || !deleteCancel || !deleteConfirm) return;
+
+    function ensureToastEl() {
+        var el = document.getElementById('mission-launch-saved-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'mission-launch-saved-toast';
+            el.className = 'mission-launch-saved-toast';
+            el.setAttribute('role', 'status');
+            el.textContent = 'Saved Successfully!';
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    function showSavedToast(message) {
+        var el = ensureToastEl();
+        el.textContent = message || 'Saved Successfully!';
+        el.classList.remove('mission-launch-saved-toast--hide');
+        el.classList.add('mission-launch-saved-toast--show');
+        if (el._hideTimer) clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function () {
+            el.classList.remove('mission-launch-saved-toast--show');
+            el.classList.add('mission-launch-saved-toast--hide');
+        }, 5000);
+    }
+
+    function parseJsonResponse(text) {
+        try {
+            return text ? JSON.parse(text) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setButtonLoading(loading) {
+        submitBtn.disabled = loading;
+        submitBtn.classList.toggle('groundwork-submit-btn--loading', loading);
+        submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+
+    var notesState = [];
+    if (initialStateEl && initialStateEl.textContent) {
+        try {
+            var parsed = JSON.parse(initialStateEl.textContent);
+            if (Array.isArray(parsed)) {
+                notesState = parsed.map(function (slot) {
+                    return typeof slot === 'string' ? slot : '';
+                });
+            }
+        } catch (e) {
+            notesState = [];
+        }
+    }
+    if (!notesState.length) {
+        for (var i = 0; i < select.options.length; i++) notesState.push('');
+    }
+    while (notesState.length < select.options.length) notesState.push('');
+    var activeIndex = Math.max(0, (parseInt(select.value, 10) || 1) - 1);
+    if (typeof notesState[activeIndex] !== 'string') notesState[activeIndex] = '';
+    textarea.value = notesState[activeIndex] || '';
+
+    function syncTextareaFromSlot() {
+        textarea.value = notesState[activeIndex] || '';
+    }
+
+    function persistCurrentSlot() {
+        notesState[activeIndex] = textarea.value || '';
+    }
+
+    function addSlotOption(slotNumber) {
+        var option = document.createElement('option');
+        option.value = String(slotNumber);
+        option.textContent = 'Note ' + slotNumber;
+        select.appendChild(option);
+    }
+
+    function rebuildOptions() {
+        select.innerHTML = '';
+        for (var i = 0; i < notesState.length; i++) addSlotOption(i + 1);
+        if (activeIndex < 0) activeIndex = 0;
+        if (activeIndex >= notesState.length) activeIndex = notesState.length - 1;
+        select.value = String(activeIndex + 1);
+        syncTextareaFromSlot();
+    }
+
+    function openDeleteModal() {
+        deleteModal.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        deleteModal.setAttribute('hidden', '');
+        document.body.style.overflow = '';
+    }
+
+    function deleteCurrentNote() {
+        persistCurrentSlot();
+        if (notesState.length > 1) {
+            notesState.splice(activeIndex, 1);
+            if (activeIndex >= notesState.length) activeIndex = notesState.length - 1;
+        } else {
+            notesState[0] = '';
+            activeIndex = 0;
+        }
+        rebuildOptions();
+        textarea.focus();
+    }
+
+    select.addEventListener('change', function () {
+        persistCurrentSlot();
+        activeIndex = Math.max(0, (parseInt(select.value, 10) || 1) - 1);
+        if (typeof notesState[activeIndex] !== 'string') notesState[activeIndex] = '';
+        syncTextareaFromSlot();
+    });
+
+    addBtn.addEventListener('click', function () {
+        persistCurrentSlot();
+        notesState.push('');
+        var newIndex = notesState.length - 1;
+        addSlotOption(newIndex + 1);
+        select.value = String(newIndex + 1);
+        activeIndex = newIndex;
+        syncTextareaFromSlot();
+        textarea.focus();
+    });
+
+    deleteBtn.addEventListener('click', function () {
+        openDeleteModal();
+    });
+
+    deleteCancel.addEventListener('click', function () {
+        closeDeleteModal();
+    });
+
+    deleteConfirm.addEventListener('click', function () {
+        deleteCurrentNote();
+        closeDeleteModal();
+    });
+
+    deleteModal.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-confirm-backdrop')) closeDeleteModal();
+    });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var start = Date.now();
+        setButtonLoading(true);
+        persistCurrentSlot();
+        payload.value = JSON.stringify(notesState.map(function (slot) {
+            return typeof slot === 'string' ? slot : '';
+        }));
+        var params = new URLSearchParams(new FormData(form));
+        params.set('notesAjax', '1');
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: params,
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    return { res: res, data: parseJsonResponse(text) };
+                });
+            })
+            .then(function (ref) {
+                var res = ref.res;
+                var data = ref.data;
+                if (!res.ok || !data || !data.ok) {
+                    var msg = data && data.error ? data.error : 'Could not save. Please try again.';
+                    window.alert(msg);
+                    return;
+                }
+                var elapsed = Date.now() - start;
+                var waitMore = Math.max(0, MIN_LOADING_MS - elapsed);
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, waitMore);
+                }).then(function () {
+                    showSavedToast('Saved Successfully!');
+                });
+            })
+            .catch(function () {
+                window.alert('Network error. Please try again.');
+            })
+            .finally(function () {
+                setButtonLoading(false);
+            });
+    });
+})();
 </script>

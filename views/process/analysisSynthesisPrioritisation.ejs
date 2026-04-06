@@ -1,0 +1,272 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/analysis`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="/process/<%= pid %>/analysis/insight-records" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= insightSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="insight" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Insight Records</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= synthesisSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-analysis-pill="synthesis" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Synthesis &amp; Prioritisation</span>
+      </span>
+      <a href="/process/<%= pid %>/analysis/problem-statement" class="groundwork-tab groundwork-tab--nav" aria-label="Open Problem Statement">
+        <span class="groundwork-tab-dot <%= statementSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="statement" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Problem Statement</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Synthesis &amp; Prioritisation</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/analysis/synthesis-prioritisation" method="POST" novalidate class="validated-form analysis-ajax-form analysis-sp-form" data-analysis-page="synthesis">
+        <input type="hidden" name="analysisAjax" value="1">
+
+        <h2 class="pd-pr-subheading">Insight Clustering</h2>
+        <div class="analysis-sp-accordion-list" data-analysis-theme-accordion-list>
+          <% insightThemeLines.forEach(function (theme, idx) { %>
+            <div class="analysis-sp-accordion" data-analysis-sp-accordion <%= idx === 0 ? 'data-analysis-theme-accordion-template' : '' %>>
+              <div class="analysis-sp-theme-card" data-analysis-sp-theme-card>
+                <div class="analysis-sp-fixed-row">
+                  <div class="analysis-sp-fixed-field">
+                    <label class="form-label">Insight Theme</label>
+                    <textarea class="form-control" name="insightTheme[]" rows="3" placeholder="e.g., The 'Trust Gap' in Digital Payments." <%= idx === 0 ? 'required' : '' %>><%= theme %></textarea>
+                  </div>
+                  <div class="analysis-sp-accordion-head">
+                    <button
+                      type="button"
+                      class="analysis-ir-remove-accordion-btn"
+                      data-analysis-remove-theme-accordion
+                      aria-label="Remove this insight theme block"
+                      style="display: <%= insightThemeLines.length >= 2 ? 'inline-flex' : 'none' %>"
+                    >×</button>
+                    <button type="button" class="analysis-sp-chevron-btn" data-analysis-sp-toggle aria-expanded="true" aria-label="Toggle insight clustering block <%= idx + 1 %>">
+                      <span class="analysis-sp-chevron-icon" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+                <div class="analysis-sp-accordion-content" data-analysis-sp-content>
+                  <div class="analysis-sp-theme-grid">
+                    <div>
+                      <div class="analysis-sp-grid-label">Type</div>
+                      <input type="hidden" name="themeType[]" value="<%= themeTypeLines[idx] || '' %>" class="analysis-sp-themeType-hidden">
+                      <div class="pd-sm-contact-stack analysis-sp-type-stack" role="group" aria-label="Insight Theme Type">
+                        <% 
+                          var selectedThemeType = String(themeTypeLines[idx] || '')
+                            .split(',')
+                            .map(function (s) { return s.trim(); })
+                            .filter(Boolean)[0] || '';
+                          ['Functional', 'Economic', 'Social', 'Intellectual'].forEach(function (opt) { 
+                          var selected = selectedThemeType === opt;
+                        %>
+                          <label class="pd-sm-contact-option">
+                            <input
+                              type="checkbox"
+                              class="pd-sm-contact-box-input analysis-sp-type-checkbox"
+                              value="<%= opt %>"
+                              aria-label="<%= opt %>"
+                              <%= selected ? 'checked' : '' %>
+                            >
+                            <span class="pd-sm-contact-box" aria-hidden="true"></span>
+                            <span class="pd-sm-contact-text"><%= opt %></span>
+                          </label>
+                        <% }); %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label analysis-sp-grid-label--evidence">Evidence Count (No.of Conversations)</div>
+                      <div class="analysis-sp-counter" data-analysis-counter>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-dec aria-label="Decrease Evidence Count">
+                          <img src="/images/analysis-counter-minus.png" alt="" class="analysis-sp-minus-icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                        <span class="analysis-sp-counter-value" data-counter-value><%= evidenceCountLines[idx] || '0' %></span>
+                        <input type="hidden" name="evidenceCount[]" value="<%= evidenceCountLines[idx] || '0' %>" data-counter-input>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-inc aria-label="Increase Evidence Count">
+                          <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label">Severity (1-5)</div>
+                      <div class="analysis-sp-counter" data-analysis-counter data-counter-max="5">
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-dec aria-label="Decrease Severity">
+                          <img src="/images/analysis-counter-minus.png" alt="" class="analysis-sp-minus-icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                        <span class="analysis-sp-counter-value" data-counter-value><%= severityLines[idx] || '0' %></span>
+                        <input type="hidden" name="severity[]" value="<%= severityLines[idx] || '0' %>" data-counter-input>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-inc aria-label="Increase Severity">
+                          <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label">Frequency (1-5)</div>
+                      <div class="analysis-sp-counter" data-analysis-counter data-counter-max="5">
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-dec aria-label="Decrease Frequency">
+                          <img src="/images/analysis-counter-minus.png" alt="" class="analysis-sp-minus-icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                        <span class="analysis-sp-counter-value" data-counter-value><%= frequencyLines[idx] || '0' %></span>
+                        <input type="hidden" name="frequency[]" value="<%= frequencyLines[idx] || '0' %>" data-counter-input>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-inc aria-label="Increase Frequency">
+                          <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <div class="analysis-ir-add-wrap analysis-sp-add-theme-wrap">
+          <button type="button" class="analysis-ir-add-interviewee-btn" data-analysis-add-theme-accordion>+ Add Insight Theme</button>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-sp-section-head">Problem Shortlisting</h2>
+        <div class="analysis-sp-accordion-list" data-analysis-draft-accordion-list>
+          <% problemDraftLines.forEach(function (draft, idx) { %>
+            <div class="analysis-sp-accordion" data-analysis-sp-accordion <%= idx === 0 ? 'data-analysis-draft-accordion-template' : '' %>>
+              <div class="analysis-sp-draft-card" data-analysis-sp-draft-card>
+                <div class="analysis-sp-fixed-row">
+                  <div class="analysis-sp-fixed-field">
+                    <label class="form-label">Problem Statement (Draft)</label>
+                    <textarea class="form-control" name="problemDraft[]" rows="3" placeholder="e.g., Small scale vendors avoid digital tools because of a 48-hour delay in settlement, causing cash flow friction." <%= idx === 0 ? 'required' : '' %>><%= draft %></textarea>
+                  </div>
+                  <div class="analysis-sp-accordion-head">
+                    <button
+                      type="button"
+                      class="analysis-ir-remove-accordion-btn"
+                      data-analysis-remove-draft-accordion
+                      aria-label="Remove this draft block"
+                      style="display: <%= problemDraftLines.length >= 2 ? 'inline-flex' : 'none' %>"
+                    >×</button>
+                    <button type="button" class="analysis-sp-chevron-btn" data-analysis-sp-toggle aria-expanded="true" aria-label="Toggle problem shortlisting block <%= idx + 1 %>">
+                      <span class="analysis-sp-chevron-icon" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+                <div class="analysis-sp-accordion-content" data-analysis-sp-content>
+                  <div class="analysis-sp-draft-grid">
+                    <div>
+                      <div class="analysis-sp-grid-label">Impact Level</div>
+                      <input type="hidden" name="impactLevel[]" value="<%= impactLevelLines[idx] || '' %>" data-analysis-chip-hidden>
+                      <div class="analysis-sp-chip-row" role="group" aria-label="Impact Level">
+                        <% ['High', 'Medium', 'Low'].forEach(function (opt) { 
+                          var selected = (impactLevelLines[idx] || '') === opt;
+                        %>
+                          <button type="button" class="analysis-sp-chip <%= selected ? 'is-active' : '' %>" data-analysis-chip-value="<%= opt %>"><%= opt %></button>
+                        <% }); %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label">Feasibility</div>
+                      <input type="hidden" name="feasibility[]" value="<%= feasibilityLines[idx] || '' %>" data-analysis-chip-hidden>
+                      <div class="analysis-sp-chip-row" role="group" aria-label="Feasibility">
+                        <% ['High', 'Medium', 'Low'].forEach(function (opt) { 
+                          var selected = (feasibilityLines[idx] || '') === opt;
+                        %>
+                          <button type="button" class="analysis-sp-chip <%= selected ? 'is-active' : '' %>" data-analysis-chip-value="<%= opt %>"><%= opt %></button>
+                        <% }); %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label">Alignment with Team Skills</div>
+                      <input type="hidden" name="alignmentWithTeamSkills[]" value="<%= alignmentLines[idx] || '' %>" data-analysis-chip-hidden>
+                      <div class="analysis-sp-chip-row" role="group" aria-label="Alignment with Team Skills">
+                        <% ['High', 'Medium', 'Low'].forEach(function (opt) { 
+                          var selected = (alignmentLines[idx] || '') === opt;
+                        %>
+                          <button type="button" class="analysis-sp-chip <%= selected ? 'is-active' : '' %>" data-analysis-chip-value="<%= opt %>"><%= opt %></button>
+                        <% }); %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="analysis-sp-grid-label">Priority Rank</div>
+                      <div class="analysis-sp-counter" data-analysis-counter>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-dec aria-label="Decrease Priority Rank">
+                          <img src="/images/analysis-counter-minus.png" alt="" class="analysis-sp-minus-icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                        <span class="analysis-sp-counter-value" data-counter-value><%= priorityRankLines[idx] || '0' %></span>
+                        <input type="hidden" name="priorityRank[]" value="<%= priorityRankLines[idx] || '0' %>" data-counter-input>
+                        <button type="button" class="analysis-sp-counter-btn" data-counter-inc aria-label="Increase Priority Rank">
+                          <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <div class="analysis-ir-add-wrap analysis-sp-add-draft-wrap">
+          <button type="button" class="analysis-ir-add-interviewee-btn" data-analysis-add-draft-accordion>+ Add Draft</button>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-sp-section-head">Requirements</h2>
+        <p class="pd-pr-subtext">Define what your solution must do and the performance standards it must meet to ensure the problem is successfully solved.</p>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="pd-repeat-section" data-field="functionalRequirement" data-placeholder="e.g., real-time alerts based on the temperature">
+              <label class="form-label">Functional Requirements</label>
+              <div class="pd-repeat-stack">
+                <% functionalReqLines.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" style="display: <%= functionalReqLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="functionalRequirement[]" rows="4" placeholder="e.g., real-time alerts based on the temperature" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+                <% }); %>
+              </div>
+              <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="pd-repeat-section" data-field="nonFunctionalRequirement" data-placeholder="e.g., work well under slow 3G connection">
+              <label class="form-label">Non-Functional Requirements</label>
+              <div class="pd-repeat-stack">
+                <% nonFunctionalReqLines.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" style="display: <%= nonFunctionalReqLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="nonFunctionalRequirement[]" rows="4" placeholder="e.g., work well under slow 3G connection" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+                <% }); %>
+              </div>
+              <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-sp-section-head">Critical Reflection</h2>
+        <div class="pd-repeat-section" data-field="criticalImpactReflection" data-placeholder="e.g., Instant settlement for vendors and automated fraud-detection alerts.">
+          <label class="form-label">Which 2-3 problems, if solved, create maximum measurable impact?</label>
+          <div class="pd-repeat-stack">
+            <% criticalImpactLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" style="display: <%= criticalImpactLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="criticalImpactReflection[]" rows="4" placeholder="e.g., Instant settlement for vendors and automated fraud-detection alerts." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="eliminationReason" data-placeholder="e.g., We are shelving User Interface redesign because the real issue is the payment speed, not the looks.">
+          <label class="form-label">Why are we eliminating the other problems?</label>
+          <div class="pd-repeat-stack">
+            <% eliminationReasonLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" style="display: <%= eliminationReasonLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="eliminationReason[]" rows="4" placeholder="e.g., We are shelving User Interface redesign because the real issue is the payment speed, not the looks." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/synthesisPrioritisation.js"></script>
+<script src="/javascripts/analysisForms.js"></script>

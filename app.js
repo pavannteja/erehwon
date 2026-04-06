@@ -173,9 +173,12 @@ app.use(async (req, res, next) => {
   // Check if user has completed Excite & Enrol (has at least one project with teamInfo.schoolName)
   if (req.user && !req.user.isAdmin) {
     try {
-      const hasProject = await Campground.findOne({ 
+      const hasProject = await Campground.findOne({
         author: req.user._id,
-        'teamInfo.schoolName': { $exists: true, $ne: null, $ne: '' }
+        $or: [
+          { 'teamInfo.schoolName': { $exists: true, $nin: [null, ''] } },
+          { 'missionLaunchGroundworkInfo.schoolName': { $exists: true, $nin: [null, ''] } }
+        ]
       });
       res.locals.hasCompletedExciteEnrol = !!hasProject;
     } catch (error) {

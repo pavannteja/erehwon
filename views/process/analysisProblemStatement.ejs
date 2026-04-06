@@ -1,0 +1,98 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/analysis`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner analysis-ps-page">
+    <div class="groundwork-tabs">
+      <a href="/process/<%= pid %>/analysis/insight-records" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= insightSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="insight" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Insight Records</span>
+      </a>
+      <a href="/process/<%= pid %>/analysis/synthesis-prioritisation" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= synthesisSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="synthesis" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Synthesis &amp; Prioritisation</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= statementSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-analysis-pill="statement" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Problem Statement</span>
+      </span>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Problem Statement</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/analysis/problem-statement" method="POST" novalidate class="validated-form analysis-ajax-form analysis-ps-form" data-analysis-page="statement">
+        <input type="hidden" name="analysisAjax" value="1">
+
+        <div class="analysis-ps-line-row">
+          <span class="analysis-ps-line-label">We will solve/help</span>
+          <textarea class="form-control analysis-ps-line-input" name="solveHelp" rows="2" placeholder="e.g., eliminate high-risk manual chemical mixing..." required><%= solveHelpLine %></textarea>
+        </div>
+        <div class="analysis-ps-line-row">
+          <span class="analysis-ps-line-label">for</span>
+          <textarea class="form-control analysis-ps-line-input" name="targetUser" rows="2" placeholder="e.g., entry-level floor technicians..." required><%= targetUserLine %></textarea>
+        </div>
+        <div class="analysis-ps-line-row">
+          <span class="analysis-ps-line-label">toward</span>
+          <textarea class="form-control analysis-ps-line-input" name="towardOutcome" rows="2" placeholder="e.g., achieving zero onsite safety incidents per year." required><%= towardOutcomeLine %></textarea>
+          <span class="analysis-ps-line-dot" aria-hidden="true">.</span>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-ps-heading">Problem Statement Checklist</h2>
+        <div class="analysis-ps-checklist">
+          <label class="pd-sm-contact-option analysis-ps-check-option">
+            <input type="checkbox" class="pd-sm-contact-box-input" name="checklistExactProblem" value="1" <%= checklistExactProblem ? 'checked' : '' %>>
+            <span class="pd-sm-contact-box" aria-hidden="true"></span>
+            <span class="analysis-ps-check-text">Does this describe the exact problem the team intends to solve?</span>
+          </label>
+          <label class="pd-sm-contact-option analysis-ps-check-option">
+            <input type="checkbox" class="pd-sm-contact-box-input" name="checklistExactUser" value="1" <%= checklistExactUser ? 'checked' : '' %>>
+            <span class="pd-sm-contact-box" aria-hidden="true"></span>
+            <span class="analysis-ps-check-text">Have we identified the exact user who suffers from this gravity?</span>
+          </label>
+          <label class="pd-sm-contact-option analysis-ps-check-option">
+            <input type="checkbox" class="pd-sm-contact-box-input" name="checklistMeasurable" value="1" <%= checklistMeasurable ? 'checked' : '' %>>
+            <span class="pd-sm-contact-box" aria-hidden="true"></span>
+            <span class="analysis-ps-check-text">Will improvement happen in a measurable way?</span>
+          </label>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-ps-heading">Digital Commitment</h2>
+        <p class="pd-pr-subtext">Enter team members name below</p>
+
+        <div class="pd-repeat-section" data-field="digitalCommitment" data-placeholder="e.g., John Doe">
+          <div class="pd-repeat-stack">
+            <% digitalCommitmentLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" style="display: <%= digitalCommitmentLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="digitalCommitment[]" rows="4" placeholder="e.g., John Doe" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap">
+            <button type="button" class="pd-add-field" aria-label="Add another commitment name">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/analysisForms.js"></script>

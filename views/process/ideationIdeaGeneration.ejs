@@ -1,0 +1,133 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cid = problemId ? String(problemId) : null;
+  const backToPhase = cid ? `/process/${cid}/ideation` : '/dashboard';
+  const sotaUrl = cid ? `/process/${cid}/ideation/sota-report` : '#';
+%>
+<div class="excite-enrol-page groundwork-page ideation-idea-gen-page">
+  <div class="groundwork-inner" data-idea-gen-root>
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= ideaGenSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-idea-gen-pill="idea" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Idea Generation</span>
+      </span>
+      <% if (cid) { %>
+        <a href="<%= sotaUrl %>" class="groundwork-tab groundwork-tab--nav">
+          <span class="groundwork-tab-dot <%= sotaSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-idea-gen-pill="sota" aria-hidden="true"></span>
+          <span class="groundwork-tab-label">2. SOTA Report</span>
+        </a>
+      <% } else { %>
+        <span class="groundwork-tab" role="presentation">
+          <span class="groundwork-tab-dot groundwork-tab-dot--pending" aria-hidden="true"></span>
+          <span class="groundwork-tab-label">2. SOTA Report</span>
+        </span>
+      <% } %>
+    </div>
+
+    <div class="groundwork-header-row ideation-sota-header">
+      <h1 class="groundwork-title">Idea Generation</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <section class="ideation-idea-gen-problem">
+      <h2 class="ideation-idea-gen-problem__title">Problem Statement</h2>
+      <% problemStatementParagraphs.forEach(function (p) { %>
+        <p class="ideation-idea-gen-problem__text"><%= p %></p>
+      <% }); %>
+    </section>
+
+    <div class="ideation-idea-gen-callout ideation-tooltip" role="note">
+      <button type="button" class="ideation-tooltip-close" data-idea-tooltip-close aria-label="Close this tooltip">&times;</button>
+      <div>
+        Create your first 5 ideas. Don&rsquo;t overthink, just get the raw concepts out. Don&rsquo;t forget to save them.
+      </div>
+    </div>
+
+    <h2 class="ideation-idea-gen-ideas-heading">Ideas</h2>
+
+    <div class="groundwork-card ideation-idea-gen-card">
+      <form action="/process/<%= problemId %>/ideation/idea-generation" method="POST" class="ideation-idea-gen-form" data-idea-gen-form novalidate>
+        <div class="ideation-idea-gen-stack" data-idea-gen-stack></div>
+        <div class="pd-add-wrap ideation-idea-gen-add-wrap">
+          <button type="button" class="pd-add-field" data-idea-gen-add aria-label="Add another idea row">
+            <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+          </button>
+        </div>
+
+        <div
+          class="ideation-themes-wrap <%= ideationThemesUnlocked ? '' : 'ideation-themes-wrap--hidden' %>"
+          data-ideation-themes-wrap
+        >
+          <div class="ideation-themes-callout ideation-tooltip" role="note">
+            <button type="button" class="ideation-tooltip-close" data-idea-tooltip-close aria-label="Close this tooltip">&times;</button>
+            <div>
+            Drag &amp; Drop your ideas into themes strategically.
+            <br />
+            Create more ideas &amp; themes.
+            </div>
+          </div>
+
+          <div class="ideation-themes-controls">
+            <div class="ideation-sota-select-shell ideation-theme-select-shell">
+              <select class="form-select ideation-sota-select ideation-theme-select" data-ideation-theme-select>
+                <option value="theme1" selected>Theme 1</option>
+              </select>
+              <span class="ideation-sota-select-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <button type="button" class="ideation-theme-add-btn" data-ideation-add-theme>Add Theme</button>
+          </div>
+
+          <input
+            type="text"
+            class="form-control ideation-theme-input"
+            data-ideation-theme-input
+            placeholder="e.g., 20 small scale dairy farmers in rural Maharashtra."
+          >
+
+          <div class="ideation-ideas-dropzone" data-ideation-ideas-dropzone>
+            <div class="ideation-ideas-dropzone__inner">
+              <div class="ideation-ideas-dropzone__stack" data-ideation-drop-stack></div>
+              <div class="ideation-ideas-dropzone__text" data-ideation-drop-placeholder>Drag your ideas here!</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="ideation-idea-gen-actions">
+          <div class="ideation-idea-gen-primary-actions">
+            <button type="submit" class="groundwork-submit-btn">
+              <span class="groundwork-submit-btn__text">Save</span>
+              <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+            </button>
+            <button
+              type="button"
+              class="ideation-theme-delete-btn"
+              id="delete-theme-trigger"
+              data-ideation-delete-theme
+              aria-haspopup="dialog"
+              aria-controls="delete-theme-confirm-modal"
+            >
+              <img src="/images/delete-icon.png" alt="" class="ideation-delete-btn__icon" aria-hidden="true">
+              <span>Delete Theme</span>
+            </button>
+          </div>
+          <button type="button" class="ideation-idea-gen-tutorial" data-idea-gen-tutorial>Tutorial?</button>
+        </div>
+        <input type="hidden" name="ideationPayload" value="" data-ideation-payload>
+      </form>
+    </div>
+    <script type="application/json" id="ideaGenInitialState"><%- ideaGenStateJson %></script>
+  </div>
+</div>
+<div id="delete-theme-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-theme-confirm-title" aria-describedby="delete-theme-confirm-desc" hidden>
+  <div class="delete-confirm-backdrop"></div>
+  <div class="delete-confirm-dialog">
+    <h3 id="delete-theme-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+    <p id="delete-theme-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this theme?</p>
+    <div class="delete-confirm-actions">
+      <button type="button" class="delete-confirm-cancel" id="delete-theme-confirm-cancel">Cancel</button>
+      <button type="button" class="delete-confirm-delete" id="delete-theme-confirm-delete">Delete</button>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/ideationIdeaGeneration.js"></script>

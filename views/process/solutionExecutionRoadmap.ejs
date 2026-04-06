@@ -1,0 +1,189 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId ? String(problemId) : '';
+  const backToPhase = pid ? `/process/${pid}/conceptual-solution` : '/dashboard';
+  const blueprintDone = !!(problem && problem.conceptualSolutionBlueprintSubmitted);
+  const marketLogicDone = !!(problem && problem.conceptualSolutionMarketLogicSubmitted);
+  const executionRoadmapDone = !!(problem && problem.conceptualSolutionExecutionRoadmapSubmitted);
+  const er = problem && problem.conceptualSolutionData && problem.conceptualSolutionData.executionRoadmap
+    ? problem.conceptualSolutionData.executionRoadmap
+    : {};
+  const targetUsersForTesting = Array.isArray(er.targetUsersForTesting) && er.targetUsersForTesting.length ? er.targetUsersForTesting : [''];
+  const keyFeaturesToBeBuilt = Array.isArray(er.keyFeaturesToBeBuilt) && er.keyFeaturesToBeBuilt.length ? er.keyFeaturesToBeBuilt : [''];
+  const developmentPlanSteps = Array.isArray(er.developmentPlanSteps) && er.developmentPlanSteps.length ? er.developmentPlanSteps : [''];
+  const developmentPlanCompletionDates = Array.isArray(er.developmentPlanCompletionDates) && er.developmentPlanCompletionDates.length ? er.developmentPlanCompletionDates : [''];
+  const developmentRows = Math.max(developmentPlanSteps.length, developmentPlanCompletionDates.length, 1);
+  const financeComponents = Array.isArray(er.financeComponents) && er.financeComponents.length ? er.financeComponents : [''];
+  const financeComponentCosts = Array.isArray(er.financeComponentCosts) && er.financeComponentCosts.length ? er.financeComponentCosts : [''];
+  const financeRows = Math.max(financeComponents.length, financeComponentCosts.length, 1);
+%>
+
+<div class="excite-enrol-page groundwork-page solution-roadmap-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="/process/<%= pid %>/conceptual-solution/blueprint" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= blueprintDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="blueprint" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. The Blueprint</span>
+      </a>
+      <a href="/process/<%= pid %>/conceptual-solution/market-logic" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= marketLogicDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="marketLogic" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Market Logic</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= executionRoadmapDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-solution-pill="executionRoadmap" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Execution Roadmap</span>
+      </span>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Execution Roadmap</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/conceptual-solution/execution-roadmap" method="POST" class="solution-roadmap-form" data-solution-page="executionRoadmap" novalidate>
+        <input type="hidden" name="solutionAjax" value="1">
+
+        <section class="solution-roadmap-section">
+          <h2 class="pd-pr-subheading">Target Users for Testing</h2>
+          <div class="pd-repeat-section solution-roadmap-repeat" data-field="targetUsersForTesting" data-placeholder="e.g., 20 small scale dairy farmers in rural Maharashtra.">
+            <div class="pd-repeat-stack">
+              <% targetUsersForTesting.forEach(function (line, idx) { %>
+                <div class="pd-repeat-row">
+                  <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                    <button type="button" class="pd-repeat-remove" style="display: <%= targetUsersForTesting.length >= 2 ? 'flex' : 'none' %>">
+                      <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                    </button>
+                    <textarea class="form-control" name="targetUsersForTesting[]" rows="4" placeholder="e.g., 20 small scale dairy farmers in rural Maharashtra." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+            <div class="solution-market-plus-wrap">
+              <button type="button" class="pd-add-field solution-add-btn" aria-label="Add target users row">
+                <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="solution-roadmap-section">
+          <h2 class="pd-pr-subheading">Key Features to be Built</h2>
+          <div class="pd-repeat-section solution-roadmap-repeat" data-field="keyFeaturesToBeBuilt" data-placeholder="e.g., Low cost temperature sensors and an offline sync mobile dashboard.">
+            <div class="pd-repeat-stack solution-roadmap-grid3">
+              <% keyFeaturesToBeBuilt.forEach(function (line, idx) { %>
+                <div class="pd-repeat-row">
+                  <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                    <button type="button" class="pd-repeat-remove" style="display: <%= keyFeaturesToBeBuilt.length >= 2 ? 'flex' : 'none' %>">
+                      <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                    </button>
+                    <textarea class="form-control" name="keyFeaturesToBeBuilt[]" rows="4" placeholder="e.g., Low cost temperature sensors and an offline sync mobile dashboard." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                  </div>
+                </div>
+              <% }) %>
+              <button type="button" class="pd-add-field solution-add-btn solution-plus-btn--grid" aria-label="Add key feature row">
+                <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="solution-roadmap-section">
+          <h2 class="pd-pr-subheading">Development Plan &amp; Timeline</h2>
+          <div class="solution-roadmap-dev-grid">
+            <% for (let i = 0; i < developmentRows; i++) { %>
+              <article class="solution-roadmap-dev-item">
+                <div class="solution-roadmap-dev-item-head">
+                  <span class="solution-roadmap-dev-index"><%= i + 1 %>.</span>
+                  <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                    <button type="button" class="pd-repeat-remove" style="display: <%= developmentRows >= 2 ? 'flex' : 'none' %>">
+                      <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                    </button>
+                    <textarea class="form-control" name="developmentPlanSteps[]" rows="4" placeholder="e.g., Finalizing circuit design and sourcing  housing materials." <%= i === 0 ? 'required' : '' %>><%= developmentPlanSteps[i] || '' %></textarea>
+                  </div>
+                </div>
+                <label class="solution-roadmap-date-label">Completion Date</label>
+                <div class="pd-sm-date-field solution-roadmap-date-field">
+                  <button type="button" class="pd-sm-date-pill">Select Date</button>
+                  <span class="pd-sm-date-text" aria-hidden="true"></span>
+                  <input type="date" class="form-control pd-sm-date-native" name="developmentPlanCompletionDates[]" value="<%= developmentPlanCompletionDates[i] || '' %>" tabindex="-1" aria-label="Completion date row <%= i + 1 %>" <%= i === 0 ? 'required' : '' %>>
+                </div>
+              </article>
+            <% } %>
+            <button type="button" class="pd-add-field solution-add-btn solution-plus-btn--grid" data-roadmap-dev-add aria-label="Add development plan row">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </section>
+
+        <section class="solution-roadmap-section">
+          <h2 class="pd-pr-subheading">Finances</h2>
+          <div class="solution-roadmap-finance-head">
+            <div>Component</div>
+            <div>Component Cost</div>
+          </div>
+          <div class="solution-roadmap-finance-list">
+            <% for (let i = 0; i < financeRows; i++) { %>
+              <div class="solution-roadmap-finance-block">
+                <div class="solution-roadmap-finance-remove-strip">
+                  <button type="button" class="solution-roadmap-finance-remove pd-repeat-remove" style="display: <%= financeRows >= 2 ? 'flex' : 'none' %>" aria-label="Remove this finance row">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                </div>
+                <div class="solution-roadmap-finance-row">
+                  <div class="solution-roadmap-finance-index"><%= i + 1 %>.</div>
+                  <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                    <input class="form-control" type="text" name="financeComponents[]" placeholder="e.g., Circuit Boards" value="<%= financeComponents[i] || '' %>" <%= i === 0 ? 'required' : '' %>>
+                  </div>
+                  <div class="solution-roadmap-rs">Rs.</div>
+                  <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                    <input class="form-control" type="text" name="financeComponentCosts[]" placeholder="e.g., ₹400" value="<%= financeComponentCosts[i] || '' %>" <%= i === 0 ? 'required' : '' %>>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+          <div class="solution-market-plus-wrap solution-roadmap-finance-add-wrap">
+            <button type="button" class="pd-add-field solution-add-btn" data-roadmap-finance-add aria-label="Add finance row">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+
+          <div class="solution-roadmap-kpi-grid">
+            <section>
+              <h4 class="solution-market-business-label">Prototype Cost</h4>
+              <div class="solution-roadmap-rs-input">
+                <span class="solution-roadmap-rs">Rs.</span>
+                <input class="form-control" type="text" name="prototypeCost" placeholder="e.g., ₹2,500" value="<%= er.prototypeCost || '' %>" required>
+              </div>
+            </section>
+            <section>
+              <h4 class="solution-market-business-label">Market Launch Price</h4>
+              <div class="solution-roadmap-rs-input">
+                <span class="solution-roadmap-rs">Rs.</span>
+                <input class="form-control" type="text" name="marketLaunchPrice" placeholder="e.g., ₹3,499" value="<%= er.marketLaunchPrice || '' %>" required>
+              </div>
+            </section>
+            <section>
+              <h4 class="solution-market-business-label">Unit Margin</h4>
+              <div class="solution-roadmap-rs-input">
+                <span class="solution-roadmap-rs">Rs.</span>
+                <input class="form-control" type="text" name="unitMargin" placeholder="e.g., ₹1,200" value="<%= er.unitMargin || '' %>" required>
+              </div>
+              <p class="solution-roadmap-hint">Hint: Price - Cost = Profit</p>
+            </section>
+          </div>
+        </section>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/solutionExecutionRoadmap.js"></script>

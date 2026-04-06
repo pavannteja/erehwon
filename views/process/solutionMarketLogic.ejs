@@ -1,0 +1,197 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId ? String(problemId) : '';
+  const backToPhase = pid ? `/process/${pid}/conceptual-solution` : '/dashboard';
+  const blueprintDone = !!(problem && problem.conceptualSolutionBlueprintSubmitted);
+  const marketLogicDone = !!(problem && problem.conceptualSolutionMarketLogicSubmitted);
+  const executionRoadmapDone = !!(problem && problem.conceptualSolutionExecutionRoadmapSubmitted);
+  const ml = problem && problem.conceptualSolutionData && problem.conceptualSolutionData.marketLogic
+    ? problem.conceptualSolutionData.marketLogic
+    : {};
+  const competitors = Array.isArray(ml.competitors) && ml.competitors.length ? ml.competitors : [''];
+  const competitorAdvantage = Array.isArray(ml.competitorAdvantage) && ml.competitorAdvantage.length ? ml.competitorAdvantage : [''];
+  const ourEdge = Array.isArray(ml.ourEdge) && ml.ourEdge.length ? ml.ourEdge : [''];
+  const whoPays = Array.isArray(ml.whoPays) && ml.whoPays.length ? ml.whoPays : [''];
+  const revenueModel = Array.isArray(ml.revenueModel) && ml.revenueModel.length ? ml.revenueModel : [''];
+  const pricingStrategy = Array.isArray(ml.pricingStrategy) && ml.pricingStrategy.length ? ml.pricingStrategy : [''];
+%>
+
+<div class="excite-enrol-page groundwork-page solution-market-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="/process/<%= pid %>/conceptual-solution/blueprint" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= blueprintDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="blueprint" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. The Blueprint</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= marketLogicDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-solution-pill="marketLogic" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Market Logic</span>
+      </span>
+      <a href="/process/<%= pid %>/conceptual-solution/execution-roadmap" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= executionRoadmapDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="executionRoadmap" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Execution Roadmap</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Market Logic</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/conceptual-solution/market-logic" method="POST" class="solution-market-form" data-solution-page="marketLogic" novalidate>
+        <input type="hidden" name="solutionAjax" value="1">
+
+        <h2 class="pd-pr-subheading">Who are your competitors?</h2>
+        <div class="pd-repeat-section solution-market-repeat" data-field="competitors" data-placeholder="e.g., Established logistics giants and local courier startups. (Mention company names if applicable)">
+          <div class="pd-repeat-stack">
+            <% competitors.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" style="display: <%= competitors.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="competitors[]" rows="4" placeholder="e.g., Established logistics giants and local courier startups. (Mention company names if applicable)" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <div class="solution-market-plus-wrap">
+            <button type="button" class="pd-add-field solution-add-btn" aria-label="Add another competitor">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="solution-market-split">
+          <section class="solution-market-panel solution-market-panel--muted">
+            <h3 class="pd-pr-subheading">Competitor's Advantage</h3>
+            <div class="pd-repeat-section solution-market-repeat" data-field="competitorAdvantage" data-placeholder="e.g., Deep market penetration and massive existing physical infrastructure.">
+              <div class="pd-repeat-stack">
+                <% competitorAdvantage.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" style="display: <%= competitorAdvantage.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="competitorAdvantage[]" rows="4" placeholder="e.g., Deep market penetration and massive existing physical infrastructure." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="solution-market-plus-wrap">
+                <button type="button" class="pd-add-field solution-add-btn" aria-label="Add competitor advantage">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="solution-market-panel solution-market-panel--accent">
+            <h3 class="pd-pr-subheading">Our Edge</h3>
+            <div class="pd-repeat-section solution-market-repeat" data-field="ourEdge" data-placeholder="e.g., Proprietary AI that reduces operational friction by 40%.">
+              <div class="pd-repeat-stack">
+                <% ourEdge.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" style="display: <%= ourEdge.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="ourEdge[]" rows="4" placeholder="e.g., Proprietary AI that reduces operational friction by 40%." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="solution-market-plus-wrap">
+                <button type="button" class="pd-add-field solution-add-btn" aria-label="Add our edge">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <h2 class="pd-pr-subheading solution-market-business-title">Business Model</h2>
+        <div class="solution-market-business-grid">
+          <section class="solution-market-business-col">
+            <h4 class="solution-market-business-label">Who pays?</h4>
+            <div class="pd-repeat-section solution-market-repeat" data-field="whoPays" data-placeholder="e.g., Large scale e-commerce platforms and supply chain managers.">
+              <div class="pd-repeat-stack">
+                <% whoPays.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" style="display: <%= whoPays.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="whoPays[]" rows="4" placeholder="e.g., Large scale e-commerce platforms and supply chain managers." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="solution-market-plus-wrap">
+                <button type="button" class="pd-add-field solution-add-btn" aria-label="Add who pays entry">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="solution-market-business-col">
+            <h4 class="solution-market-business-label">What is the Revenue Model?</h4>
+            <div class="pd-repeat-section solution-market-repeat" data-field="revenueModel" data-placeholder="e.g., Tiered subscription (SaaS) with a small per transaction fee.">
+              <div class="pd-repeat-stack">
+                <% revenueModel.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" style="display: <%= revenueModel.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="revenueModel[]" rows="4" placeholder="e.g., Tiered subscription (SaaS) with a small per transaction fee." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="solution-market-plus-wrap">
+                <button type="button" class="pd-add-field solution-add-btn" aria-label="Add revenue model entry">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="solution-market-business-col">
+            <h4 class="solution-market-business-label">What is the Pricing Strategy?</h4>
+            <div class="pd-repeat-section solution-market-repeat" data-field="pricingStrategy" data-placeholder="e.g., Value-Based pricing that scales with the user’s cost savings.">
+              <div class="pd-repeat-stack">
+                <% pricingStrategy.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" style="display: <%= pricingStrategy.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="pricingStrategy[]" rows="4" placeholder="e.g., Value-Based pricing that scales with the user’s cost savings." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+              <div class="solution-market-plus-wrap">
+                <button type="button" class="pd-add-field solution-add-btn" aria-label="Add pricing strategy entry">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/solutionMarketLogic.js"></script>

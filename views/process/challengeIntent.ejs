@@ -1,0 +1,136 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/problem-discovery`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= challengeSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-pd-pill="challenge" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Challenge &amp; Intent</span>
+      </span>
+      <a href="/process/<%= pid %>/problem-discovery/problem-research" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= researchSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="research" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Problem Research</span>
+      </a>
+      <a href="/process/<%= pid %>/problem-discovery/stakeholder-mapping" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= stakeholdersSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="stakeholders" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Stakeholder Mapping</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Challenge &amp; Intent</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/problem-discovery/challenge-intent" method="POST" novalidate class="validated-form challenge-intent-form problem-discovery-ajax-form" data-pd-page="challenge">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="challengeChosen">Challenge Chosen</label>
+            <input class="form-control" type="text" id="challengeChosen" name="challengeChosen" value="<%= challengeChosen %>" placeholder="The challenge name" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="industrySector">Industry/Sector</label>
+            <input class="form-control" type="text" id="industrySector" name="industrySector" value="<%= industrySector %>" placeholder="The industry/sector" required>
+          </div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="whyMattersToday" data-placeholder="e.g., Resource scarcity in this sector is hitting a 10-year critical peak.">
+          <label class="form-label">Why does this challenge matter today?</label>
+          <div class="pd-repeat-stack">
+            <% whyLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= whyLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="whyMattersToday[]" rows="4" placeholder="e.g., Resource scarcity in this sector is hitting a 10-year critical peak." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap">
+            <button type="button" class="pd-add-field" aria-label="Add another answer">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="existingSolutions" data-placeholder="e.g., Current manual sorting processes and standard logistics tools.">
+          <label class="form-label">What solutions exist for the chosen problem?</label>
+          <div class="pd-repeat-stack">
+            <% solutionsLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= solutionsLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="existingSolutions[]" rows="4" placeholder="e.g., Current manual sorting processes and standard logistics tools." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap">
+            <button type="button" class="pd-add-field" aria-label="Add another answer">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="whatsMissing" data-placeholder="e.g., Real-time data visibility and automated feedback loops.">
+          <label class="form-label">What is missing in the current solutions?</label>
+          <div class="pd-repeat-stack">
+            <% missingLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= missingLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="whatsMissing[]" rows="4" placeholder="e.g., Real-time data visibility and automated feedback loops." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap">
+            <button type="button" class="pd-add-field" aria-label="Add another answer">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="motivation" data-placeholder="e.g., To bridge the gap between classroom theory and industry reality.">
+          <label class="form-label">Why are you motivated to work on this?</label>
+          <div class="pd-repeat-stack">
+            <% motivationLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= motivationLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="motivation[]" rows="4" placeholder="e.g., To bridge the gap between classroom theory and industry reality." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap">
+            <button type="button" class="pd-add-field" aria-label="Add another answer">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Submit for Approval</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/challengeIntentRepeat.js"></script>
+<script src="/javascripts/problemDiscoveryForms.js"></script>

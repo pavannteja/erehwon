@@ -50,6 +50,12 @@
             <a href="/corporate-problems/<%= corporateProblem._id %>/edit" class="corporate-problem-detail-edit-btn">
                 <img src="/images/edit-icon.png" alt="" class="corporate-problem-detail-edit-icon" aria-hidden="true"><span>Edit</span>
             </a>
+            <% } else if (currentUser) { %>
+            <form action="/corporate-problems/<%= corporateProblem._id %>/adopt" method="POST" class="corporate-problem-detail-adopt-form">
+                <button type="submit" class="corporate-problem-detail-adopt-btn">
+                    <img src="/images/adopt-icon.webp" alt="" class="corporate-problem-detail-adopt-icon" aria-hidden="true"><span>Adopt</span>
+                </button>
+            </form>
             <% } %>
             <p class="corporate-problem-detail-adopted-copy">10+ students have adopted this mission</p>
         </footer>

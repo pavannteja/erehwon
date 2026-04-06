@@ -1,0 +1,109 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId ? String(problemId) : '';
+  const backToPhase = pid ? `/process/${pid}/conceptual-solution` : '/dashboard';
+  const blueprintDone = !!(problem && problem.conceptualSolutionBlueprintSubmitted);
+  const marketLogicDone = !!(problem && problem.conceptualSolutionMarketLogicSubmitted);
+  const executionRoadmapDone = !!(problem && problem.conceptualSolutionExecutionRoadmapSubmitted);
+  const bp = problem && problem.conceptualSolutionData && problem.conceptualSolutionData.blueprint
+    ? problem.conceptualSolutionData.blueprint
+    : {};
+  const keyFeatures = (bp.keyFeatures && bp.keyFeatures.length ? bp.keyFeatures : ['']);
+  const customerJourney = (bp.customerJourney && bp.customerJourney.length ? bp.customerJourney : ['']);
+  const usp = bp.usp || '';
+%>
+
+<div class="excite-enrol-page groundwork-page solution-blueprint-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= blueprintDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-solution-pill="blueprint" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. The Blueprint</span>
+      </span>
+      <a href="/process/<%= pid %>/conceptual-solution/market-logic" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= marketLogicDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="marketLogic" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Market Logic</span>
+      </a>
+      <a href="/process/<%= pid %>/conceptual-solution/execution-roadmap" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= executionRoadmapDone ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-solution-pill="executionRoadmap" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Execution Roadmap</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">The Blueprint</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/conceptual-solution/blueprint" method="POST" enctype="multipart/form-data" class="solution-blueprint-form" data-solution-page="blueprint" novalidate>
+        <input type="hidden" name="solutionAjax" value="1">
+
+        <h2 class="pd-pr-subheading">Key Features of the Solution</h2>
+        <div class="pd-repeat-section solution-repeat-section" data-field="keyFeatures" data-show-index="0" data-placeholder="e.g., Automated drone based delivery with real-time obstacle avoidance.">
+          <div class="pd-repeat-stack solution-repeat-grid">
+            <% keyFeatures.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row solution-repeat-row">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" style="display: <%= keyFeatures.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="keyFeatures[]" rows="4" placeholder="e.g., Automated drone based delivery with real-time obstacle avoidance." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }) %>
+            <button type="button" class="pd-add-field solution-add-btn solution-plus-btn--grid" aria-label="Add another key feature">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <p class="pd-pr-subtext solution-upload-help">Upload supplementary images or files for the key features of the solution.</p>
+        <div class="solution-upload-row">
+          <label for="keyFeatureFiles" class="solution-upload-btn">Upload Features</label>
+          <span class="solution-upload-optional">(Optional)</span>
+          <input id="keyFeatureFiles" name="keyFeatureFiles" type="file" multiple hidden>
+        </div>
+
+        <h2 class="pd-pr-subheading solution-section-spacing">Unique Selling Proposition of the Solution</h2>
+        <textarea class="form-control solution-usp-textarea" name="usp" rows="4" placeholder="e.g., The only solution that operates with 99% accuracy in GPS denied urban zones." required><%= usp %></textarea>
+
+        <p class="pd-pr-subtext solution-upload-help">Upload supplementary images or files for the USP of the solution</p>
+        <div class="solution-upload-row">
+          <label for="uspFiles" class="solution-upload-btn">Upload USP</label>
+          <span class="solution-upload-optional">(Optional)</span>
+          <input id="uspFiles" name="uspFiles" type="file" multiple hidden>
+        </div>
+
+        <h2 class="pd-pr-subheading solution-section-spacing">Customer Journey of the Solution</h2>
+        <div class="pd-repeat-section solution-repeat-section" data-field="customerJourney" data-show-index="1" data-placeholder="e.g., User receives an Low Stock alert and taps the Restock button.">
+          <div class="pd-repeat-stack solution-repeat-grid">
+            <% customerJourney.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row solution-repeat-row">
+                <div class="solution-repeat-row-index"><%= idx + 1 %>.</div>
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" style="display: <%= customerJourney.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="customerJourney[]" rows="4" placeholder="e.g., User receives an Low Stock alert and taps the Restock button." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }) %>
+            <button type="button" class="pd-add-field solution-add-btn solution-plus-btn--grid" aria-label="Add another customer journey step">
+              <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/solutionBlueprint.js"></script>

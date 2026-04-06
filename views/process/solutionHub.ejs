@@ -1,0 +1,158 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cg = typeof campground !== 'undefined' && campground ? campground : (typeof problem !== 'undefined' ? problem : null);
+  const cid = cg && cg._id ? String(cg._id) : null;
+  const blueprintDone = !!(cg && cg.conceptualSolutionBlueprintSubmitted);
+  const marketLogicDone = !!(cg && cg.conceptualSolutionMarketLogicSubmitted);
+  const executionRoadmapDone = !!(cg && cg.conceptualSolutionExecutionRoadmapSubmitted);
+  const phase6Complete = blueprintDone && marketLogicDone && executionRoadmapDone;
+  const backUrl = cid ? `/problems/${cid}` : '/dashboard';
+  const missionLaunchUrl = cid ? `/excite-and-enrol?campgroundId=${cid}` : '/excite-and-enrol';
+  const problemDiscoveryUrl = cid ? `/process/${cid}/problem-discovery` : '#';
+  const analysisUrl = cid ? `/process/${cid}/analysis` : '#';
+  const ideationUrl = cid ? `/process/${cid}/ideation` : '#';
+  const convergeUrl = cid ? `/process/${cid}/converge-ideas` : '#';
+  const nextStepUrl = cid ? `/prototyping/${cid}` : '#';
+%>
+<div class="mission-launch-page">
+  <nav class="mission-launch-timeline" aria-label="Phase progress">
+    <ul class="mission-launch-timeline__list">
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= missionLaunchUrl %>" class="mission-launch-timeline__circle" aria-label="Open Mission Launch">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Mission Launch</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= problemDiscoveryUrl %>" class="mission-launch-timeline__circle" aria-label="Open Problem Discovery">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Problem Discovery</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= analysisUrl %>" class="mission-launch-timeline__circle" aria-label="Open Analysis">
+            <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Analysis</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= ideationUrl %>" class="mission-launch-timeline__circle" aria-label="Open Ideation">
+            <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Ideation</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= convergeUrl %>" class="mission-launch-timeline__circle" aria-label="Open Converge">
+            <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Converge</span>
+      </li>
+      <li class="mission-launch-timeline__phase mission-launch-timeline__phase--active">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/solution-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Solution</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= nextStepUrl %>" class="mission-launch-timeline__circle" aria-label="Open Prototype">
+            <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Prototype</span>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="mission-launch-main">
+    <div class="mission-launch-header">
+      <h1 class="mission-launch-title">Phase 6: Solution</h1>
+      <a href="<%= backUrl %>" class="mission-launch-back">Back to Project Overview</a>
+    </div>
+    <p class="mission-launch-intro">
+      Transition from features to action. Build a robust "Success Model" that doesn't just fix a problem, but creates a new industry standard through logic and execution.
+    </p>
+
+    <div class="mission-launch-cards">
+      <section class="mission-launch-card<%= blueprintDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">1. The Blueprint</h2>
+        <p class="mission-launch-card__desc">Define your breakthrough. Detail the features, customer journey, and unique selling points that make your solution the new standard for the industry.</p>
+        <a href="/process/<%= cid %>/conceptual-solution/blueprint" class="mission-launch-card__btn">
+          <span>Draft Blueprint</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+
+      <section class="mission-launch-card<%= marketLogicDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">2. Market Logic</h2>
+        <p class="mission-launch-card__desc">Solidify your solution. Map out the competitive landscape and build a sustainable business model to ensure your solution thrives in the real world.</p>
+        <a href="/process/<%= cid %>/conceptual-solution/market-logic" class="mission-launch-card__btn">
+          <span>Map Logic</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+
+      <section class="mission-launch-card<%= executionRoadmapDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">3. Execution Roadmap</h2>
+        <p class="mission-launch-card__desc">Plan the build. Outline your prototype development path and crunch the unit economics to prove your solution is as viable as it is innovative.</p>
+        <a href="/process/<%= cid %>/conceptual-solution/execution-roadmap" class="mission-launch-card__btn">
+          <span>Build Roadmap</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+    </div>
+
+    <p class="mission-launch-unlock<%= phase6Complete ? ' mission-launch-unlock--complete' : '' %>">
+      <% if (phase6Complete) { %>
+        Congratulations you have unlocked Phase 7: Prototype!
+      <% } else { %>
+        Complete the above sub-steps to unlock Phase 7: Prototype.
+      <% } %>
+    </p>
+
+    <div class="mission-launch-next-wrap">
+      <% if (phase6Complete && cid) { %>
+        <a href="<%= nextStepUrl %>" class="mission-launch-card__btn mission-launch-next-link">
+          <span>Move To Next Step</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      <% } else { %>
+        <button type="button" class="mission-launch-next" disabled aria-disabled="true">Move To Next Step</button>
+      <% } %>
+    </div>
+  </div>
+</div>

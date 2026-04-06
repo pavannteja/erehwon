@@ -1,469 +1,526 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = String(problemId || '');
+  const backUrl = pid ? `/problems/${pid}` : '/dashboard';
+  const existingFiles = (prototype && Array.isArray(prototype.files)) ? prototype.files : [];
+  const existingLinks = (prototype && Array.isArray(prototype.additionalLinks)) ? prototype.additionalLinks.filter((link) => String(link || '').trim().length > 0) : [];
+  const hasExistingFiles = existingFiles.length > 0;
+%>
 
-<style>
-.prototyping-page {
-    background: #0a0a0a;
-    min-height: 100vh;
-    padding: 40px 0;
-    color: #fff;
-}
+<div class="mission-launch-page prototype-page">
+  <nav class="mission-launch-timeline" aria-label="Phase progress">
+    <ul class="mission-launch-timeline__list">
+      <li class="mission-launch-timeline__phase">
+        <a href="/excite-and-enrol/mission-launch?campgroundId=<%= pid %>" class="mission-launch-timeline__circle" aria-label="Open Mission Launch">
+          <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Mission<br>Launch</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <a href="/process/<%= pid %>/problem-discovery" class="mission-launch-timeline__circle" aria-label="Open Problem Discovery">
+          <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Problem<br>Discovery</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <a href="/process/<%= pid %>/analysis" class="mission-launch-timeline__circle" aria-label="Open Analysis">
+          <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Analysis</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <a href="/process/<%= pid %>/ideation" class="mission-launch-timeline__circle" aria-label="Open Ideation">
+          <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Ideation</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <a href="/process/<%= pid %>/converge" class="mission-launch-timeline__circle" aria-label="Open Converge">
+          <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Converge</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <a href="/process/<%= pid %>/solution" class="mission-launch-timeline__circle" aria-label="Open Solution">
+          <img src="/images/solution-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </a>
+        <span class="mission-launch-timeline__label">Solution</span>
+      </li>
+      <li class="mission-launch-timeline__phase mission-launch-timeline__phase--active">
+        <span class="mission-launch-timeline__circle" aria-current="step">
+          <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Prototype</span>
+      </li>
+    </ul>
+  </nav>
 
-.prototyping-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.prototyping-header {
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-.prototyping-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 12px;
-}
-
-.prototyping-subtitle {
-    font-size: 1.1rem;
-    color: #888;
-}
-
-.prototyping-content {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 30px;
-}
-
-.info-card {
-    background: #111;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.info-card h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.info-card h3 i {
-    color: #ffde00;
-}
-
-.info-card p {
-    color: #aaa;
-    line-height: 1.6;
-}
-
-.prototype-form-card {
-    background: #111;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 30px;
-}
-
-.form-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.form-title i {
-    color: #ffde00;
-}
-
-.form-group {
-    margin-bottom: 24px;
-}
-
-.form-label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 8px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 16px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #ffde00;
-    box-shadow: 0 0 0 3px rgba(255, 222, 0, 0.1);
-}
-
-.form-control::placeholder {
-    color: #666;
-}
-
-.form-text {
-    display: block;
-    margin-top: 6px;
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.btn-submit {
-    background: #ffde00;
-    color: #000;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    justify-content: center;
-}
-
-.btn-submit:hover {
-    background: #e6c800;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 222, 0, 0.3);
-}
-
-.prototype-files-card {
-    background: #111;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 30px;
-    margin-top: 24px;
-}
-
-.files-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.file-item {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.file-item:hover {
-    border-color: #ffde00;
-    transform: translateY(-2px);
-}
-
-.file-preview {
-    width: 100%;
-    height: 150px;
-    background: #0a0a0a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.file-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.file-preview.file-icon {
-    font-size: 3rem;
-    color: #ffde00;
-}
-
-.file-info {
-    padding: 16px;
-}
-
-.file-name {
-    font-size: 0.85rem;
-    color: #aaa;
-    margin: 0 0 12px 0;
-    word-break: break-all;
-    line-height: 1.4;
-}
-
-.btn-delete-file {
-    background: transparent;
-    border: 1px solid #444;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.btn-delete-file:hover {
-    border-color: #dc3545;
-    color: #dc3545;
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.sidebar-section {
-    background: #111;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.sidebar-section h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sidebar-section h3 i {
-    color: #ffde00;
-}
-
-.instructions-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.instructions-list li {
-    color: #aaa;
-    font-size: 0.9rem;
-    line-height: 1.8;
-    padding-left: 24px;
-    position: relative;
-    margin-bottom: 12px;
-}
-
-.instructions-list li:before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: #ffde00;
-    font-weight: bold;
-}
-
-.empty-files {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
-
-.empty-files i {
-    font-size: 3rem;
-    color: #333;
-    margin-bottom: 16px;
-}
-
-@media (max-width: 992px) {
-    .prototyping-content {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
-<div class="prototyping-page">
-    <div class="prototyping-container">
-        <div class="prototyping-header">
-            <h1 class="prototyping-title">Prototyping</h1>
-            <p class="prototyping-subtitle">Upload your prototype files and document your progress</p>
-        </div>
-
-        <div class="prototyping-content">
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Problem Info Card -->
-                <div class="info-card">
-                    <h3><i class="fas fa-lightbulb"></i> <%= problem.title %></h3>
-                    <% if (problem.description) { %>
-                        <p><%= problem.description.substring(0, 200) %><%= problem.description.length > 200 ? '...' : '' %></p>
-                    <% } else if (problem.problem) { %>
-                        <p><%= problem.problem.substring(0, 200) %><%= problem.problem.length > 200 ? '...' : '' %></p>
-                    <% } %>
-                </div>
-
-                <!-- Prototype Form -->
-                <div class="prototype-form-card">
-                    <h2 class="form-title">
-                        <i class="fas fa-upload"></i> Upload Your Prototype
-                    </h2>
-                    
-                    <form action="/prototyping/<%= problemId %>" method="POST" enctype="multipart/form-data" id="prototypeForm">
-                        <div class="form-group">
-                            <label for="prototypeTitle" class="form-label">Prototype Title</label>
-                            <input type="text" class="form-control" id="prototypeTitle" name="title" 
-                                value="<%= prototype ? (prototype.title || '') : '' %>" 
-                                placeholder="Enter a title for your prototype" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="prototypeDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="prototypeDescription" name="description" rows="4" 
-                                placeholder="Describe your prototype, its features, and how it solves the problem..."><%= prototype ? (prototype.description || '') : '' %></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="prototypeFiles" class="form-label">Upload Files</label>
-                            <input type="file" class="form-control" id="prototypeFiles" name="prototypeFiles" 
-                                multiple accept="image/*,video/*,.pdf,.doc,.docx,.zip,.rar,.7z">
-                            <small class="form-text">You can upload images, videos, documents (PDF, Word), or compressed files (ZIP, RAR)</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="prototypeNotes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="prototypeNotes" name="notes" rows="4" 
-                                placeholder="Add any additional notes about your prototype, testing results, or feedback..."><%= prototype ? (prototype.notes || '') : '' %></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-submit">
-                            <i class="fas fa-save"></i> Save Prototype
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Existing Prototype Files -->
-                <div class="prototype-files-card">
-                    <h2 class="form-title">
-                        <i class="fas fa-folder-open"></i> Uploaded Files
-                    </h2>
-                    <% if (prototype && prototype.files && prototype.files.length > 0) { %>
-                        <div class="files-grid">
-                            <% prototype.files.forEach((file, index) => { %>
-                                <div class="file-item">
-                                    <% if (file.fileType === 'image') { %>
-                                        <div class="file-preview">
-                                            <img src="<%= file.url %>" alt="Prototype file">
-                                        </div>
-                                    <% } else if (file.fileType === 'video') { %>
-                                        <div class="file-preview file-icon">
-                                            <i class="fas fa-video"></i>
-                                        </div>
-                                    <% } else { %>
-                                        <div class="file-preview file-icon">
-                                            <i class="fas fa-file"></i>
-                                        </div>
-                                    <% } %>
-                                    <div class="file-info">
-                                        <p class="file-name"><%= file.filename %></p>
-                                        <button type="button" class="btn-delete-file" data-file-index="<%= index %>">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            <% }) %>
-                        </div>
-                    <% } else { %>
-                        <div class="empty-files">
-                            <i class="fas fa-folder-open"></i>
-                            <p>No files uploaded yet. Upload your prototype files above.</p>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-info-circle"></i> Instructions</h3>
-                    <ul class="instructions-list">
-                        <li>Upload images, videos, or documents of your prototype</li>
-                        <li>Provide a clear title and description</li>
-                        <li>Add notes about testing and feedback</li>
-                        <li>You can upload multiple files</li>
-                        <li>Files can be deleted individually</li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-check-circle"></i> Success Criteria</h3>
-                    <p style="color: #aaa; font-size: 0.9rem; line-height: 1.6;">
-                        Upload at least one prototype file to complete this phase. Your prototype should demonstrate how your solution addresses the problem.
-                    </p>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3><i class="fas fa-file-upload"></i> Supported Formats</h3>
-                    <ul class="instructions-list">
-                        <li>Images: JPG, PNG, GIF</li>
-                        <li>Videos: MP4, MOV, AVI</li>
-                        <li>Documents: PDF, DOC, DOCX</li>
-                        <li>Archives: ZIP, RAR, 7Z</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+  <div class="mission-launch-main prototype-main">
+    <div class="mission-launch-header prototype-header">
+      <h1 class="mission-launch-title prototype-title">Phase 7: Prototype</h1>
+      <a href="<%= backUrl %>" class="mission-launch-back">Back to Project Overview</a>
     </div>
+
+    <form
+      action="/prototyping/<%= pid %>"
+      method="POST"
+      enctype="multipart/form-data"
+      id="prototypeForm"
+      class="prototype-form-shell"
+      data-existing-count="<%= existingFiles.length %>"
+    >
+      <input type="hidden" name="title" value="<%= (prototype && prototype.title) ? prototype.title : 'Prototype' %>">
+      <input type="hidden" name="prototypeAjax" value="1">
+
+      <section class="prototype-upload-card">
+        <div class="prototype-dropzone" id="prototypeDropzone">
+          <input
+            id="prototypeFiles"
+            name="prototypeFiles"
+            type="file"
+            multiple
+            accept=".jpg,.jpeg,.png,.pdf,.mp4,image/jpeg,image/png,application/pdf,video/mp4"
+            hidden
+          >
+          <i class="bi bi-cloud-arrow-up prototype-dropzone__icon" aria-hidden="true"></i>
+          <i class="bi bi-file-earmark-text prototype-dropzone__file-icon" aria-hidden="true"></i>
+          <p class="prototype-dropzone__file-name" id="prototypeDropzoneFileName"></p>
+          <p class="prototype-dropzone__title">Choose a file or drag &amp; drop it here.</p>
+          <p class="prototype-dropzone__subtitle">JPEG, PNG, PDF, and MP4 formats, up to 5MB.</p>
+          <button type="button" class="prototype-dropzone__btn groundwork-submit-btn" id="prototypeBrowseBtn">Browse File</button>
+        </div>
+      </section>
+
+      <p class="prototype-file-error" id="prototypeFileError" role="alert" aria-live="polite"></p>
+      <ul class="prototype-selected-files" id="prototypeSelectedFiles" aria-live="polite"></ul>
+
+      <section class="prototype-links-block">
+        <h2 class="prototype-links-title">Additional Links <span class="prototype-links-title__optional">(Optional)</span></h2>
+        <div id="prototypeLinksRows" class="prototype-links-rows">
+          <% if (existingLinks.length > 0) { %>
+            <% existingLinks.forEach((link, index) => { %>
+              <div class="prototype-link-row">
+                <input type="url" class="form-control prototype-link-input" name="additionalLinks[]" placeholder="Paste Link" value="<%= link %>">
+                <button type="button" class="prototype-link-remove" aria-label="Remove link" style="display: <%= existingLinks.length > 1 ? 'inline-flex' : 'none' %>;">
+                  <img src="/images/challenge-intent-close.png" alt="" class="prototype-link-remove__icon" width="13" height="13" aria-hidden="true">
+                </button>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="prototype-link-row">
+              <input type="url" class="form-control prototype-link-input" name="additionalLinks[]" placeholder="Paste Link">
+              <button type="button" class="prototype-link-remove" aria-label="Remove link" style="display: none;">
+                <img src="/images/challenge-intent-close.png" alt="" class="prototype-link-remove__icon" width="13" height="13" aria-hidden="true">
+              </button>
+            </div>
+          <% } %>
+        </div>
+        <div class="prototype-plus-wrap">
+          <button type="button" class="prototype-plus-btn pd-add-field solution-add-btn" id="prototypeAddLinkBtn" aria-label="Add another link">
+            <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+          </button>
+        </div>
+      </section>
+
+      <div class="prototype-save-wrap">
+        <button type="submit" class="groundwork-submit-btn prototype-save-btn">
+          <span class="groundwork-submit-btn__text">Save</span>
+          <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+
+    <section class="prototype-files-list">
+      <% if (hasExistingFiles) { %>
+        <h3 class="prototype-files-list__title">Attached Files</h3>
+        <div class="prototype-file-chips">
+          <% existingFiles.forEach((file, index) => { %>
+            <article class="prototype-file-chip">
+              <a href="<%= file.url %>" class="prototype-file-chip__name" target="_blank" rel="noopener noreferrer"><%= file.filename %></a>
+              <button type="button" class="prototype-file-chip__delete btn-delete-file" data-file-index="<%= index %>" aria-label="Delete file <%= file.filename %>">
+                <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" aria-hidden="true">
+              </button>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </div>
+</div>
+
+<div id="prototype-delete-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="prototype-delete-confirm-title" aria-describedby="prototype-delete-confirm-desc" hidden>
+  <div class="delete-confirm-backdrop"></div>
+  <div class="delete-confirm-dialog">
+    <h3 id="prototype-delete-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+    <p id="prototype-delete-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this attached file?</p>
+    <div class="delete-confirm-actions">
+      <button type="button" class="delete-confirm-cancel" id="prototype-delete-confirm-cancel">Cancel</button>
+      <button type="button" class="delete-confirm-delete" id="prototype-delete-confirm-delete">Delete</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// Handle file deletion
-document.querySelectorAll('.btn-delete-file').forEach(btn => {
-    btn.addEventListener('click', async function() {
-        const fileIndex = this.getAttribute('data-file-index');
-        const problemId = '<%= problemId %>';
-        
-        if (!confirm('Are you sure you want to delete this file?')) {
-            return;
-        }
-        
-        try {
-            const response = await fetch(`/prototyping/${problemId}/file/${fileIndex}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.ok) {
-                location.reload();
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to delete file');
-            }
-        } catch (error) {
-            console.error('Error deleting file:', error);
-            alert('Failed to delete file. Please try again.');
-        }
-    });
-});
+(function () {
+  const MIN_LOADING_MS = 2000;
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+  const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'application/pdf', 'video/mp4']);
+  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'pdf', 'mp4']);
 
-// File input preview
-const fileInput = document.getElementById('prototypeFiles');
-if (fileInput) {
-    fileInput.addEventListener('change', function(e) {
-        const files = e.target.files;
-        if (files.length > 0) {
-            console.log(`${files.length} file(s) selected for upload`);
-        }
+  const form = document.getElementById('prototypeForm');
+  const fileInput = document.getElementById('prototypeFiles');
+  const fileError = document.getElementById('prototypeFileError');
+  const selectedFilesList = document.getElementById('prototypeSelectedFiles');
+  const dropzone = document.getElementById('prototypeDropzone');
+  const dropzoneFileName = document.getElementById('prototypeDropzoneFileName');
+  const browseBtn = document.getElementById('prototypeBrowseBtn');
+  const addLinkBtn = document.getElementById('prototypeAddLinkBtn');
+  const linksRows = document.getElementById('prototypeLinksRows');
+  const saveBtn = form ? form.querySelector('.prototype-save-btn') : null;
+  const deleteModal = document.getElementById('prototype-delete-confirm-modal');
+  const deleteCancelBtn = document.getElementById('prototype-delete-confirm-cancel');
+  const deleteConfirmBtn = document.getElementById('prototype-delete-confirm-delete');
+  const initialAttachedFiles = <%- JSON.stringify(existingFiles || []).replace(/</g, '\\u003c') %>;
+  let pendingDeleteIndex = null;
+  let isSaving = false;
+  let currentAttachedFiles = Array.isArray(initialAttachedFiles) ? initialAttachedFiles : [];
+
+  function setButtonLoading(btn, loading) {
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.classList.toggle('groundwork-submit-btn--loading', loading);
+    btn.setAttribute('aria-busy', loading ? 'true' : 'false');
+  }
+
+  function ensureToastEl() {
+    let el = document.getElementById('mission-launch-saved-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'mission-launch-saved-toast';
+      el.className = 'mission-launch-saved-toast';
+      el.setAttribute('role', 'status');
+      el.textContent = 'Saved Successfully!';
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function showSavedToast() {
+    const el = ensureToastEl();
+    el.textContent = 'Saved Successfully!';
+    el.classList.remove('mission-launch-saved-toast--hide');
+    el.classList.add('mission-launch-saved-toast--show');
+    if (el._hideTimer) clearTimeout(el._hideTimer);
+    el._hideTimer = setTimeout(function () {
+      el.classList.remove('mission-launch-saved-toast--show');
+      el.classList.add('mission-launch-saved-toast--hide');
+    }, 5000);
+  }
+
+  function parseJson(text) {
+    try {
+      return text ? JSON.parse(text) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getExtension(filename) {
+    const parts = String(filename || '').toLowerCase().split('.');
+    return parts.length > 1 ? parts.pop() : '';
+  }
+
+  function validateFiles(files) {
+    const invalid = [];
+    for (const file of files) {
+      const ext = getExtension(file.name);
+      const validType = ALLOWED_MIME_TYPES.has(file.type) || ALLOWED_EXTENSIONS.has(ext);
+      if (!validType) {
+        invalid.push(`${file.name} unsupported format`);
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        invalid.push(`${file.name} exceeds 5MB`);
+      }
+    }
+    return invalid;
+  }
+
+  function renderSelectedFiles(files) {
+    selectedFilesList.innerHTML = '';
+    if (!files || files.length === 0) return;
+  }
+
+  function updateDropzonePreview(files) {
+    if (!files || files.length === 0) {
+      dropzone.classList.remove('has-file');
+      dropzoneFileName.textContent = '';
+      return;
+    }
+    dropzone.classList.add('has-file');
+    dropzoneFileName.textContent = files.length === 1 ? files[0].name : `${files.length} files selected`;
+  }
+
+  function renderAttachedFiles(files) {
+    const section = document.querySelector('.prototype-files-list');
+    if (!section) return;
+    const safeFiles = Array.isArray(files) ? files : [];
+    currentAttachedFiles = safeFiles;
+    if (safeFiles.length === 0) {
+      section.innerHTML = '';
+      form.setAttribute('data-existing-count', '0');
+      return;
+    }
+
+    const chips = safeFiles.map((file, index) => (
+      `<article class="prototype-file-chip">
+        <a href="${escapeHtml(file.url)}" class="prototype-file-chip__name" target="_blank" rel="noopener noreferrer">${escapeHtml(file.filename)}</a>
+        <button type="button" class="prototype-file-chip__delete btn-delete-file" data-file-index="${index}" aria-label="Delete file ${escapeHtml(file.filename)}">
+          <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" aria-hidden="true">
+        </button>
+      </article>`
+    )).join('');
+
+    section.innerHTML = `<h3 class="prototype-files-list__title">Attached Files</h3><div class="prototype-file-chips">${chips}</div>`;
+    form.setAttribute('data-existing-count', String(safeFiles.length));
+  }
+
+  function setFiles(files) {
+    const errors = validateFiles(files);
+    if (errors.length > 0) {
+      fileInput.value = '';
+      renderSelectedFiles([]);
+      updateDropzonePreview([]);
+      fileError.textContent = errors.join(' | ');
+      return false;
+    }
+
+    const dt = new DataTransfer();
+    files.forEach((file) => dt.items.add(file));
+    fileInput.files = dt.files;
+    renderSelectedFiles(Array.from(fileInput.files));
+    updateDropzonePreview(Array.from(fileInput.files));
+    fileError.textContent = '';
+    return true;
+  }
+
+  fileInput.addEventListener('change', function () {
+    setFiles(Array.from(fileInput.files));
+  });
+
+  browseBtn.addEventListener('click', function () {
+    fileInput.click();
+  });
+
+  ['dragenter', 'dragover'].forEach((eventName) => {
+    dropzone.addEventListener(eventName, function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      dropzone.classList.add('is-dragover');
     });
-}
+  });
+
+  ['dragleave', 'drop'].forEach((eventName) => {
+    dropzone.addEventListener(eventName, function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      dropzone.classList.remove('is-dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', function (event) {
+    const droppedFiles = Array.from(event.dataTransfer.files || []);
+    if (droppedFiles.length > 0) {
+      setFiles(droppedFiles);
+    }
+  });
+
+  function createLinkRow(value) {
+    const row = document.createElement('div');
+    row.className = 'prototype-link-row';
+
+    const input = document.createElement('input');
+    input.type = 'url';
+    input.className = 'form-control prototype-link-input';
+    input.name = 'additionalLinks[]';
+    input.placeholder = 'Paste Link';
+    input.value = value || '';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'prototype-link-remove';
+    removeBtn.setAttribute('aria-label', 'Remove link');
+    removeBtn.innerHTML = '<img src="/images/challenge-intent-close.png" alt="" class="prototype-link-remove__icon" width="13" height="13" aria-hidden="true">';
+
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    return row;
+  }
+
+  function syncLinkRemoveButtons() {
+    const rows = Array.from(linksRows.querySelectorAll('.prototype-link-row'));
+    rows.forEach((row) => {
+      const removeBtn = row.querySelector('.prototype-link-remove');
+      if (!removeBtn) return;
+      removeBtn.style.display = rows.length > 1 ? 'inline-flex' : 'none';
+    });
+  }
+
+  addLinkBtn.addEventListener('click', function () {
+    const row = createLinkRow('');
+    linksRows.appendChild(row);
+    syncLinkRemoveButtons();
+    const input = row.querySelector('.prototype-link-input');
+    if (input) input.focus();
+  });
+
+  linksRows.addEventListener('click', function (event) {
+    const removeBtn = event.target.closest('.prototype-link-remove');
+    if (!removeBtn) return;
+    const rows = linksRows.querySelectorAll('.prototype-link-row');
+    if (rows.length <= 1) return;
+    const row = removeBtn.closest('.prototype-link-row');
+    if (row) row.remove();
+    syncLinkRemoveButtons();
+  });
+
+  syncLinkRemoveButtons();
+  updateDropzonePreview(Array.from(fileInput.files || []));
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isSaving) return;
+
+    const existingCount = Number(form.getAttribute('data-existing-count') || '0');
+    const selectedCount = fileInput.files ? fileInput.files.length : 0;
+    if (existingCount === 0 && selectedCount === 0) {
+      fileError.textContent = 'Please upload at least one file to continue.';
+      return;
+    }
+    const errors = validateFiles(Array.from(fileInput.files || []));
+    if (errors.length > 0) {
+      fileError.textContent = errors.join(' | ');
+      setButtonLoading(saveBtn, false);
+      return;
+    }
+
+    isSaving = true;
+    const start = Date.now();
+    setButtonLoading(saveBtn, true);
+
+    fetch(form.getAttribute('action'), {
+      method: 'POST',
+      body: new FormData(form),
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' }
+    })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          return { ok: res.ok, data: parseJson(text) };
+        });
+      })
+      .then(function (ref) {
+        if (!ref.ok || !ref.data || !ref.data.ok) {
+          const msg = ref.data && ref.data.error ? ref.data.error : 'Could not save. Please try again.';
+          window.alert(msg);
+          return;
+        }
+        const elapsed = Date.now() - start;
+        const waitMore = Math.max(0, MIN_LOADING_MS - elapsed);
+        return new Promise(function (resolve) {
+          setTimeout(resolve, waitMore);
+        }).then(function () {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(showSavedToast, 150);
+          const serverFiles = Array.isArray(ref.data.files) ? ref.data.files : null;
+          const nextFiles = serverFiles && (serverFiles.length > 0 || currentAttachedFiles.length === 0)
+            ? serverFiles
+            : currentAttachedFiles;
+          renderAttachedFiles(nextFiles);
+          fileInput.value = '';
+          renderSelectedFiles([]);
+          updateDropzonePreview([]);
+        });
+      })
+      .catch(function () {
+        window.alert('Network error. Please try again.');
+      })
+      .finally(function () {
+        isSaving = false;
+        setButtonLoading(saveBtn, false);
+      });
+  });
+
+  function openDeleteModal(fileIndex) {
+    pendingDeleteIndex = fileIndex;
+    if (!deleteModal) return;
+    deleteModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (deleteConfirmBtn) deleteConfirmBtn.focus();
+  }
+
+  function closeDeleteModal() {
+    if (!deleteModal) return;
+    deleteModal.hidden = true;
+    pendingDeleteIndex = null;
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', function (event) {
+    const btn = event.target.closest('.btn-delete-file');
+    if (!btn) return;
+    const fileIndex = btn.getAttribute('data-file-index');
+    openDeleteModal(fileIndex);
+  });
+
+  if (deleteCancelBtn) {
+    deleteCancelBtn.addEventListener('click', closeDeleteModal);
+  }
+
+  if (deleteModal) {
+    deleteModal.addEventListener('click', function (event) {
+      if (event.target.classList.contains('delete-confirm-backdrop')) closeDeleteModal();
+    });
+  }
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && deleteModal && !deleteModal.hidden) closeDeleteModal();
+  });
+
+  if (deleteConfirmBtn) {
+    deleteConfirmBtn.addEventListener('click', async function () {
+      if (pendingDeleteIndex === null || pendingDeleteIndex === undefined) {
+        closeDeleteModal();
+        return;
+      }
+
+      const problemId = '<%= problemId %>';
+      try {
+        const response = await fetch(`/prototyping/${problemId}/file/${pendingDeleteIndex}`, { method: 'DELETE' });
+        if (response.ok) {
+          closeDeleteModal();
+          location.reload();
+          return;
+        }
+        const error = await response.json();
+        alert(error.error || 'Failed to delete file');
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        alert('Failed to delete file. Please try again.');
+      }
+    });
+  }
+})();
 </script>
 

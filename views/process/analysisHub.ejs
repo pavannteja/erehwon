@@ -1,0 +1,134 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cg = typeof campground !== 'undefined' && campground ? campground : (typeof problem !== 'undefined' ? problem : null);
+  const cid = cg && cg._id ? String(cg._id) : null;
+  const insightDone = !!(cg && cg.analysisInsightRecordsSubmitted);
+  const synthesisDone = !!(cg && cg.analysisSynthesisPrioritisationSubmitted);
+  const statementDone = !!(cg && cg.analysisProblemStatementSubmitted);
+  const phase3Complete = insightDone && synthesisDone && statementDone;
+  const backUrl = cid ? `/problems/${cid}` : '/dashboard';
+  const missionLaunchUrl = cid ? `/excite-and-enrol?campgroundId=${cid}` : '/excite-and-enrol';
+  const problemDiscoveryUrl = cid ? `/process/${cid}/problem-discovery` : '#';
+  const nextStepUrl = cid ? `/process/${cid}/ideation` : '#';
+%>
+<div class="mission-launch-page">
+  <nav class="mission-launch-timeline" aria-label="Phase progress">
+    <ul class="mission-launch-timeline__list">
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= missionLaunchUrl %>" class="mission-launch-timeline__circle" aria-label="Open Mission Launch">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Mission Launch</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= problemDiscoveryUrl %>" class="mission-launch-timeline__circle" aria-label="Open Problem Discovery">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Problem Discovery</span>
+      </li>
+      <li class="mission-launch-timeline__phase mission-launch-timeline__phase--active">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Analysis</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="/process/<%= cid %>/ideation" class="mission-launch-timeline__circle" aria-label="Open Ideation">
+            <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Ideation</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Converge</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/solution-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Solution</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Prototype</span>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="mission-launch-main">
+    <div class="mission-launch-header">
+      <h1 class="mission-launch-title">Phase 3: Analysis</h1>
+      <a href="<%= backUrl %>" class="mission-launch-back">Back to Project Overview</a>
+    </div>
+    <p class="mission-launch-intro">
+      To reach a solution, you must decode your research. Identify the patterns in the insights you've found and distill them into a definitive mission for impact.
+    </p>
+
+    <div class="mission-launch-cards">
+      <section class="mission-launch-card<%= insightDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">1. Insight Records</h2>
+        <p class="mission-launch-card__desc">Turn your raw interviews into actionable logic. Every stakeholder interaction holds a hidden key to solving the problem.</p>
+        <a href="/process/<%= cid %>/analysis/insight-records" class="mission-launch-card__btn">
+          <span>Log Insights</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+      <section class="mission-launch-card<%= synthesisDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">2. Synthesis &amp; Prioritisation</h2>
+        <p class="mission-launch-card__desc">Group your insights, rank the severity of them, and choose the 2-3 breakthroughs that will define your Success Model.</p>
+        <a href="/process/<%= cid %>/analysis/synthesis-prioritisation" class="mission-launch-card__btn">
+          <span>Group Insights</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+      <section class="mission-launch-card<%= statementDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">3. Problem Statement</h2>
+        <p class="mission-launch-card__desc">Distill your findings into a single, high-impact commitment. This is your definitive problem statement, sharp and measurable</p>
+        <a href="/process/<%= cid %>/analysis/problem-statement" class="mission-launch-card__btn">
+          <span>Finalize Problem</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+    </div>
+
+    <p class="mission-launch-unlock<%= phase3Complete ? ' mission-launch-unlock--complete' : '' %>">
+      <% if (phase3Complete) { %>
+        Congratulations you have unlocked Phase 4: Ideation!
+      <% } else { %>
+        Complete the above sub-steps to unlock Phase 4: Ideation.
+      <% } %>
+    </p>
+    <div class="mission-launch-next-wrap">
+      <% if (phase3Complete && cid) { %>
+        <a href="<%= nextStepUrl %>" class="mission-launch-card__btn mission-launch-next-link">
+          <span>Move To Next Step</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      <% } else { %>
+        <button type="button" class="mission-launch-next" disabled aria-disabled="true">Move To Next Step</button>
+      <% } %>
+    </div>
+  </div>
+</div>

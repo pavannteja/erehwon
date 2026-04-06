@@ -1,0 +1,163 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/problem-discovery`;
+  const challengeUrl = `/process/${pid}/problem-discovery/challenge-intent`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="<%= challengeUrl %>" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= challengeSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="challenge" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Challenge &amp; Intent</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= researchSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-pd-pill="research" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Problem Research</span>
+      </span>
+      <a href="/process/<%= pid %>/problem-discovery/stakeholder-mapping" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= stakeholdersSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="stakeholders" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Stakeholder Mapping</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Problem Research</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/problem-discovery/problem-research" method="POST" enctype="multipart/form-data" novalidate class="validated-form problem-research-form problem-discovery-ajax-form" data-pd-page="research">
+        <div class="pd-pr-section">
+          <% prCategories.forEach(function (cat) { %>
+            <% const envOptional = cat.base === 'pr_environmental'; %>
+            <div class="pd-pr-category-block mb-3">
+              <% /* Desktop: 2-col spacer + 10-col titles (matches body row; wider field column) */ %>
+              <div class="row g-2 pd-pr-category-header-row d-none d-md-flex align-items-start">
+                <div class="col-md-2" aria-hidden="true"></div>
+                <div class="col-md-10">
+                  <div class="row g-2 pd-pr-col-headers">
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Data Found</span></div>
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Source Link</span></div>
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Why This Matters?</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="row g-2 align-items-start pd-pr-category-body-row">
+                <div class="col-12 col-md-2">
+                  <label class="form-label pd-pr-row-label mb-md-0"><%= cat.label %></label>
+                </div>
+                <div class="col-12 col-md-10">
+                  <div
+                  class="pd-pr-category<%= envOptional ? ' pd-pr-category--optional' : '' %>"
+                  data-base="<%= cat.base %>"
+                  data-ph-df="<%= cat.phDf %>"
+                  data-ph-sl="<%= cat.phSl %>"
+                  data-ph-wm="<%= cat.phWm %>"
+                  data-optional="<%= envOptional ? '1' : '0' %>"
+                >
+                    <div class="pd-pr-triplet-stack">
+                      <% cat.rows.forEach(function (row, idx) { %>
+                      <div class="pd-pr-triplet-row mb-2">
+                        <div class="pd-pr-triplet-shell">
+                          <div class="pd-repeat-remove-strip">
+                            <button type="button" class="pd-repeat-remove pd-pr-triplet-remove" aria-label="Remove this row" style="display: <%= cat.rows.length >= 2 ? 'flex' : 'none' %>">
+                              <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                            </button>
+                          </div>
+                          <div class="row g-2">
+                            <div class="col-md-4">
+                              <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Data Found</span>
+                              <textarea class="form-control" name="<%= cat.base %>_dataFound[]" rows="4" placeholder="<%= cat.phDf %>" <%= !envOptional && idx === 0 ? 'required' : '' %>><%= row.dataFound %></textarea>
+                            </div>
+                            <div class="col-md-4">
+                              <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Source Link</span>
+                              <textarea class="form-control" name="<%= cat.base %>_sourceLink[]" rows="4" placeholder="<%= cat.phSl %>" <%= !envOptional && idx === 0 ? 'required' : '' %>><%= row.sourceLink %></textarea>
+                            </div>
+                            <div class="col-md-4">
+                              <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Why This Matters?</span>
+                              <textarea class="form-control" name="<%= cat.base %>_whyMatters[]" rows="4" placeholder="<%= cat.phWm %>" <%= !envOptional && idx === 0 ? 'required' : '' %>><%= row.whyMatters %></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <% }); %>
+                    </div>
+                    <div class="pd-add-wrap">
+                      <button type="button" class="pd-add-field" aria-label="Add another row for this category">
+                        <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+
+        <div class="pd-pr-section pd-pr-section--impact mt-4">
+          <h2 class="pd-pr-subheading">Projected Impact</h2>
+          <p class="pd-pr-subtext text-muted">If this problem is solved, what improves and by how much?</p>
+          <div class="row g-2 pd-pr-proj-fields-row">
+            <% projectedFields.forEach(function (pf) { %>
+              <div class="col-md-4">
+                <div class="pd-pr-proj-repeat" data-field="<%= pf.field %>" data-placeholder="<%= pf.placeholder %>">
+                  <label class="form-label"><%= pf.label %></label>
+                  <div class="pd-repeat-stack">
+                    <% pf.lines.forEach(function (line, idx) { %>
+                      <div class="pd-repeat-row mb-2">
+                        <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                          <button type="button" class="pd-repeat-remove" aria-label="Remove this entry" style="display: <%= pf.lines.length >= 2 ? 'flex' : 'none' %>">
+                            <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                          </button>
+                          <textarea class="form-control" name="<%= pf.field %>[]" rows="4" placeholder="<%= pf.placeholder %>" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                        </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                  <div class="pd-add-wrap">
+                    <button type="button" class="pd-add-field" aria-label="Add another <%= pf.label %>">
+                      <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="pd-pr-section mt-4">
+          <h2 class="pd-pr-subheading">Research Documents</h2>
+          <p class="pd-pr-subtext text-muted pd-pr-subtext--large">Upload supporting reports, spreadsheets, or references. You can add more each time you save.</p>
+          <% if (researchFileNames && researchFileNames.length) { %>
+            <ul class="pd-pr-file-list small text-muted mb-2">
+              <% researchFileNames.forEach(function (name) { %>
+                <li><%= name %></li>
+              <% }); %>
+            </ul>
+          <% } %>
+          <div class="pd-pr-upload-row">
+            <input type="file" id="pd-research-files" name="researchFiles" class="pd-research-upload-sr" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/*" aria-label="Upload research documents">
+            <label for="pd-research-files" class="pd-research-upload-btn">Upload Research</label>
+            <span class="pd-research-upload-optional">(Optional)</span>
+          </div>
+        </div>
+
+        <div class="pd-pr-section mt-4">
+          <h2 class="pd-pr-subheading">Reflection</h2>
+          <p class="pd-pr-subtext text-muted pd-pr-subtext--large">Would a CEO or Plant Head care about solving this? Why?</p>
+          <textarea class="form-control" name="reflection" rows="4" placeholder="e.g., Yes — it ties to cost, risk, and reputation at the executive level." required><%= reflection %></textarea>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/problemResearchRepeat.js"></script>
+<script src="/javascripts/problemDiscoveryForms.js"></script>

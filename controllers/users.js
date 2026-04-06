@@ -3,6 +3,7 @@ const Campground = require('../models/campgrounds');
 const crypto = require('crypto');
 const { sendPasswordResetEmail } = require('../utils/email');
 const { getProblemStage } = require('../utils/stageHelper');
+const { projectBrandLogo } = require('../utils/projectBrandLogo');
 const { Idea, Program, School } = require('../models/schemas');
 
 module.exports.renderRegister = (req, res) => {
@@ -19,6 +20,7 @@ async function loadUserProjectsWithStage(authorId) {
         .populate('problemStatementInfo.selectedPredefinedProblem')
         .populate('solution')
         .populate('prototype')
+        .populate({ path: 'adoptedFromCorporateProblem', select: 'companyName title' })
         .lean()
         .sort({ createdAt: -1 });
 
@@ -58,6 +60,7 @@ async function loadUserProjectsWithStage(authorId) {
             campObj.progress = stageInfo.progress;
             campObj.ideaCount = ideaCount;
             campObj.stageProgress = stageInfo.stageProgress;
+            campObj.brandMark = projectBrandLogo(campObj);
             return campObj;
         })
     );

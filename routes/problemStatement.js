@@ -27,6 +27,46 @@ const SDG_GOALS = [
   { number: 18, title: 'Women and Welfare', description: 'Promote women\'s welfare and empowerment' }
 ];
 
+function trimStr(v) {
+  if (v === undefined || v === null) return '';
+  return String(v).trim();
+}
+
+function validateMissionLaunchTeamBody(body) {
+  const errors = [];
+  if (!trimStr(body.groupName)) errors.push('Team name is required.');
+  if (!trimStr(body.groupMembers)) errors.push('Team members is required.');
+  if (!trimStr(body.highImpactMissionWhy)) errors.push('High-impact mission response is required.');
+  if (!trimStr(body.missionEndKnownFor)) errors.push('Mission impact response is required.');
+  return errors;
+}
+
+function validateMissionLaunchGroundworkBody(body) {
+  const errors = [];
+  if (!trimStr(body.schoolName)) errors.push('School name is required.');
+  if (!trimStr(body.enrolledProgram)) errors.push('Enrolled program is required.');
+  if (!trimStr(body.className)) errors.push('Class name is required.');
+  if (!trimStr(body.sdgGoal)) errors.push('SDG goal is required.');
+  if (!trimStr(body.innovationProcessSteps)) errors.push('Please select the innovation process steps.');
+  if (!trimStr(body.problemDiscoveryMethod)) {
+    errors.push('How do you do Problem discovery? is required.');
+  }
+  if (!trimStr(body.communityChallenges)) {
+    errors.push('Community challenges response is required.');
+  }
+  if (!trimStr(body.fiveYearProblem)) {
+    errors.push('Five-year problem response is required.');
+  }
+  if (!trimStr(body.technologyApplicationReason)) {
+    errors.push('Why do we learn the application of technology? is required.');
+  }
+  return errors;
+}
+
+function isMissionLaunchAjax(req) {
+  return req.body && String(req.body.missionLaunchAjax) === '1';
+}
+
 // Create a new project (campground)
 router.post('/create-project', isLoggedIn, async (req, res) => {
   try {
@@ -45,7 +85,6 @@ router.post('/create-project', isLoggedIn, async (req, res) => {
     await campground.save();
     console.log('Project created successfully:', campground._id);
     
-    req.flash('success', 'Project created! Click on the card to start Excite & Enrol.');
     res.redirect('/');
   } catch (error) {
     console.error('Error creating project:', error);
@@ -54,13 +93,122 @@ router.post('/create-project', isLoggedIn, async (req, res) => {
   }
 });
 
-// Excite and Enrol: Initial Form (Page 1)
+// Excite and Enrol: Briefing form (Groundwork / Assemble Team form)
+router.get('/excite-and-enrol/briefing', isLoggedIn, async (req, res) => {
+  try {
+    const { campgroundId } = req.query;
+    let campground = null;
+
+    if (campgroundId) {
+      campground = await Campground.findById(campgroundId)
+        .populate('teamInfo.enrolledProgram')
+        .populate('missionLaunchGroundworkInfo.enrolledProgram');
+      if (!campground || campground.author.toString() !== req.user._id.toString()) {
+        req.flash('error', 'Project not found or access denied.');
+        return res.redirect('/');
+      }
+    }
+
+    const programs = await Program.find({ isActive: true }).sort({ name: 1 });
+    const schools = await School.find({ isActive: true }).sort({ name: 1 });
+    res.render('problemStatement/briefing', {
+      currentUser: req.user,
+      sdgGoals: SDG_GOALS,
+      programs,
+      schools,
+      campgroundId: campgroundId || null,
+      campground: campground
+    });
+  } catch (error) {
+    console.error('Error loading excite and enrol briefing form:', error);
+    req.flash('error', 'Error loading form. Please try again.');
+    res.redirect('/');
+  }
+});
+
+// Excite and Enrol: The Team form (Phase 1 step 2)
+router.get('/excite-and-enrol/team', isLoggedIn, async (req, res) => {
+  try {
+    const { campgroundId } = req.query;
+    let campground = null;
+
+    if (campgroundId) {
+      campground = await Campground.findById(campgroundId).populate('teamInfo.enrolledProgram');
+      if (!campground || campground.author.toString() !== req.user._id.toString()) {
+        req.flash('error', 'Project not found or access denied.');
+        return res.redirect('/');
+      }
+    }
+
+    res.render('problemStatement/team', {
+      currentUser: req.user,
+      campgroundId: campgroundId || null,
+      campground: campground
+    });
+  } catch (error) {
+    console.error('Error loading The Team form:', error);
+    req.flash('error', 'Error loading form. Please try again.');
+    res.redirect('/');
+  }
+});
+
+router.post('/excite-and-enrol/team', isLoggedIn, async (req, res) => {
+  const json = isMissionLaunchAjax(req);
+  try {
+    const { campgroundId } = req.body;
+    if (!campgroundId) {
+      if (json) return res.status(400).json({ ok: false, error: 'Please open The Team from your project (Mission Launch).' });
+      req.flash('error', 'Please open The Team from your project (Mission Launch).');
+      return res.redirect('/excite-and-enrol');
+    }
+    const campground = await Campground.findById(campgroundId);
+    if (!campground || campground.author.toString() !== req.user._id.toString()) {
+      if (json) return res.status(403).json({ ok: false, error: 'Project not found or access denied.' });
+      req.flash('error', 'Project not found or access denied.');
+      return res.redirect('/');
+    }
+    const teamErrors = validateMissionLaunchTeamBody(req.body);
+    if (teamErrors.length && !json) {
+      const msg = teamErrors.join(' ');
+      req.flash('error', msg);
+      return res.redirect(`/excite-and-enrol/team?campgroundId=${campgroundId}`);
+    }
+    if (!campground.teamInfo) {
+      campground.teamInfo = {};
+    }
+    Object.assign(campground.teamInfo, {
+      groupName: trimStr(req.body.groupName),
+      groupMembers: trimStr(req.body.groupMembers),
+      highImpactMissionWhy: trimStr(req.body.highImpactMissionWhy),
+      missionEndKnownFor: trimStr(req.body.missionEndKnownFor)
+    });
+    if (req.body.groupName) {
+      campground.title = `${trimStr(req.body.groupName)} - Innovation Project`;
+    }
+    campground.missionLaunchTeamSubmitted = teamErrors.length === 0;
+    await campground.save();
+    if (json) {
+      return res.json({
+        ok: true,
+        missionLaunchGroundworkSubmitted: !!campground.missionLaunchGroundworkSubmitted,
+        missionLaunchTeamSubmitted: !!campground.missionLaunchTeamSubmitted
+      });
+    }
+    return res.redirect(`/excite-and-enrol/team?campgroundId=${campgroundId}`);
+  } catch (error) {
+    console.error('Error saving The Team form:', error);
+    if (json) return res.status(500).json({ ok: false, error: 'Failed to save team information. Please try again.' });
+    req.flash('error', 'Failed to save team information. Please try again.');
+    res.redirect(req.body.campgroundId ? `/excite-and-enrol/team?campgroundId=${req.body.campgroundId}` : '/excite-and-enrol/team');
+  }
+});
+
+// Excite and Enrol: Mission Launch hub (Phase 1 landing)
 router.get('/excite-and-enrol', isLoggedIn, async (req, res) => {
   try {
     const { campgroundId } = req.query;
     let campground = null;
-    
-    // If campgroundId is provided, fetch it and verify ownership
+
     if (campgroundId) {
       campground = await Campground.findById(campgroundId)
         .populate('teamInfo.enrolledProgram');
@@ -69,20 +217,16 @@ router.get('/excite-and-enrol', isLoggedIn, async (req, res) => {
         return res.redirect('/');
       }
     }
-    
-    const programs = await Program.find({ isActive: true }).sort({ name: 1 });
-    const schools = await School.find({ isActive: true }).sort({ name: 1 });
-    res.render('problemStatement/page1', { 
+
+    res.render('problemStatement/missionLaunch', {
       currentUser: req.user,
-      sdgGoals: SDG_GOALS,
-      programs: programs,
-      schools: schools,
       campgroundId: campgroundId || null,
-      campground: campground
+      campground: campground,
+      bodyClass: 'mission-launch-body'
     });
   } catch (error) {
-    console.error('Error loading excite and enrol form:', error);
-    req.flash('error', 'Error loading form. Please try again.');
+    console.error('Error loading Mission Launch page:', error);
+    req.flash('error', 'Error loading page. Please try again.');
     res.redirect('/');
   }
 });
@@ -94,8 +238,82 @@ router.post('/excite-and-enrol', isLoggedIn, async (req, res) => {
     console.log('Request body:', req.body);
     const { campgroundId } = req.body;
     console.log('Campground ID:', campgroundId);
-    
-    // Get school name from school ID
+
+    // If campgroundId exists, update the existing campground (Groundwork page)
+    if (campgroundId) {
+      const json = isMissionLaunchAjax(req);
+      console.log('Updating existing campground:', campgroundId);
+      const campground = await Campground.findById(campgroundId);
+      if (!campground) {
+        console.error('Campground not found:', campgroundId);
+        if (json) return res.status(404).json({ ok: false, error: 'Project not found.' });
+        req.flash('error', 'Project not found.');
+        return res.redirect('/');
+      }
+      if (campground.author.toString() !== req.user._id.toString()) {
+        console.error('Access denied for user:', req.user._id);
+        if (json) return res.status(403).json({ ok: false, error: 'Access denied.' });
+        req.flash('error', 'Access denied.');
+        return res.redirect('/');
+      }
+
+      if (!campground.missionLaunchGroundworkInfo) {
+        campground.missionLaunchGroundworkInfo = {};
+      }
+
+      const gwErrors = validateMissionLaunchGroundworkBody(req.body);
+      let schoolName = '';
+      const schoolId = trimStr(req.body.schoolName);
+      if (schoolId && mongoose.Types.ObjectId.isValid(schoolId)) {
+        const school = await School.findById(schoolId);
+        if (school) schoolName = school.name;
+      }
+
+      let enrolledProgramId = null;
+      const enrolledProgramRaw = trimStr(req.body.enrolledProgram);
+      if (enrolledProgramRaw && mongoose.Types.ObjectId.isValid(enrolledProgramRaw)) {
+        const programDoc = await Program.findById(enrolledProgramRaw);
+        if (programDoc) enrolledProgramId = programDoc._id;
+      }
+
+      const groundworkComplete =
+        gwErrors.length === 0 && !!schoolName && !!enrolledProgramId;
+
+      if (!json && !groundworkComplete) {
+        const strictErrors = [...gwErrors];
+        if (!schoolName) strictErrors.push('Please select a valid school.');
+        if (!enrolledProgramId) strictErrors.push('Please select a valid program.');
+        req.flash('error', strictErrors.join(' '));
+        return res.redirect(`/excite-and-enrol/briefing?campgroundId=${campgroundId}`);
+      }
+
+      Object.assign(campground.missionLaunchGroundworkInfo, {
+        schoolName,
+        className: trimStr(req.body.className),
+        enrolledProgram: enrolledProgramId,
+        sdgGoal: trimStr(req.body.sdgGoal),
+        innovationProcessSteps: trimStr(req.body.innovationProcessSteps),
+        problemDiscoveryMethod: trimStr(req.body.problemDiscoveryMethod),
+        communityChallenges: trimStr(req.body.communityChallenges),
+        fiveYearProblem: trimStr(req.body.fiveYearProblem),
+        technologyApplicationReason: trimStr(req.body.technologyApplicationReason)
+      });
+
+      campground.missionLaunchGroundworkSubmitted = groundworkComplete;
+      await campground.save();
+      console.log('Campground saved successfully:', campground._id);
+
+      if (json) {
+        return res.json({
+          ok: true,
+          missionLaunchGroundworkSubmitted: !!campground.missionLaunchGroundworkSubmitted,
+          missionLaunchTeamSubmitted: !!campground.missionLaunchTeamSubmitted
+        });
+      }
+      return res.redirect(`/excite-and-enrol/briefing?campgroundId=${campgroundId}`);
+    }
+
+    // Legacy flow: resolve school name from ID when possible
     let schoolName = req.body.schoolName;
     if (schoolName && mongoose.Types.ObjectId.isValid(schoolName)) {
       const school = await School.findById(schoolName);
@@ -104,48 +322,6 @@ router.post('/excite-and-enrol', isLoggedIn, async (req, res) => {
       }
     }
 
-    // If campgroundId exists, update the existing campground
-    if (campgroundId) {
-      console.log('Updating existing campground:', campgroundId);
-      const campground = await Campground.findById(campgroundId);
-      if (!campground) {
-        console.error('Campground not found:', campgroundId);
-        req.flash('error', 'Project not found.');
-        return res.redirect('/');
-      }
-      if (campground.author.toString() !== req.user._id.toString()) {
-        console.error('Access denied for user:', req.user._id);
-        req.flash('error', 'Access denied.');
-        return res.redirect('/');
-      }
-      
-      // Update campground with Excite & Enrol data
-      campground.teamInfo = {
-        schoolName: schoolName,
-        className: req.body.className,
-        groupMembers: req.body.groupMembers,
-        groupName: req.body.groupName,
-        enrolledProgram: req.body.enrolledProgram,
-        sdgGoal: req.body.sdgGoal,
-        innovationProcessSteps: req.body.innovationProcessSteps,
-        problemDiscoveryMethod: req.body.problemDiscoveryMethod,
-        communityChallenges: req.body.communityChallenges,
-        fiveYearProblem: req.body.fiveYearProblem,
-        technologyApplicationReason: req.body.technologyApplicationReason
-      };
-      
-      // Update title if group name is provided
-      if (req.body.groupName) {
-        campground.title = req.body.groupName + ' - Innovation Project';
-      }
-      
-      await campground.save();
-      console.log('Campground saved successfully:', campground._id);
-      
-      req.flash('success', 'Excite & Enrol form saved successfully!');
-      return res.redirect('/');
-    }
-    
     // Otherwise, create new form data (legacy flow)
     const formData = {
       schoolName: schoolName,
@@ -166,7 +342,6 @@ router.post('/excite-and-enrol', isLoggedIn, async (req, res) => {
     const problemFormData = new ProblemFormData(formData);
     await problemFormData.save();
 
-    req.flash('success', 'Excite & Enrol form submitted successfully! Continue with Problem Discovery.');
     res.redirect('/');
   } catch (error) {
     console.error('Error saving excite and enrol data:', error);
@@ -185,25 +360,31 @@ router.get('/problem-statement/page2', isLoggedIn, async (req, res) => {
     // If campgroundId is provided, fetch the campground and use its data
     if (campgroundId) {
       campground = await Campground.findById(campgroundId)
-        .populate('teamInfo.enrolledProgram');
+        .populate('teamInfo.enrolledProgram')
+        .populate('missionLaunchGroundworkInfo.enrolledProgram');
       if (!campground || campground.author.toString() !== req.user._id.toString()) {
         req.flash('error', 'Project not found or access denied.');
         return res.redirect('/');
       }
-      
+
+      const gw = campground.missionLaunchGroundworkInfo || {};
+      const t = campground.teamInfo || {};
+
       // Create formData object from campground for compatibility
       formData = {
-        schoolName: campground.teamInfo?.schoolName || '',
-        className: campground.teamInfo?.className || '',
-        groupMembers: campground.teamInfo?.groupMembers || '',
-        groupName: campground.teamInfo?.groupName || '',
-        enrolledProgram: campground.teamInfo?.enrolledProgram || null,
-        sdgGoal: campground.teamInfo?.sdgGoal || '',
-        innovationProcessSteps: campground.teamInfo?.innovationProcessSteps || '',
-        problemDiscoveryMethod: campground.teamInfo?.problemDiscoveryMethod || '',
-        communityChallenges: campground.teamInfo?.communityChallenges || '',
-        fiveYearProblem: campground.teamInfo?.fiveYearProblem || '',
-        technologyApplicationReason: campground.teamInfo?.technologyApplicationReason || '',
+        schoolName: gw.schoolName || t.schoolName || '',
+        className: gw.className || t.className || '',
+        groupMembers: gw.groupMembers || t.groupMembers || '',
+        groupName: gw.groupName || t.groupName || '',
+        enrolledProgram: gw.enrolledProgram || t.enrolledProgram || null,
+        sdgGoal: gw.sdgGoal || t.sdgGoal || '',
+        innovationProcessSteps: gw.innovationProcessSteps || t.innovationProcessSteps || '',
+        problemDiscoveryMethod: gw.problemDiscoveryMethod || t.problemDiscoveryMethod || '',
+        communityChallenges: gw.communityChallenges || t.communityChallenges || '',
+        fiveYearProblem: gw.fiveYearProblem || t.fiveYearProblem || '',
+        technologyApplicationReason: gw.technologyApplicationReason || t.technologyApplicationReason || '',
+        highImpactMissionWhy: gw.highImpactMissionWhy || t.highImpactMissionWhy || '',
+        missionEndKnownFor: gw.missionEndKnownFor || t.missionEndKnownFor || '',
         selectedPredefinedProblem: campground.problemStatementInfo?.selectedPredefinedProblem || null,
         recommendedStakeholders: campground.problemStatementInfo?.recommendedStakeholders || [],
         problemType: campground.problemStatementInfo?.problemType || 'predefined',
@@ -224,7 +405,9 @@ router.get('/problem-statement/page2', isLoggedIn, async (req, res) => {
     // Get predefined problems for the selected SDG
     // The SDG goal might be stored as "No Poverty" but database has "SDG 1: No Poverty"
     // Try multiple matching strategies
-    const selectedSdgGoal = campground ? (campground.teamInfo?.sdgGoal || '') : formData.sdgGoal;
+    const selectedSdgGoal = campground
+      ? (campground.missionLaunchGroundworkInfo?.sdgGoal || campground.teamInfo?.sdgGoal || '')
+      : formData.sdgGoal;
     console.log('Looking for problems with SDG Goal:', selectedSdgGoal);
     
     // Normalize the search term - remove common words and punctuation
@@ -319,7 +502,6 @@ router.post('/problem-statement/page2', isLoggedIn, async (req, res) => {
       
       await campground.save();
       
-      req.flash('success', 'Problem statement saved successfully!');
       return res.redirect('/');
     }
     
@@ -374,7 +556,6 @@ router.post('/problem-statement/page2', isLoggedIn, async (req, res) => {
     formData.problemId = problem._id;
     await formData.save();
 
-    req.flash('success', 'Problem statement created successfully!');
     res.redirect('/');
   } catch (error) {
     console.error('Error saving page 2 data:', error);
@@ -476,7 +657,6 @@ router.post('/problem-statement/page3', isLoggedIn, async (req, res) => {
     formData.problemId = problem._id;
     await formData.save();
 
-    req.flash('success', 'Custom problem statement created successfully!');
     res.redirect('/');
   } catch (error) {
     console.error('Error saving page 3 data:', error);

@@ -41,7 +41,9 @@
             problemDiscoveryMethod: Joi.string().optional().allow(''),
             communityChallenges: Joi.string().optional().allow(''),
             fiveYearProblem: Joi.string().optional().allow(''),
-            technologyApplicationReason: Joi.string().optional().allow('')
+            technologyApplicationReason: Joi.string().optional().allow(''),
+            highImpactMissionWhy: Joi.string().optional().allow(''),
+            missionEndKnownFor: Joi.string().optional().allow('')
         }).optional(),
         deleteImages: Joi.array().optional()
     });

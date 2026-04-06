@@ -1,5 +1,59 @@
 <% layout('layouts/boilerplate')%>
-<div class="container-fluid mt-4">
+<style>
+    .admin-dashboard h1 {
+        font-size: 32px;
+    }
+
+    .admin-dashboard .lead {
+        font-size: 20px;
+    }
+
+    .admin-dashboard .nav-tabs .nav-link {
+        font-size: 18px;
+    }
+
+    .admin-dashboard .card-header h5 {
+        font-size: 20px;
+    }
+
+    .admin-dashboard h6 {
+        font-size: 18px;
+    }
+
+    .admin-dashboard .form-label {
+        font-size: 16px;
+    }
+
+    .admin-dashboard .form-control,
+    .admin-dashboard .form-select,
+    .admin-dashboard .btn {
+        font-size: 15px;
+    }
+
+    .admin-dashboard .open-btn {
+        font-size: 15px;
+    }
+
+    .admin-dashboard .new-project-btn,
+    .admin-dashboard .creating-btn {
+        font-size: 18px;
+    }
+
+    .admin-dashboard .table thead th {
+        font-size: 16px;
+    }
+
+    .admin-dashboard .table tbody td {
+        font-size: 15px;
+    }
+
+    .admin-dashboard .badge,
+    .admin-dashboard small,
+    .admin-dashboard .text-muted {
+        font-size: 14px;
+    }
+</style>
+<div class="container-fluid mt-4 admin-dashboard">
     <div class="row mb-4">
         <div class="col-12">
             <h1 class="mb-3"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
@@ -561,15 +615,15 @@
                                                             <span class="badge bg-secondary ms-2">Individual</span>
                                                             <% } %>
                                                         </h6>
-                                                        <p class="text-muted mb-2" style="font-size: 0.9rem;">
+                                                        <p class="text-muted mb-2" style="font-size: 14px;">
                                                             Project: <strong><%= project.title %></strong>
                                                         </p>
-                                                        <p class="text-muted mb-2" style="font-size: 0.85rem;">
+                                                        <p class="text-muted mb-2" style="font-size: 14px;">
                                                             School: <%= (project.author && project.author.schoolName) || (project.teamInfo && project.teamInfo.schoolName) || 'N/A' %><br>
                                                             Program: <%= (project.author && project.author.programName) || 'N/A' %>
                                                         </p>
                                                         <% if (project.author && project.author.teamMembers && project.author.teamMembers.length > 0) { %>
-                                                            <p class="text-muted mb-0" style="font-size: 0.85rem;">
+                                                            <p class="text-muted mb-0" style="font-size: 14px;">
                                                                 Members:
                                                                 <% project.author.teamMembers.forEach((member, idx) => { %>
                                                                     <%= member.username %><%= idx < project.author.teamMembers.length - 1 ? ', ' : '' %>

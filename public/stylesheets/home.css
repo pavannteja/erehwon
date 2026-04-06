@@ -994,7 +994,7 @@ body:has(.landing-page) {
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 18px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1079,7 +1079,7 @@ body:has(.landing-page) {
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 15px;
     display: inline-flex;
     align-items: center;
     gap: 8px;

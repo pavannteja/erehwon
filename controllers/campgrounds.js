@@ -1,4 +1,5 @@
 const Campground = require('../models/campgrounds');
+const { projectBrandLogo } = require('../utils/projectBrandLogo');
 const { cloudinary } = require("../cloudinary");
 const multer = require('multer');
 const maptilerClient = require("@maptiler/client");
@@ -37,6 +38,7 @@ module.exports.renderNewForm = (req, res) => {
     }).populate('author')
     .populate('solution')
     .populate('prototype')
+    .populate({ path: 'adoptedFromCorporateProblem', select: 'companyName title' })
     .select('+notes'); // Explicitly include notes field
     
     if(!campground){
@@ -84,7 +86,15 @@ module.exports.renderNewForm = (req, res) => {
       campground.notes = refreshedCampground.notes;
     }
     
-    res.render('campgrounds/show', { campground, mapData, ideaCount, prototypeHasFiles });
+    res.render('campgrounds/show', {
+      campground,
+      brandMark: projectBrandLogo(campground),
+      mapData,
+      ideaCount,
+      prototypeHasFiles,
+      bodyClass: 'mission-launch-body',
+      title: `${campground.title} | Project overview`
+    });
   }
 
   module.exports.renderEditForm = async(req, res) => {
@@ -169,6 +179,12 @@ module.exports.renderNewForm = (req, res) => {
       }
       if (req.body.teamInfo.technologyApplicationReason) {
         campground.teamInfo.technologyApplicationReason = req.body.teamInfo.technologyApplicationReason;
+      }
+      if (req.body.teamInfo.highImpactMissionWhy !== undefined) {
+        campground.teamInfo.highImpactMissionWhy = req.body.teamInfo.highImpactMissionWhy;
+      }
+      if (req.body.teamInfo.missionEndKnownFor !== undefined) {
+        campground.teamInfo.missionEndKnownFor = req.body.teamInfo.missionEndKnownFor;
       }
     }
 

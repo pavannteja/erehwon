@@ -35,8 +35,9 @@ function getProblemStage(campground, ideaCount = 0) {
   };
   
   // Stage 1: Excite & Enrol (20%)
-  // Success criteria: teamInfo exists with schoolName
-  if (campground.teamInfo && campground.teamInfo.schoolName) {
+  // Success criteria: school on teamInfo or Mission Launch Groundwork
+  const gwSchool = campground.missionLaunchGroundworkInfo && campground.missionLaunchGroundworkInfo.schoolName;
+  if ((campground.teamInfo && campground.teamInfo.schoolName) || gwSchool) {
     stageProgress[1] = 20;
     totalProgress += 20;
   }

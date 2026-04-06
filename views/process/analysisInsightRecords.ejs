@@ -1,0 +1,237 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/analysis`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= insightSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-analysis-pill="insight" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Insight Records</span>
+      </span>
+      <a
+        href="/process/<%= pid %>/analysis/synthesis-prioritisation"
+        class="groundwork-tab groundwork-tab--nav"
+        aria-label="Open Synthesis & Prioritisation"
+      >
+        <span class="groundwork-tab-dot <%= synthesisSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="synthesis" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Synthesis &amp; Prioritisation</span>
+      </a>
+      <a href="/process/<%= pid %>/analysis/problem-statement" class="groundwork-tab groundwork-tab--nav" aria-label="Open Problem Statement">
+        <span class="groundwork-tab-dot <%= statementSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-analysis-pill="statement" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Problem Statement</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Insight Records</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/analysis/insight-records" method="POST" novalidate class="validated-form analysis-ajax-form analysis-ir-form" data-analysis-page="insight">
+        <input type="hidden" name="analysisAjax" value="1">
+
+        <div class="analysis-ir-accordion-list" data-analysis-accordion-list>
+        <div class="analysis-ir-accordion" data-analysis-accordion data-analysis-accordion-template>
+          <div class="row align-items-center analysis-ir-top-row">
+            <div class="col-md mb-3">
+            <div class="pd-repeat-section" data-field="intervieweeName" data-placeholder="e.g., John Doe">
+              <label class="form-label">Interviewee Name</label>
+              <div class="pd-repeat-stack">
+                <% intervieweeNameLines.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row mb-2">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= intervieweeNameLines.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="intervieweeName[]" rows="4" placeholder="e.g., John Doe" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+              <div class="pd-add-wrap">
+                <button type="button" class="pd-add-field" aria-label="Add another interviewee name">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md mb-3">
+            <div class="pd-repeat-section" data-field="intervieweeRole" data-placeholder="e.g., CEO at XYZ Tech">
+              <label class="form-label">Interviewee Role</label>
+              <div class="pd-repeat-stack">
+                <% intervieweeRoleLines.forEach(function (line, idx) { %>
+                  <div class="pd-repeat-row mb-2">
+                    <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                      <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= intervieweeRoleLines.length >= 2 ? 'flex' : 'none' %>">
+                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                      </button>
+                      <textarea class="form-control" name="intervieweeRole[]" rows="4" placeholder="e.g., CEO at XYZ Tech" <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+              <div class="pd-add-wrap">
+                <button type="button" class="pd-add-field" aria-label="Add another interviewee role">
+                  <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-auto mb-3 d-flex justify-content-end align-items-center">
+            <div class="analysis-ir-controls">
+              <button
+                type="button"
+                class="analysis-ir-remove-accordion-btn"
+                data-analysis-remove-accordion
+                aria-label="Remove this interviewee"
+              >
+                ×
+              </button>
+              <button
+                type="button"
+                class="analysis-ir-chevron-btn"
+                data-analysis-accordion-toggle
+                aria-expanded="true"
+                aria-label="Toggle insight details"
+              >
+                <span class="analysis-ir-chevron-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          </div>
+
+          <div class="analysis-ir-content" data-analysis-accordion-content>
+
+        <div class="pd-repeat-section" data-field="problemImpact" data-placeholder="e.g., They lose 2 hours of output managing low-risk daily errors.">
+          <label class="form-label">How does the problem impact them?</label>
+          <div class="pd-repeat-stack">
+            <% problemImpactLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2">
+                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                  <button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= problemImpactLines.length >= 2 ? 'flex' : 'none' %>">
+                    <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                  </button>
+                  <textarea class="form-control" name="problemImpact[]" rows="4" placeholder="e.g., They lose 2 hours of output managing low-risk daily errors." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <h2 class="pd-pr-subheading analysis-ir-notes-heading">Notes from Insight</h2>
+
+        <div class="pd-repeat-section" data-field="functionalDifficulty" data-placeholder="e.g., The current software crashes when processing more than 500 users.">
+          <label class="form-label">What is the functional difficulty?</label>
+          <div class="pd-repeat-stack">
+            <% functionalDifficultyLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= functionalDifficultyLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="functionalDifficulty[]" rows="4" placeholder="e.g., The current software crashes when processing more than 500 users." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="economicPressure" data-placeholder="e.g., Frequent emergency shipping fees are adding 10% to their costs.">
+          <label class="form-label">What is the economic pressure?</label>
+          <div class="pd-repeat-stack">
+            <% economicPressureLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= economicPressureLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="economicPressure[]" rows="4" placeholder="e.g., Frequent emergency shipping fees are adding 10% to their costs." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="emotionalConcern" data-placeholder="e.g., They feel embarrassed when delivering delays to long-term clients.">
+          <label class="form-label">What emotional or social concern is visible?</label>
+          <div class="pd-repeat-stack">
+            <% emotionalConcernLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= emotionalConcernLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="emotionalConcern[]" rows="4" placeholder="e.g., They feel embarrassed when delivering delays to long-term clients." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="currentWorkaround" data-placeholder="e.g., Manually tracking everything in a physical diary as backup.">
+          <label class="form-label">What workaround is currently used?</label>
+          <div class="pd-repeat-stack">
+            <% currentWorkaroundLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= currentWorkaroundLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="currentWorkaround[]" rows="4" placeholder="e.g., Manually tracking everything in a physical diary as backup." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="unsaidButImplied" data-placeholder="e.g., They are worried that a digital fix might be too complicated to learn.">
+          <label class="form-label">What is not being said directly but implied?</label>
+          <div class="pd-repeat-stack">
+            <% unsaidButImpliedLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= unsaidButImpliedLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="unsaidButImplied[]" rows="4" placeholder="e.g., They are worried that a digital fix might be too complicated to learn." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="stakeholderQuote" data-placeholder="e.g., I don't need a fancy app. I just need to know the truck is on time.">
+          <label class="form-label">Quote from the stakeholder</label>
+          <div class="pd-repeat-stack">
+            <% stakeholderQuoteLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= stakeholderQuoteLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="stakeholderQuote[]" rows="4" placeholder="e.g., I don't need a fancy app. I just need to know the truck is on time." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="surprise" data-placeholder="e.g., They quickly preferred the old manual system over the new buggy one.">
+          <label class="form-label">What surprised us?</label>
+          <div class="pd-repeat-stack">
+            <% surpriseLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= surpriseLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="surprise[]" rows="4" placeholder="e.g., They quickly preferred the old manual system over the new buggy one." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <div class="pd-repeat-section" data-field="otherInsights" data-placeholder="e.g., They abandoned that new dashboard because of the loading delay.">
+          <label class="form-label">Other insights</label>
+          <div class="pd-repeat-stack">
+            <% otherInsightsLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= otherInsightsLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="otherInsights[]" rows="4" placeholder="e.g., They abandoned that new dashboard because of the loading delay." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+        <h2 class="pd-pr-subheading">Reflection</h2>
+        <div class="pd-repeat-section" data-field="reflection" data-placeholder="e.g., We realized the user isn't a tech-first user, but a lack-of-trust-in-tech user.">
+          <label class="form-label">What changed in our understanding after this conversation?</label>
+          <div class="pd-repeat-stack">
+            <% reflectionLines.forEach(function (line, idx) { %>
+              <div class="pd-repeat-row mb-2"><div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside"><button type="button" class="pd-repeat-remove" aria-label="Remove this answer" style="display: <%= reflectionLines.length >= 2 ? 'flex' : 'none' %>"><img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true"></button><textarea class="form-control" name="reflection[]" rows="4" placeholder="e.g., We realized the user isn't a tech-first user, but a lack-of-trust-in-tech user." <%= idx === 0 ? 'required' : '' %>><%= line %></textarea></div></div>
+            <% }); %>
+          </div>
+          <div class="pd-add-wrap"><button type="button" class="pd-add-field"><img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true"></button></div>
+        </div>
+
+          </div>
+        </div>
+        </div>
+
+        <div class="analysis-ir-add-wrap">
+          <button type="button" class="analysis-ir-add-interviewee-btn" data-analysis-add-interviewee>+ Add Interviewee</button>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/analysisForms.js"></script>

@@ -17,7 +17,7 @@
 
 .dashboard-title-section h1 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 50px;
+    font-size: 32px;
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.07em;
@@ -29,7 +29,7 @@
     font-family: 'Satoshi', sans-serif;
     font-weight: 500;
     color: #1d1f21;
-    font-size: 24px;
+    font-size: 20px;
     margin: 0;
 }
 
@@ -40,7 +40,7 @@
     text-decoration: none;
     font-family: 'Satoshi', sans-serif;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
     padding: 8px 14px;
     transition: all 0.3s ease;
     display: inline-flex;
@@ -64,7 +64,7 @@
     text-decoration: none;
     font-family: 'Satoshi', sans-serif;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
     padding: 8px 14px;
     transition: all 0.3s ease;
     display: inline-flex;
@@ -287,7 +287,7 @@
     border-radius: 8px;
     text-decoration: none;
     font-family: 'Satoshi', sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 500;
     line-height: 1;
     transition: all 0.3s ease;
@@ -323,20 +323,20 @@
 }
 
 .empty-state-icon {
-    font-size: 4rem;
+    font-size: 32px;
     color: #ffde00;
     margin-bottom: 20px;
 }
 
 .empty-state h2 {
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 22px;
     margin-bottom: 12px;
 }
 
 .empty-state p {
     color: #888;
-    font-size: 1rem;
+    font-size: 16px;
     margin-bottom: 30px;
 }
 
@@ -425,7 +425,12 @@
                     <div class="project-card">
                         <div class="project-card-header-row">
                             <div class="project-card-brand">
-                                <img src="/images/unilever-logo.webp" alt="Company logo" class="project-card-logo">
+                                <% const bm = campground.brandMark || { kind: 'image', src: '/images/mission-launch-icon.png', alt: '' }; %>
+                                <% if (bm.kind === 'image') { %>
+                                <img src="<%= bm.src %>" alt="<%= bm.alt || 'Project logo' %>" class="project-card-logo">
+                                <% } else { %>
+                                <div class="corporate-problem-card__logo-placeholder project-card-logo-placeholder" aria-hidden="true"><%= bm.letter %></div>
+                                <% } %>
                                 <span class="project-card-brand-divider" aria-hidden="true"></span>
                                 <h3 class="project-card-title"><%= campground.title %></h3>
                             </div>

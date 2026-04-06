@@ -1,0 +1,153 @@
+<% layout('layouts/boilerplate')%>
+<%
+  const backToMissionLaunch = campgroundId ? `/excite-and-enrol?campgroundId=${campgroundId}` : '/excite-and-enrol';
+  const teamPageUrl = campgroundId ? `/excite-and-enrol/team?campgroundId=${campgroundId}` : '/excite-and-enrol/team';
+  const ti = campground && campground.missionLaunchGroundworkInfo ? campground.missionLaunchGroundworkInfo : {};
+  const gwSubmitted = !!(campground && campground.missionLaunchGroundworkSubmitted);
+  const teamSubmitted = !!(campground && campground.missionLaunchTeamSubmitted);
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= gwSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-pill="groundwork" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Groundwork</span>
+      </span>
+      <a href="<%= teamPageUrl %>" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= teamSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pill="team" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. The Team</span>
+      </a>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Groundwork</h1>
+      <a href="<%= backToMissionLaunch %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <% if (!campgroundId) { %>
+        <p class="mb-4" style="font-family: 'Satoshi', sans-serif; font-size: 14px; color: rgba(29, 31, 33, 0.75);">
+          Open <a href="/excite-and-enrol" class="groundwork-return-link" style="display: inline;">Mission Launch</a> from a project to save team details.
+        </p>
+      <% } %>
+      <form action="/excite-and-enrol" method="POST" novalidate class="<%= campgroundId ? 'mission-launch-ajax-form ' : '' %>validated-form" data-mission-page="groundwork">
+        <% if (campgroundId) { %>
+          <input type="hidden" name="campgroundId" value="<%= campgroundId %>">
+          <input type="hidden" name="missionLaunchAjax" value="1">
+        <% } %>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="schoolName">School Name</label>
+            <div class="groundwork-dropdown-shell">
+              <select class="form-select" id="schoolName" name="schoolName" required>
+                <option value="">Select a School</option>
+                <% if (schools && schools.length > 0) { %>
+                  <% schools.forEach(school => { %>
+                    <option value="<%= school._id %>" <%= (ti.schoolName === school.name) ? 'selected' : '' %>><%= school.name %></option>
+                  <% }); %>
+                <% } else { %>
+                  <option value="">No schools available. Please contact admin.</option>
+                <% } %>
+              </select>
+              <span class="groundwork-dropdown-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="enrolledProgram">Enrolled Program</label>
+            <div class="groundwork-dropdown-shell">
+              <select class="form-select" id="enrolledProgram" name="enrolledProgram" required>
+                <option value="">Select a Program</option>
+                <% if (programs && programs.length > 0) { %>
+                  <% programs.forEach(program => { %>
+                    <option value="<%= program._id %>" <%= (ti.enrolledProgram && program._id.toString() === String(ti.enrolledProgram._id || ti.enrolledProgram)) ? 'selected' : '' %>><%= program.name %></option>
+                  <% }); %>
+                <% } else { %>
+                  <option value="">No programs available. Please contact admin.</option>
+                <% } %>
+              </select>
+              <span class="groundwork-dropdown-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="className">Class Name</label>
+            <input class="form-control" type="text" id="className" name="className" value="<%= ti.className || '' %>" placeholder="Enter class name" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="sdgGoal">SDG Goal for the challenge</label>
+            <div class="groundwork-dropdown-shell">
+              <select class="form-select" id="sdgGoal" name="sdgGoal" required>
+                <option value="">Select an SDG Goal</option>
+                <% sdgGoals.forEach(goal => { %>
+                  <option value="<%= goal.title %>" <%= (ti.sdgGoal === goal.title) ? 'selected' : '' %>><%= goal.number %>. <%= goal.title %></option>
+                <% }); %>
+              </select>
+              <span class="groundwork-dropdown-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3 innovation-steps-group">
+          <label class="form-label">What are the steps of innovation process?</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="innovationProcessSteps" id="gwInnovationOption1" value="Problem discovery>Creative Ideation >Concepual solution>Prototyping>Market Ready solution" <%= (ti.innovationProcessSteps === 'Problem discovery>Creative Ideation >Concepual solution>Prototyping>Market Ready solution') ? 'checked' : '' %> required>
+            <label class="form-check-label" for="gwInnovationOption1">
+              1) Problem discovery &gt; Creative Ideation &gt; Conceptual solution &gt; Prototyping &gt; Market Ready solution
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="innovationProcessSteps" id="gwInnovationOption2" value="Concepual solution>Problem discovery>Creative Ideation >Prototyping>Market Ready solution" <%= (ti.innovationProcessSteps === 'Concepual solution>Problem discovery>Creative Ideation >Prototyping>Market Ready solution') ? 'checked' : '' %>>
+            <label class="form-check-label" for="gwInnovationOption2">
+              2) Conceptual solution &gt; Problem discovery &gt; Creative Ideation &gt; Prototyping &gt; Market Ready solution
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="innovationProcessSteps" id="gwInnovationOption3" value="Problem discovery>Creative Ideation >Prototyping>Market Ready solution>Conceptual solution" <%= (ti.innovationProcessSteps === 'Problem discovery>Creative Ideation >Prototyping>Market Ready solution>Conceptual solution') ? 'checked' : '' %>>
+            <label class="form-check-label" for="gwInnovationOption3">
+              3) Problem discovery &gt; Creative Ideation &gt; Prototyping &gt; Market Ready solution &gt; Conceptual solution
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="innovationProcessSteps" id="gwInnovationOption4" value="Problem discovery>Concepual solution>Prototyping>Market Ready solution" <%= (ti.innovationProcessSteps === 'Problem discovery>Concepual solution>Prototyping>Market Ready solution') ? 'checked' : '' %>>
+            <label class="form-check-label" for="gwInnovationOption4">
+              4) Problem discovery &gt; Conceptual solution &gt; Prototyping &gt; Market Ready solution
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="problemDiscoveryMethod">How do you do Problem discovery?</label>
+          <textarea class="form-control" id="problemDiscoveryMethod" name="problemDiscoveryMethod" rows="4" required placeholder="e.g., Identifying the gravity and mental shackles in the current system."><%= ti.problemDiscoveryMethod || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="communityChallenges">What Challenges have you seen in and around your community which personally impact you?</label>
+          <textarea class="form-control" id="communityChallenges" name="communityChallenges" rows="4" required placeholder="e.g., Inefficient local waste management impacting local hygiene."><%= ti.communityChallenges || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="fiveYearProblem">If given resources, what’s one community problem you would be obsessed with solving in the next 5 years?</label>
+          <textarea class="form-control" id="fiveYearProblem" name="fiveYearProblem" rows="4" required placeholder="e.g., Creating a success model for 100% urban plastic circularity."><%= ti.fiveYearProblem || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="technologyApplicationReason">Why do we learn the application of technology?</label>
+          <textarea class="form-control" id="technologyApplicationReason" name="technologyApplicationReason" rows="4" required placeholder="e.g., To build breakthroughs that defy the gravity of conventional methods."><%= ti.technologyApplicationReason || '' %></textarea>
+        </div>
+
+        <div class="mb-3 text-center">
+          <button type="submit" class="groundwork-submit-btn" <%= campgroundId ? '' : 'disabled' %>>
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<% if (campgroundId) { %>
+<script src="/javascripts/missionLaunchForms.js"></script>
+<% } %>

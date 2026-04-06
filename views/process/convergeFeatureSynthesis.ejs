@@ -1,0 +1,148 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cid = problemId ? String(problemId) : '';
+  const backToPhase = cid ? `/process/${cid}/converge-ideas` : '/dashboard';
+  const backToIdeation = cid ? `/process/${cid}/ideation` : '/dashboard';
+  const initialState = {
+    functionalRequirements: Array.isArray(functionalRequirements) ? functionalRequirements : [],
+    nonFunctionalRequirements: Array.isArray(nonFunctionalRequirements) ? nonFunctionalRequirements : [],
+    ideas: Array.isArray(ideas) ? ideas.map((idea) => ({
+      id: String(idea && (idea.id || idea._id) ? (idea.id || idea._id) : ''),
+      text: idea && (idea.text || idea.content) ? String(idea.text || idea.content) : '(No idea text)'
+    })) : [],
+    featurePairs: Array.isArray(featurePairs) ? featurePairs : [],
+    featureCards: Array.isArray(featureCards) ? featureCards : [],
+    groupedFeatureCards: Array.isArray(groupedFeatureCards) ? groupedFeatureCards : [],
+    definedFeatures: Array.isArray(convergeData && convergeData.definedFeatures)
+      ? convergeData.definedFeatures.join('\n')
+      : ''
+  };
+  const initialStateJson = JSON.stringify(initialState).replace(/</g, '\\u003c');
+%>
+<div class="excite-enrol-page groundwork-page converge-feature-page">
+  <div class="groundwork-inner" data-converge-feature-root>
+    <div class="groundwork-tabs">
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= convergeFeatureSynthesisSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-converge-pill="feature-synthesis" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Feature Synthesis</span>
+      </span>
+    </div>
+
+    <div class="groundwork-header-row ideation-sota-header">
+      <h1 class="groundwork-title">Feature Synthesis</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <form action="/process/<%= cid %>/converge-ideas/feature-synthesis" method="POST" data-fs-form>
+      <input type="hidden" name="featurePairsJson" value="" data-fs-pairs-json>
+      <input type="hidden" name="featureCardsJson" value="" data-fs-feature-cards-json>
+      <input type="hidden" name="groupedFeatureCardsJson" value="" data-fs-grouped-feature-cards-json>
+      <input type="hidden" name="definedFeaturesText" value="" data-fs-defined-features>
+
+      <div class="converge-feature-grid">
+        <section class="converge-feature-panel">
+          <h2 class="converge-feature-panel__title">Requirements</h2>
+          <h3 class="converge-feature-panel__subheading">Functional</h3>
+          <div data-fs-functional-rows></div>
+          <h3 class="converge-feature-panel__subheading">Non-Functional</h3>
+          <div data-fs-nonfunctional-rows></div>
+        </section>
+
+        <section class="converge-feature-panel converge-feature-panel--ideas">
+          <h2 class="converge-feature-panel__title">Ideas</h2>
+          <div data-fs-idea-rows></div>
+          <p class="converge-feature-panel__empty" data-fs-idea-empty hidden>
+            No Ideas?<br>
+            Go back to the Ideation Phase to create new ones!
+          </p>
+        </section>
+      </div>
+
+      <div class="converge-feature-actions-top">
+        <button type="button" class="groundwork-submit-btn converge-feature-create-btn" data-fs-create-feature>
+          <span class="groundwork-submit-btn__text">Create Feature</span>
+          <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+        </button>
+        <a href="<%= backToIdeation %>" class="converge-feature-back-btn">Back To Ideation</a>
+      </div>
+
+      <section class="converge-feature-notes">
+        <div class="converge-feature-notes__title-row">
+          <h3 class="converge-feature-notes__title">Features</h3>
+          <div class="converge-feature-notes__actions" data-fs-feature-actions hidden>
+            <button type="button" class="converge-feature-notes__action-btn" data-fs-group-btn>Group</button>
+            <span class="converge-feature-notes__action-separator">|</span>
+            <button
+              type="button"
+              class="converge-feature-notes__action-btn converge-feature-notes__action-btn--danger"
+              data-fs-delete-btn
+              aria-haspopup="dialog"
+              aria-controls="delete-converge-feature-confirm-modal"
+            >Delete</button>
+          </div>
+        </div>
+        <p class="converge-feature-notes__copy">Make sure your features answer the following questions:</p>
+        <ul class="converge-feature-notes__list">
+          <li>Does it solve the problem?</li>
+          <li>Can it be built within the requirements defined?</li>
+          <li>Is it a breakthrough or a standard fix?</li>
+        </ul>
+        <div class="converge-feature-created-wrap">
+          <div class="converge-feature-created-grid" data-fs-feature-grid></div>
+          <p class="converge-feature-created-empty" data-fs-feature-empty>Create features by selecting a requirement and one/more ideas.</p>
+        </div>
+      </section>
+
+      <section class="converge-feature-notes converge-grouped-feature-notes">
+        <div class="converge-feature-notes__title-row">
+          <h3 class="converge-feature-notes__title">Grouped Features</h3>
+        </div>
+        <div class="converge-feature-created-wrap">
+          <div class="converge-feature-created-grid converge-grouped-feature-grid" data-fs-grouped-grid></div>
+          <p class="converge-feature-created-empty" data-fs-grouped-empty>Select 2 or more features and click Group to create grouped features.</p>
+        </div>
+      </section>
+
+      <div class="converge-feature-save-wrap">
+        <button type="submit" class="groundwork-submit-btn">
+          <span class="groundwork-submit-btn__text">Save</span>
+          <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="delete-converge-feature-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-converge-feature-confirm-title" aria-describedby="delete-converge-feature-confirm-desc" hidden>
+  <div class="delete-confirm-backdrop"></div>
+  <div class="delete-confirm-dialog">
+    <h3 id="delete-converge-feature-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+    <p id="delete-converge-feature-confirm-desc" class="delete-confirm-question">Are you sure you want to delete the selected feature(s)?</p>
+    <div class="delete-confirm-actions">
+      <button type="button" class="delete-confirm-cancel" id="delete-converge-feature-confirm-cancel">Cancel</button>
+      <button type="button" class="delete-confirm-delete" id="delete-converge-feature-confirm-delete">Delete</button>
+    </div>
+  </div>
+</div>
+<div id="delete-converge-group-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-converge-group-confirm-title" aria-describedby="delete-converge-group-confirm-desc" hidden>
+  <div class="delete-confirm-backdrop"></div>
+  <div class="delete-confirm-dialog">
+    <h3 id="delete-converge-group-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+    <p id="delete-converge-group-confirm-desc" class="delete-confirm-question">Are you sure you want to delete the selected grouped feature(s)?</p>
+    <div class="delete-confirm-actions">
+      <button type="button" class="delete-confirm-cancel" id="delete-converge-group-confirm-cancel">Cancel</button>
+      <button type="button" class="delete-confirm-delete" id="delete-converge-group-confirm-delete">Delete</button>
+    </div>
+  </div>
+</div>
+<div id="converge-group-min-selection-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="converge-group-min-selection-title" aria-describedby="converge-group-min-selection-desc" hidden>
+  <div class="delete-confirm-backdrop"></div>
+  <div class="delete-confirm-dialog">
+    <h3 id="converge-group-min-selection-title" class="delete-confirm-title">Select more features</h3>
+    <p id="converge-group-min-selection-desc" class="delete-confirm-question">Please select 2 or more features to group them.</p>
+    <div class="delete-confirm-actions">
+      <button type="button" class="delete-confirm-cancel" id="converge-group-min-selection-ok">OK</button>
+    </div>
+  </div>
+</div>
+<script type="application/json" id="convergeFeatureInitialState"><%- initialStateJson %></script>
+<script src="/javascripts/convergeFeatureSynthesis.js"></script>

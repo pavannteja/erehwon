@@ -6,7 +6,29 @@ const { Prototype } = require('../models/schemas');
 const Campground = require('../models/campgrounds');
 const multer = require('multer');
 const { prototypeStorage } = require('../cloudinary');
-const upload = multer({ storage: prototypeStorage });
+const path = require('path');
+
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'application/pdf', 'video/mp4']);
+const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf', '.mp4']);
+
+const upload = multer({
+  storage: prototypeStorage,
+  limits: { fileSize: MAX_FILE_SIZE_BYTES },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    const validType = ALLOWED_MIME_TYPES.has(file.mimetype) || ALLOWED_EXTENSIONS.has(ext);
+    if (!validType) {
+      return cb(new Error('Only JPEG, PNG, PDF, and MP4 files are allowed.'));
+    }
+    cb(null, true);
+  }
+});
+
+function expectsJson(req) {
+  const accept = String(req.get('accept') || '').toLowerCase();
+  return accept.includes('application/json') || (req.body && String(req.body.prototypeAjax) === '1');
+}
 
 // GET route to render prototyping page
 router.get('/prototyping/:problemId', isLoggedIn, catchAsync(async (req, res) => {
@@ -54,6 +76,12 @@ router.get('/prototyping/:problemId', isLoggedIn, catchAsync(async (req, res) =>
     prototype.files = [];
     await prototype.save();
   }
+
+  // Ensure additionalLinks array exists and is initialized
+  if (prototype && (!prototype.additionalLinks || !Array.isArray(prototype.additionalLinks))) {
+    prototype.additionalLinks = [];
+    await prototype.save();
+  }
   
   // Debug: Log prototype data
   if (prototype) {
@@ -89,6 +117,8 @@ router.get('/prototyping/:problemId', isLoggedIn, catchAsync(async (req, res) =>
   
   res.render('prototyping', {
     currentUser: req.user,
+    bodyClass: 'mission-launch-body',
+    suppressGlobalFlash: true,
     problemId: problemId,
     problem: campground,
     prototype: prototypeData
@@ -100,6 +130,16 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
   upload.array('prototypeFiles')(req, res, (err) => {
     if (err) {
       console.error('Multer upload error:', err);
+      if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        if (expectsJson(req)) {
+          return res.status(400).json({ ok: false, error: 'Each file must be 5MB or smaller.' });
+        }
+        req.flash('error', 'Each file must be 5MB or smaller.');
+        return res.redirect(`/prototyping/${req.params.problemId}`);
+      }
+      if (expectsJson(req)) {
+        return res.status(400).json({ ok: false, error: 'File upload failed: ' + err.message });
+      }
       req.flash('error', 'File upload failed: ' + err.message);
       return res.redirect(`/prototyping/${req.params.problemId}`);
     }
@@ -108,7 +148,14 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
 }, catchAsync(async (req, res) => {
   try {
     const { problemId } = req.params;
+    const ajax = expectsJson(req);
     const { title, description, notes } = req.body;
+    const additionalLinks = Array.isArray(req.body.additionalLinks)
+      ? req.body.additionalLinks
+      : (req.body.additionalLinks ? [req.body.additionalLinks] : []);
+    const sanitizedAdditionalLinks = additionalLinks
+      .map(link => String(link || '').trim())
+      .filter(link => link.length > 0);
     
     console.log('=== PROTOTYPE SAVE ===');
     console.log('Problem ID:', problemId);
@@ -120,11 +167,13 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
     // Verify the problem belongs to the user
     const campground = await Campground.findById(problemId);
     if (!campground) {
+      if (ajax) return res.status(404).json({ ok: false, error: 'Problem statement not found' });
       req.flash('error', 'Problem statement not found');
       return res.redirect('/');
     }
     
     if (campground.author.toString() !== req.user._id.toString()) {
+      if (ajax) return res.status(403).json({ ok: false, error: 'You do not have permission to access this problem' });
       req.flash('error', 'You do not have permission to access this problem');
       return res.redirect('/');
     }
@@ -181,7 +230,6 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
           fileUrl = file.path;
         } else {
           // Disk storage - path is local, need to create URL path
-          const path = require('path');
           const filename = path.basename(file.path);
           fileUrl = `/uploads/${filename}`;
         }
@@ -212,6 +260,7 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
       prototype.title = prototypeTitle;
       prototype.description = description !== undefined ? description : prototype.description;
       prototype.notes = notes !== undefined ? notes : prototype.notes;
+        prototype.additionalLinks = sanitizedAdditionalLinks;
       if (files.length > 0) {
         console.log('Adding files to existing prototype. Current files:', prototype.files ? prototype.files.length : 0);
         // Ensure files array exists
@@ -232,6 +281,7 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
       prototype = new Prototype({
         title: prototypeTitle,
         description: description || '',
+        additionalLinks: sanitizedAdditionalLinks,
         notes: notes || '',
         files: files,
         user: req.user._id,
@@ -248,6 +298,7 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
     prototype = new Prototype({
       title: prototypeTitle,
       description: description || '',
+      additionalLinks: sanitizedAdditionalLinks,
       notes: notes || '',
       files: files,
       user: req.user._id,
@@ -296,7 +347,14 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
       // Reload again after fix
       prototype = await Prototype.findById(prototype._id);
     }
-    
+    if (ajax) {
+      return res.json({
+        ok: true,
+        message: 'Saved Successfully!',
+        files: Array.isArray(prototype.files) ? prototype.files : []
+      });
+    }
+
     req.flash('success', files.length > 0 ? `Prototype saved successfully with ${files.length} file(s)!` : 'Prototype saved successfully!');
     res.redirect(`/prototyping/${problemId}`);
   } catch (error) {
@@ -307,6 +365,9 @@ router.post('/prototyping/:problemId', isLoggedIn, (req, res, next) => {
     console.error('Request params:', req.params);
     console.error('Request body:', req.body);
     console.error('Files:', req.files);
+    if (expectsJson(req)) {
+      return res.status(500).json({ ok: false, error: 'Failed to save prototype: ' + (error.message || 'Unknown error') });
+    }
     req.flash('error', 'Failed to save prototype: ' + (error.message || 'Unknown error'));
     res.redirect(`/prototyping/${req.params.problemId}`);
   }

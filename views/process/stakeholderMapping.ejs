@@ -1,0 +1,187 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const pid = problemId;
+  const backToPhase = `/process/${pid}/problem-discovery`;
+  const challengeUrl = `/process/${pid}/problem-discovery/challenge-intent`;
+  const researchUrl = `/process/${pid}/problem-discovery/problem-research`;
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="<%= challengeUrl %>" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= challengeSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="challenge" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Challenge &amp; Intent</span>
+      </a>
+      <a href="<%= researchUrl %>" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= researchSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pd-pill="research" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. Problem Research</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= stakeholdersSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-pd-pill="stakeholders" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">3. Stakeholder Mapping</span>
+      </span>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">Stakeholder Mapping</h1>
+      <a href="<%= backToPhase %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <form action="/process/<%= pid %>/problem-discovery/stakeholder-mapping" method="POST" novalidate class="validated-form stakeholder-mapping-form problem-discovery-ajax-form" data-pd-page="stakeholders">
+        <div class="pd-sm-section">
+          <% stakeholderCategories.forEach(function (cat) { %>
+            <div class="pd-sm-category-block mb-4">
+              <div class="row g-2 pd-sm-cat-header-row d-none d-md-flex align-items-start mb-0">
+                <div class="col-md-1" aria-hidden="true"></div>
+                <div class="col-md-11 pd-sm-cat-fields-col">
+                  <div class="row g-2 pd-sm-cat-col-headers pd-sm-stake-fields-row">
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Specific Person/Role</span></div>
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Why They Matter</span></div>
+                    <div class="col-md-4"><span class="form-label pd-pr-row-label mb-0">Contact Status</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="row g-2 align-items-start pd-sm-cat-body-row">
+                <div class="col-12 col-md-1 pd-sm-cat-label-col">
+                  <label class="form-label pd-pr-row-label mb-md-0"><%= cat.label %></label>
+                </div>
+                <div class="col-12 col-md-11 pd-sm-cat-fields-col">
+                  <div
+                    class="pd-sm-stake-category"
+                    data-base="<%= cat.base %>"
+                    data-optional="<%= cat.optional ? '1' : '0' %>"
+                    data-ph-person="<%= cat.phPerson %>"
+                    data-ph-why="<%= cat.phWhy %>"
+                  >
+                    <div class="pd-sm-stake-stack">
+                      <% cat.rows.forEach(function (row, idx) { %>
+                        <div class="pd-sm-stake-row mb-2">
+                          <div class="pd-sm-stake-shell">
+                            <div class="pd-repeat-remove-strip">
+                              <button type="button" class="pd-repeat-remove pd-sm-stake-remove" aria-label="Remove this row" style="display: <%= cat.rows.length >= 2 ? 'flex' : 'none' %>">
+                                <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                              </button>
+                            </div>
+                            <div class="row g-2 align-items-start pd-sm-stake-fields-row">
+                              <div class="col-md-4">
+                                <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Specific Person/Role</span>
+                                <textarea class="form-control" name="<%= cat.base %>_personRole[]" rows="4" placeholder="<%= cat.phPerson %>" <%= !cat.optional && idx === 0 ? 'required' : '' %>><%= row.personRole %></textarea>
+                              </div>
+                              <div class="col-md-4">
+                                <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Why They Matter</span>
+                                <textarea class="form-control" name="<%= cat.base %>_whyMatter[]" rows="4" placeholder="<%= cat.phWhy %>" <%= !cat.optional && idx === 0 ? 'required' : '' %>><%= row.whyMatter %></textarea>
+                              </div>
+                              <div class="col-md-4">
+                                <span class="form-label pd-pr-row-label pd-pr-mobile-col d-md-none">Contact Status</span>
+                                <div class="pd-sm-contact-stack" role="group" aria-label="Contact status">
+                                  <label class="pd-sm-contact-option">
+                                    <input type="hidden" name="<%= cat.base %>_planned[]" value="<%= row.contactPlanned ? '1' : '0' %>" class="pd-sm-contact-hidden">
+                                    <input type="checkbox" class="pd-sm-contact-box-input" <%= row.contactPlanned ? 'checked' : '' %> aria-label="Planned">
+                                    <span class="pd-sm-contact-box" aria-hidden="true"></span>
+                                    <span class="pd-sm-contact-text">Planned</span>
+                                  </label>
+                                  <label class="pd-sm-contact-option">
+                                    <input type="hidden" name="<%= cat.base %>_contacted[]" value="<%= row.contactContacted ? '1' : '0' %>" class="pd-sm-contact-hidden">
+                                    <input type="checkbox" class="pd-sm-contact-box-input" <%= row.contactContacted ? 'checked' : '' %> aria-label="Contacted">
+                                    <span class="pd-sm-contact-box" aria-hidden="true"></span>
+                                    <span class="pd-sm-contact-text">Contacted</span>
+                                  </label>
+                                  <label class="pd-sm-contact-option">
+                                    <input type="hidden" name="<%= cat.base %>_met[]" value="<%= row.contactMet ? '1' : '0' %>" class="pd-sm-contact-hidden">
+                                    <input type="checkbox" class="pd-sm-contact-box-input" <%= row.contactMet ? 'checked' : '' %> aria-label="Met">
+                                    <span class="pd-sm-contact-box" aria-hidden="true"></span>
+                                    <span class="pd-sm-contact-text">Met</span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      <% }); %>
+                    </div>
+                    <div class="pd-add-wrap">
+                      <button type="button" class="pd-add-field" aria-label="Add another row for <%= cat.label %>">
+                        <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+
+        <div class="pd-sm-section pd-sm-section--log mt-4">
+          <h2 class="pd-pr-subheading">Interaction Log</h2>
+          <p class="pd-pr-subtext text-muted">Make sure to have at least 5 meaningful conversations before proceeding to the next phase.</p>
+
+          <div class="pd-sm-log-stack">
+            <% interactionLogSections.forEach(function (sec) {
+              const rows = interactionLogByType[sec.key];
+              const prefix = 'sm_log_' + sec.key;
+            %>
+              <div class="pd-sm-log-section" data-log-entry-type="<%= sec.key %>" data-log-label="<%= sec.title %>">
+                <div class="pd-sm-log-section-head">
+                  <span class="pd-sm-log-section-num"><%= sec.num %>.</span>
+                  <span class="pd-sm-log-section-title"><%= sec.title %></span>
+                </div>
+                <div class="pd-sm-log-heading-row">
+                  <div class="pd-sm-log-heading-cell"><span class="form-label pd-pr-row-label pd-sm-log-col-label">Organization/Person</span></div>
+                  <div class="pd-sm-log-heading-cell"><span class="form-label pd-pr-row-label pd-sm-log-col-label">Objective</span></div>
+                  <div class="pd-sm-log-heading-cell"><span class="form-label pd-pr-row-label pd-sm-log-col-label">Date</span></div>
+                  <div class="pd-sm-log-heading-cell"><span class="form-label pd-pr-row-label pd-sm-log-col-label">Key Takeaways</span></div>
+                </div>
+                <div class="pd-sm-log-section-rows">
+                  <% rows.forEach(function (row, idx) { %>
+                    <div class="pd-sm-log-block">
+                      <div class="pd-sm-log-row-shell">
+                        <div class="pd-repeat-remove-strip pd-sm-log-remove-strip">
+                          <button type="button" class="pd-repeat-remove pd-sm-log-remove" aria-label="Remove this <%= sec.title %> entry" style="display: <%= rows.length >= 2 ? 'flex' : 'none' %>">
+                            <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                          </button>
+                        </div>
+                        <div class="row g-0 align-items-start pd-sm-log-body-row pd-sm-log-fields-row pd-sm-log-fields-row--eq-text">
+                          <div class="col-12">
+                            <textarea class="form-control pd-sm-log-textarea" name="<%= prefix %>_organization[]" rows="4" placeholder="e.g., XYZ IT Center" aria-label="Organization or person, <%= sec.title %>, row <%= idx + 1 %>"><%= row.organization %></textarea>
+                          </div>
+                          <div class="col-12">
+                            <textarea class="form-control pd-sm-log-textarea" name="<%= prefix %>_objective[]" rows="4" placeholder="e.g., Observe manual bottlenecks." aria-label="Objective, <%= sec.title %>, row <%= idx + 1 %>"><%= row.objective %></textarea>
+                          </div>
+                          <div class="col-12">
+                            <div class="pd-sm-date-field">
+                              <button type="button" class="pd-sm-date-pill">Select Date</button>
+                              <span class="pd-sm-date-text" aria-hidden="true"></span>
+                              <input type="date" class="form-control pd-sm-date-native" name="<%= prefix %>_date[]" value="<%= row.interactionDate %>" tabindex="-1" aria-label="Date, <%= sec.title %>, row <%= idx + 1 %>">
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <textarea class="form-control pd-sm-log-textarea" name="<%= prefix %>_takeaways[]" rows="4" placeholder="e.g., 30% of time is lost to manual logs." aria-label="Key takeaways, <%= sec.title %>, row <%= idx + 1 %>"><%= row.takeaways %></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+                <div class="pd-add-wrap">
+                  <button type="button" class="pd-add-field" data-pd-sm-log-add aria-label="Add another <%= sec.title %> entry">
+                    <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                  </button>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="mb-3 mt-4 text-center">
+          <button type="submit" class="groundwork-submit-btn">
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/javascripts/stakeholderMappingRepeat.js"></script>
+<script src="/javascripts/problemDiscoveryForms.js"></script>

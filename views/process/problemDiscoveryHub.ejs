@@ -1,0 +1,151 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cg = typeof campground !== 'undefined' && campground ? campground : (typeof problem !== 'undefined' ? problem : null);
+  const cid = cg && cg._id ? String(cg._id) : null;
+  const challengeDone = !!(cg && cg.problemDiscoveryChallengeIntentSubmitted);
+  const researchDone = !!(cg && cg.problemDiscoveryProblemResearchSubmitted);
+  const stakeholdersDone = !!(cg && cg.problemDiscoveryStakeholderMappingSubmitted);
+  const phase2Complete = challengeDone && researchDone && stakeholdersDone;
+  const backUrl = cid ? `/problems/${cid}` : '/dashboard';
+  const missionLaunchUrl = cid ? `/excite-and-enrol?campgroundId=${cid}` : '/excite-and-enrol';
+  const nextStepUrl = cid ? `/process/${cid}/analysis` : '#';
+  const challengeIntentUrl = cid ? `/process/${cid}/problem-discovery/challenge-intent` : '#';
+  const problemResearchUrl = cid ? `/process/${cid}/problem-discovery/problem-research` : '#';
+  const stakeholderMappingUrl = cid ? `/process/${cid}/problem-discovery/stakeholder-mapping` : '#';
+%>
+<div class="mission-launch-page">
+  <nav class="mission-launch-timeline" aria-label="Phase progress">
+    <ul class="mission-launch-timeline__list">
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= missionLaunchUrl %>" class="mission-launch-timeline__circle" aria-label="Open Mission Launch">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Mission Launch</span>
+      </li>
+      <li class="mission-launch-timeline__phase mission-launch-timeline__phase--active">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Problem Discovery</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="/process/<%= cid %>/analysis" class="mission-launch-timeline__circle" aria-label="Open Analysis">
+            <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Analysis</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Ideation</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Converge</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/solution-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Solution</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Prototype</span>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="mission-launch-main">
+    <div class="mission-launch-header">
+      <h1 class="mission-launch-title">Phase 2: Problem Discovery</h1>
+      <a href="<%= backUrl %>" class="mission-launch-back">Back to Project Overview</a>
+    </div>
+    <p class="mission-launch-intro">
+      To create a breakthrough, you must first understand the problem. Strip away assumptions and uncover the hidden hurdles that define the problem.
+    </p>
+
+    <div class="mission-launch-cards">
+      <section class="mission-launch-card<%= challengeDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">1. Challenge &amp; Intent</h2>
+        <p class="mission-launch-card__desc">Confirm your problem. Define why this specific challenge matters today and identify exactly what is missing in current solutions to spot your breakthrough.</p>
+        <% if (cid) { %>
+          <a href="<%= challengeIntentUrl %>" class="mission-launch-card__btn">
+            <span>Confirm Challenge</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <button type="button" class="mission-launch-card__btn mission-launch-card__btn--placeholder" disabled>
+            <span>Confirm Challenge</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </button>
+        <% } %>
+      </section>
+      <section class="mission-launch-card<%= researchDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">2. Problem Research</h2>
+        <p class="mission-launch-card__desc">Gather hard data on the economic, human, and environmental impact to prove why this problem is worth solving.</p>
+        <% if (cid) { %>
+          <a href="<%= problemResearchUrl %>" class="mission-launch-card__btn">
+            <span>Gather Evidence</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <button type="button" class="mission-launch-card__btn mission-launch-card__btn--placeholder" disabled>
+            <span>Gather Evidence</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </button>
+        <% } %>
+      </section>
+      <section class="mission-launch-card<%= stakeholdersDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">3. Stakeholder Mapping</h2>
+        <p class="mission-launch-card__desc">Map out the decision-makers and record your real-world interviews to gain the insights needed for a &lsquo;Success Model.&rsquo;</p>
+        <% if (cid) { %>
+          <a href="<%= stakeholderMappingUrl %>" class="mission-launch-card__btn">
+            <span>Identify Stakeholders</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <button type="button" class="mission-launch-card__btn mission-launch-card__btn--placeholder" disabled>
+            <span>Identify Stakeholders</span>
+            <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+          </button>
+        <% } %>
+      </section>
+    </div>
+
+    <p class="mission-launch-unlock<%= phase2Complete ? ' mission-launch-unlock--complete' : '' %>">
+      <% if (phase2Complete) { %>
+        Congratulations you have unlocked Phase 3: Analysis!
+      <% } else { %>
+        Complete the above sub-steps to unlock Phase 3: Analysis.
+      <% } %>
+    </p>
+    <div class="mission-launch-next-wrap">
+      <% if (phase2Complete && cid) { %>
+        <a href="<%= nextStepUrl %>" class="mission-launch-card__btn mission-launch-next-link">
+          <span>Move To Next Step</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      <% } else { %>
+        <button type="button" class="mission-launch-next" disabled aria-disabled="true">Move To Next Step</button>
+      <% } %>
+    </div>
+  </div>
+</div>

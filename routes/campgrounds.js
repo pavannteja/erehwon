@@ -27,25 +27,56 @@ router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.renderEditF
 router.post('/:id/notes', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
   try {
     const { id } = req.params;
-    const { notes } = req.body;
+    const { notes, notesPayload } = req.body;
+    const wantsJson =
+      String(req.body.notesAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
     console.log('Saving notes for campground:', id);
     console.log('Notes content:', notes);
     
     const campground = await Campground.findById(id);
     if (!campground) {
+      if (wantsJson) {
+        return res.status(404).json({ ok: false, error: 'Campground not found' });
+      }
       req.flash('error', 'Campground not found');
       return res.redirect('/');
     }
     
-    // Update notes field directly
-    campground.notes = notes || '';
+    // Backward-compatible storage:
+    // - if notesPayload is a JSON array, store all note slots as JSON string
+    // - otherwise store single note text in legacy format
+    let notesToSave = notes || '';
+    if (typeof notesPayload === 'string' && notesPayload.trim().length > 0) {
+      try {
+        const parsed = JSON.parse(notesPayload);
+        if (Array.isArray(parsed)) {
+          const normalized = parsed.map(slot => (typeof slot === 'string' ? slot : ''));
+          notesToSave = JSON.stringify(normalized);
+        }
+      } catch (e) {
+        // Keep legacy single-note save if payload parsing fails
+      }
+    }
+    campground.notes = notesToSave;
     await campground.save();
     
     console.log('Notes saved successfully, campground notes:', campground.notes);
+    if (wantsJson) {
+      return res.json({ ok: true, message: 'Notes saved successfully!' });
+    }
     req.flash('success', 'Notes saved successfully!');
     res.redirect(`/problems/${id}`);
   } catch (error) {
     console.error('Error saving notes:', error);
+    const wantsJson =
+      String(req.body.notesAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
+    if (wantsJson) {
+      return res.status(500).json({ ok: false, error: 'Failed to save notes. Please try again.' });
+    }
     req.flash('error', 'Failed to save notes: ' + error.message);
     res.redirect(`/problems/${req.params.id}`);
   }

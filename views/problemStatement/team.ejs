@@ -1,0 +1,70 @@
+<% layout('layouts/boilerplate')%>
+<%
+  const backToMissionLaunch = campgroundId ? `/excite-and-enrol?campgroundId=${campgroundId}` : '/excite-and-enrol';
+  const briefingUrl = campgroundId ? `/excite-and-enrol/briefing?campgroundId=${campgroundId}` : '/excite-and-enrol/briefing';
+  const ti = campground && campground.teamInfo ? campground.teamInfo : {};
+  const gwSubmitted = !!(campground && campground.missionLaunchGroundworkSubmitted);
+  const teamSubmitted = !!(campground && campground.missionLaunchTeamSubmitted);
+%>
+<div class="excite-enrol-page groundwork-page">
+  <div class="groundwork-inner">
+    <div class="groundwork-tabs">
+      <a href="<%= briefingUrl %>" class="groundwork-tab groundwork-tab--nav">
+        <span class="groundwork-tab-dot <%= gwSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--pending' %>" data-pill="groundwork" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">1. Groundwork</span>
+      </a>
+      <span class="groundwork-tab groundwork-tab--active" role="presentation">
+        <span class="groundwork-tab-dot <%= teamSubmitted ? 'groundwork-tab-dot--complete' : 'groundwork-tab-dot--current' %>" data-pill="team" aria-hidden="true"></span>
+        <span class="groundwork-tab-label">2. The Team</span>
+      </span>
+    </div>
+
+    <div class="groundwork-header-row">
+      <h1 class="groundwork-title">The Team</h1>
+      <a href="<%= backToMissionLaunch %>" class="groundwork-return-link">Return to Phase Overview</a>
+    </div>
+
+    <div class="groundwork-card">
+      <% if (!campgroundId) { %>
+        <p class="mb-4" style="font-family: 'Satoshi', sans-serif; font-size: 14px; color: rgba(29, 31, 33, 0.75);">
+          Open <a href="/excite-and-enrol" class="groundwork-return-link" style="display: inline;">Mission Launch</a> from a project to save team details.
+        </p>
+      <% } %>
+      <form action="/excite-and-enrol/team" method="POST" novalidate class="<%= campgroundId ? 'mission-launch-ajax-form ' : '' %>validated-form" data-mission-page="team">
+        <% if (campgroundId) { %>
+          <input type="hidden" name="campgroundId" value="<%= campgroundId %>">
+          <input type="hidden" name="missionLaunchAjax" value="1">
+        <% } %>
+        <div class="mb-3">
+          <label class="form-label" for="groupName">Team Name</label>
+          <input class="form-control" type="text" id="groupName" name="groupName" value="<%= ti.groupName || '' %>" placeholder="Enter team name" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="groupMembers">Team Members</label>
+          <textarea class="form-control" id="groupMembers" name="groupMembers" rows="5" required placeholder="Enter all team members"><%= ti.groupMembers || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="highImpactMissionWhy">Why are you choosing a high-impact mission over a standard project?</label>
+          <textarea class="form-control" id="highImpactMissionWhy" name="highImpactMissionWhy" rows="4" required placeholder="e.g., I want to tackle a boardroom-level challenge with real-world stakes."><%= ti.highImpactMissionWhy || '' %></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="missionEndKnownFor">What specific impact do you want to be known for when this mission ends?</label>
+          <textarea class="form-control" id="missionEndKnownFor" name="missionEndKnownFor" rows="4" required placeholder="e.g., Known for designing a scalable solution for rural water access."><%= ti.missionEndKnownFor || '' %></textarea>
+        </div>
+
+        <div class="mb-3 text-center">
+          <button type="submit" class="groundwork-submit-btn" <%= campgroundId ? '' : 'disabled' %>>
+            <span class="groundwork-submit-btn__text">Save</span>
+            <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<% if (campgroundId) { %>
+<script src="/javascripts/missionLaunchForms.js"></script>
+<% } %>

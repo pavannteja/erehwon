@@ -1,0 +1,114 @@
+<% layout('layouts/boilerplate') %>
+<%
+  const cid = (typeof campgroundId !== 'undefined' && campgroundId) ? campgroundId : null;
+  const cg = (typeof campground !== 'undefined' && campground) ? campground : null;
+  const groundworkDone = !!(cg && cg.missionLaunchGroundworkSubmitted);
+  const teamDone = !!(cg && cg.missionLaunchTeamSubmitted);
+  const phase1Complete = groundworkDone && teamDone && !!cid;
+  const nextStepUrl = cid ? `/process/${cid}/problem-discovery` : '#';
+  const briefingUrl = cid ? `/excite-and-enrol/briefing?campgroundId=${cid}` : '/excite-and-enrol/briefing';
+  const teamUrl = cid ? `/excite-and-enrol/team?campgroundId=${cid}` : '/excite-and-enrol/team';
+  const backUrl = cid ? `/problems/${cid}` : '/dashboard';
+%>
+<div class="mission-launch-page">
+  <!-- Phase timeline -->
+  <nav class="mission-launch-timeline" aria-label="Phase progress">
+    <ul class="mission-launch-timeline__list">
+      <li class="mission-launch-timeline__phase mission-launch-timeline__phase--active">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/mission-launch-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Mission Launch</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <% if (cid) { %>
+          <a href="<%= nextStepUrl %>" class="mission-launch-timeline__circle" aria-label="Open Problem Discovery">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </a>
+        <% } else { %>
+          <span class="mission-launch-timeline__circle">
+            <img src="/images/problem-discovery-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+          </span>
+        <% } %>
+        <span class="mission-launch-timeline__label">Problem Discovery</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/analysis-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Analysis</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/ideation-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Ideation</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/converge-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Converge</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/solution-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Solution</span>
+      </li>
+      <li class="mission-launch-timeline__phase">
+        <span class="mission-launch-timeline__circle">
+          <img src="/images/prototype-icon.png" alt="" class="mission-launch-timeline__icon-img" aria-hidden="true">
+        </span>
+        <span class="mission-launch-timeline__label">Prototype</span>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="mission-launch-main">
+    <div class="mission-launch-header">
+      <h1 class="mission-launch-title">Phase 1: Mission Launch</h1>
+      <a href="<%= backUrl %>" class="mission-launch-back">Back to Project Overview</a>
+    </div>
+    <p class="mission-launch-intro">
+      Every breakthrough starts with a solid foundation. Before tackling the problem, you must align your mission with global stakes and lock in your team.
+    </p>
+
+    <div class="mission-launch-cards">
+      <section class="mission-launch-card<%= groundworkDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">1. Groundwork</h2>
+        <p class="mission-launch-card__desc">Establish your context. Define the community hurdles you are obsessed with solving and align your mission with SDG goals.</p>
+        <a href="<%= briefingUrl %>" class="mission-launch-card__btn">
+          <span>Enter Briefing</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+      <section class="mission-launch-card<%= teamDone ? ' mission-launch-card--submitted' : '' %>">
+        <h2 class="mission-launch-card__title">2. The Team</h2>
+        <p class="mission-launch-card__desc">Identity defines impact. Forge your team, name it, and commit to the legacy you want to leave by the end of this mission.</p>
+        <a href="<%= teamUrl %>" class="mission-launch-card__btn">
+          <span>Assemble Team</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      </section>
+    </div>
+
+    <p class="mission-launch-unlock<%= phase1Complete ? ' mission-launch-unlock--complete' : '' %>">
+      <% if (phase1Complete) { %>
+        Congratulations you have unlocked Phase 2: Discovery!
+      <% } else { %>
+        Complete the above sub-steps to unlock Phase 2: Discovery.
+      <% } %>
+    </p>
+    <div class="mission-launch-next-wrap">
+      <% if (phase1Complete) { %>
+        <a href="<%= nextStepUrl %>" class="mission-launch-card__btn mission-launch-next-link">
+          <span>Move To Next Step</span>
+          <img src="/images/mission-launch-arrow.png" alt="" class="mission-launch-card__btn-icon" aria-hidden="true">
+        </a>
+      <% } else { %>
+        <button type="button" class="mission-launch-next" disabled aria-disabled="true">Move To Next Step</button>
+      <% } %>
+    </div>
+  </div>
+</div>

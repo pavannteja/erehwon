@@ -62,6 +62,7 @@ const prototypeSchema = new mongoose.Schema({
     fileType: { type: String }, // image, video, document, etc.
     uploadedAt: { type: Date, default: Date.now }
   }],
+  additionalLinks: [{ type: String }],
   notes: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
