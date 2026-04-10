@@ -86,9 +86,16 @@ router.post('/:id/notes', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
 router.post('/:id/images', isLoggedIn, isAuthor, upload.array('image'), catchAsync(async (req, res) => {
   try {
     const { id } = req.params;
+    const wantsJson =
+      String(req.body.imagesAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
     const campground = await Campground.findById(id);
     
     if (!campground) {
+      if (wantsJson) {
+        return res.status(404).json({ ok: false, error: 'Problem statement not found' });
+      }
       req.flash('error', 'Problem statement not found');
       return res.redirect('/');
     }
@@ -110,14 +117,31 @@ router.post('/:id/images', isLoggedIn, isAuthor, upload.array('image'), catchAsy
       });
       campground.images.push(...imgs);
       await campground.save();
+      if (wantsJson) {
+        return res.json({
+          ok: true,
+          message: `${req.files.length} image(s) uploaded successfully!`,
+          images: imgs
+        });
+      }
       req.flash('success', `${req.files.length} image(s) uploaded successfully!`);
     } else {
+      if (wantsJson) {
+        return res.status(400).json({ ok: false, error: 'No images selected' });
+      }
       req.flash('error', 'No images selected');
     }
     
     res.redirect(`/problems/${id}`);
   } catch (error) {
     console.error('Error uploading images:', error);
+    const wantsJson =
+      String(req.body.imagesAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
+    if (wantsJson) {
+      return res.status(500).json({ ok: false, error: 'Failed to upload images. Please try again.' });
+    }
     req.flash('error', 'Failed to upload images: ' + error.message);
     res.redirect(`/problems/${req.params.id}`);
   }
@@ -127,24 +151,42 @@ router.post('/:id/images', isLoggedIn, isAuthor, upload.array('image'), catchAsy
 router.delete('/:id/images/:filename', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
   try {
     const { id, filename } = req.params;
+    const decodedFilename = decodeURIComponent(filename || '');
+    const wantsJson =
+      String(req.body.imagesDeleteAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
     const campground = await Campground.findById(id);
     
     if (!campground) {
+      if (wantsJson) {
+        return res.status(404).json({ ok: false, error: 'Problem statement not found' });
+      }
       req.flash('error', 'Problem statement not found');
       return res.redirect('/');
     }
     
     // Delete from Cloudinary
     const { cloudinary } = require('../cloudinary');
-    await cloudinary.uploader.destroy(filename);
+    await cloudinary.uploader.destroy(decodedFilename);
     
     // Remove from campground
-    await campground.updateOne({ $pull: { images: { filename: filename } } });
+    await campground.updateOne({ $pull: { images: { filename: decodedFilename } } });
+    if (wantsJson) {
+      return res.json({ ok: true, filename: decodedFilename, message: 'Deleted successfully' });
+    }
     
     req.flash('success', 'Image deleted successfully!');
     res.redirect(`/problems/${id}`);
   } catch (error) {
     console.error('Error deleting image:', error);
+    const wantsJson =
+      String(req.body.imagesDeleteAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
+    if (wantsJson) {
+      return res.status(500).json({ ok: false, error: 'Failed to delete image. Please try again.' });
+    }
     req.flash('error', 'Failed to delete image: ' + error.message);
     res.redirect(`/problems/${req.params.id}`);
   }

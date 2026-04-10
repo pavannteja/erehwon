@@ -193,6 +193,19 @@ const campgroundSchema = new Schema ({
         type: Schema.Types.ObjectId,
         ref: 'CorporateProblem'
     },
+    // Dashboard-created custom project metadata
+    isStudentLedProject: {
+        type: Boolean,
+        default: false
+    },
+    customProjectSkills: {
+        type: [String],
+        default: undefined
+    },
+    customProjectObjective: {
+        type: String,
+        default: ''
+    },
     // Phase 1 Mission Launch: pill state (green only after successful Submit on that step)
     missionLaunchGroundworkSubmitted: {
         type: Boolean,

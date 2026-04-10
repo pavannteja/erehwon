@@ -1154,6 +1154,26 @@ main.container {
     background: #c82333;
 }
 
+.delete-confirm-delete--loading {
+    position: relative;
+    pointer-events: none;
+    padding-right: 34px;
+}
+
+.delete-confirm-delete--loading::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    margin-top: -7px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: mission-launch-spin 0.65s linear infinite;
+}
+
 /* Adopters working on this problem – 60px below delete button, admin only */
 .corporate-problem-adopters-section {
     margin-top: 60px;
@@ -3762,11 +3782,27 @@ body.mission-launch-body .project-overview-page.mission-launch-page {
     flex-shrink: 0;
 }
 
+.project-overview-page .po-hero-cta {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
 .project-overview-page a.po-resume-btn.groundwork-submit-btn {
     padding: 12px 22px;
     font-size: 0.95rem;
     font-family: 'Satoshi', sans-serif;
     font-weight: 500;
+}
+
+.project-overview-page .po-hero-edit-link {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.project-overview-page .po-link-muted.po-hero-edit-link {
+    font-size: 15px;
 }
 
 /* Project Status: full-width row; flex dashes absorb space between labels */
@@ -3925,6 +3961,12 @@ body.mission-launch-body .project-overview-page.mission-launch-page {
     background: transparent;
 }
 
+.project-overview-page .po-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .project-overview-page .po-image-tile img {
     width: 100%;
     height: 100%;
@@ -3940,20 +3982,32 @@ body.mission-launch-body .project-overview-page.mission-launch-page {
 
 .project-overview-page .po-delete-icon-btn {
     border: none;
-    background: transparent;
-    padding: 0.25rem;
-    line-height: 0;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 3px 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    overflow: visible;
 }
 
 .project-overview-page .po-delete-icon-btn:hover {
-    opacity: 0.85;
+    background: #ffffff;
 }
 
 .project-overview-page .po-delete-icon-btn:focus-visible {
     outline: 2px solid rgba(29, 31, 33, 0.35);
     outline-offset: 2px;
+}
+
+.project-overview-page .po-image-delete .ideation-delete-btn__icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+    object-fit: contain;
 }
 
 .project-overview-page .po-btn-delete-with-icon {

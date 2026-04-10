@@ -1,0 +1,244 @@
+<% layout('layouts/boilerplate') %>
+<%
+var isEditMode = !!(typeof project !== 'undefined' && project);
+var formAction = isEditMode ? ('/dashboard/projects/' + project._id + '/edit') : '/dashboard/new-project';
+var titleValue = isEditMode ? (project.title || '') : '';
+var challengeValue = isEditMode ? (project.problem || '') : '';
+var objectiveValue = isEditMode ? (project.customProjectObjective || project.description || '') : '';
+var initialSkills = [];
+if (isEditMode && Array.isArray(project.customProjectSkills)) {
+    initialSkills = project.customProjectSkills
+        .map(function (skill) { return String(skill || '').trim(); })
+        .filter(function (skill) { return skill.length > 0; })
+        .slice(0, 3);
+}
+if (!initialSkills.length) initialSkills = [''];
+%>
+<style>
+.custom-project-page .custom-project-form textarea.form-control {
+    min-height: 100px;
+}
+
+.custom-project-page .custom-project-skills-group {
+    display: block;
+}
+
+.custom-project-page .custom-project-label-muted {
+    color: rgba(29, 31, 33, 0.5) !important;
+}
+
+.custom-project-page .custom-project-skills-fields {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-project-page .pd-add-wrap {
+    margin-top: 15px;
+}
+
+.custom-project-page .custom-project-skill-field {
+    margin: 0;
+}
+</style>
+
+<div class="excite-enrol-page groundwork-page custom-project-page">
+    <div class="groundwork-inner">
+        <div class="groundwork-header-row">
+            <h1 class="groundwork-title">Project Details</h1>
+            <a href="<%= isEditMode ? ('/problems/' + project._id) : '/dashboard' %>" class="groundwork-return-link"><%= isEditMode ? 'Return to Project Overview' : 'Return to Dashboard' %></a>
+        </div>
+
+        <div class="groundwork-card">
+            <form class="custom-project-form validated-form" action="<%= formAction %>" method="POST" id="new-project-form" novalidate>
+                <div class="mb-3">
+                    <label class="form-label" for="np-title">Project Name</label>
+                    <input class="form-control" type="text" id="np-title" name="title" value="<%= titleValue %>" placeholder="e.g. Decentralized Urban Energy" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="np-challenge">Challenge</label>
+                    <textarea class="form-control" id="np-challenge" name="challenge" rows="4" placeholder="e.g. High maintenance costs and unreliable grids in rural settlements." required><%= challengeValue %></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="np-objective">Objective</label>
+                    <textarea class="form-control" id="np-objective" name="objective" rows="4" placeholder="e.g. To develop a self-sustaining kinetic floor tile for off-grid lighting." required><%= objectiveValue %></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Skills to be developed along the way <span class="custom-project-label-muted">(Max 3)</span></label>
+                    <div class="custom-project-skills-group">
+                        <div class="custom-project-skills-fields" id="np-skills-fields">
+                            <% initialSkills.forEach(function (skill, idx) { %>
+                            <div class="pd-repeat-row custom-project-skill-row">
+                                <div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">
+                                    <button type="button" class="pd-repeat-remove custom-project-skill-remove" aria-label="Remove this skill" style="display: none;">
+                                        <img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">
+                                    </button>
+                                    <input class="form-control custom-project-skill-field" type="text" id="np-skill-input-<%= idx + 1 %>" value="<%= skill %>" placeholder="e.g. Competitive Analysis">
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                        <div class="pd-add-wrap">
+                            <button type="button" class="pd-add-field" id="np-skill-add-btn" aria-label="Add another skill textbox">
+                                <img src="/images/challenge-intent-plus.png" alt="" class="pd-add-field__icon" width="11" height="11" aria-hidden="true">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="np-skills-hidden" name="skills" value="[]">
+
+                <div class="mb-3 text-center">
+                    <button type="submit" class="groundwork-submit-btn" id="new-project-save-btn">
+                        <span class="groundwork-submit-btn__text">Save</span>
+                        <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="np-skills-limit-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="np-skills-limit-title" aria-describedby="np-skills-limit-desc" hidden>
+    <div class="delete-confirm-backdrop"></div>
+    <div class="delete-confirm-dialog">
+        <h3 id="np-skills-limit-title" class="delete-confirm-title">Notice</h3>
+        <p id="np-skills-limit-desc" class="delete-confirm-question">You can add up to 3 skills only.</p>
+        <div class="delete-confirm-actions">
+            <button type="button" class="delete-confirm-cancel" id="np-skills-limit-ok">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    function setButtonLoading(btn, loading) {
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.classList.toggle('groundwork-submit-btn--loading', loading);
+        btn.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+
+    var form = document.getElementById('new-project-form');
+    var saveBtn = document.getElementById('new-project-save-btn');
+    var addBtn = document.getElementById('np-skill-add-btn');
+    var fieldsWrap = document.getElementById('np-skills-fields');
+    var hidden = document.getElementById('np-skills-hidden');
+    var limitModal = document.getElementById('np-skills-limit-modal');
+    var limitOkBtn = document.getElementById('np-skills-limit-ok');
+    if (!form || !saveBtn || !addBtn || !fieldsWrap || !hidden || !limitModal || !limitOkBtn) return;
+
+    var MAX_SKILLS = 3;
+
+    function getSkillInputs() {
+        return Array.prototype.slice.call(fieldsWrap.querySelectorAll('.custom-project-skill-field'));
+    }
+
+    function getSkillRows() {
+        return Array.prototype.slice.call(fieldsWrap.querySelectorAll('.custom-project-skill-row'));
+    }
+
+    function openLimitModal() {
+        limitModal.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLimitModal() {
+        limitModal.setAttribute('hidden', '');
+        document.body.style.overflow = '';
+    }
+
+    function syncRemoveButtons() {
+        var rows = getSkillRows();
+        var show = rows.length >= 2;
+        rows.forEach(function (row) {
+            var btn = row.querySelector('.custom-project-skill-remove');
+            if (!btn) return;
+            btn.style.display = show ? 'flex' : 'none';
+            btn.disabled = !show;
+        });
+    }
+
+    function syncHidden() {
+        var uniqueSkills = [];
+        getSkillInputs().forEach(function (input) {
+            var value = String(input.value || '').trim();
+            if (!value) return;
+            var isDuplicate = uniqueSkills.some(function (existing) {
+                return existing.toLowerCase() === value.toLowerCase();
+            });
+            if (!isDuplicate) uniqueSkills.push(value);
+        });
+        hidden.value = JSON.stringify(uniqueSkills.slice(0, MAX_SKILLS));
+    }
+
+    function createSkillRow(nextIndex) {
+        var row = document.createElement('div');
+        row.className = 'pd-repeat-row custom-project-skill-row';
+        row.innerHTML = '' +
+            '<div class="pd-repeat-row-shell pd-repeat-row-shell--close-inside">' +
+                '<button type="button" class="pd-repeat-remove custom-project-skill-remove" aria-label="Remove this skill">' +
+                    '<img src="/images/challenge-intent-close.png" alt="" class="pd-repeat-remove__icon" width="13" height="13" aria-hidden="true">' +
+                '</button>' +
+                '<input class="form-control custom-project-skill-field" type="text" id="np-skill-input-' + nextIndex + '" placeholder="e.g. Competitive Analysis">' +
+            '</div>';
+        return row;
+    }
+
+    function addSkillField() {
+        var rows = getSkillRows();
+        if (rows.length >= MAX_SKILLS) {
+            openLimitModal();
+            return;
+        }
+
+        var row = createSkillRow(rows.length + 1);
+        fieldsWrap.appendChild(row);
+        syncRemoveButtons();
+        var input = row.querySelector('.custom-project-skill-field');
+        input.focus();
+    }
+
+    fieldsWrap.addEventListener('input', function (e) {
+        if (e.target && e.target.classList.contains('custom-project-skill-field')) {
+            syncHidden();
+        }
+    });
+
+    fieldsWrap.addEventListener('keydown', function (e) {
+        if (e.target && e.target.classList.contains('custom-project-skill-field') && e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+
+    fieldsWrap.addEventListener('click', function (e) {
+        var removeBtn = e.target.closest('.custom-project-skill-remove');
+        if (!removeBtn || removeBtn.disabled) return;
+        var row = removeBtn.closest('.custom-project-skill-row');
+        if (!row) return;
+        row.remove();
+        syncRemoveButtons();
+        syncHidden();
+    });
+
+    addBtn.addEventListener('click', addSkillField);
+    limitOkBtn.addEventListener('click', closeLimitModal);
+    limitModal.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-confirm-backdrop')) {
+            closeLimitModal();
+        }
+    });
+
+    form.addEventListener('submit', function () {
+        syncHidden();
+        setButtonLoading(saveBtn, true);
+    });
+
+    syncRemoveButtons();
+    syncHidden();
+})();
+</script>

@@ -35,13 +35,20 @@ module.exports.createReview = async (req, res)=>{
       });
     }
     req.flash('success', 'Created new review');
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.redirect(`/problems/${campground._id}`);
   }
 
   module.exports.deleteReview =async (req, res)=>{
     const { id, reviewId } = req.params;
+    const wantsJson =
+      String(req.body.reviewsDeleteAjax || '') === '1' ||
+      req.xhr ||
+      (req.get('Accept') || '').includes('application/json');
     await Campground.findByIdAndUpdate(id, {$pull: { reviews: reviewId} });
     await Review.findByIdAndDelete(reviewId);
+    if (wantsJson) {
+      return res.json({ ok: true, reviewId: String(reviewId), message: 'Deleted successfully' });
+    }
     req.flash('success', 'successfully deleted a review')
-    res.redirect(`/campgrounds/${id}`);
+    res.redirect(`/problems/${id}`);
   }

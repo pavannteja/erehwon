@@ -140,13 +140,13 @@
 .project-card-header-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
 }
 
 .project-card-brand {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     min-width: 0;
 }
 
@@ -379,7 +379,7 @@
                 <p>Manage and track your active innovation initiatives</p>
             </div>
             <div class="dashboard-actions">
-                <a href="/excite-and-enrol" class="new-project-btn">
+                <a href="/dashboard/new-project" class="new-project-btn">
                     <i class="fas fa-plus"></i> <%= campgrounds.length === 0 ? 'Create Your First Project' : 'New Project' %>
                 </a>
                 <% if (currentUser && !currentUser.isTeam) { %>
@@ -398,7 +398,7 @@
                 <h2>No Projects Yet</h2>
                 <p>Start by creating your first project to begin your innovation journey!</p>
                 <div class="dashboard-actions justify-content-center flex-wrap">
-                    <a href="/excite-and-enrol" class="empty-state-btn">
+                    <a href="/dashboard/new-project" class="empty-state-btn">
                         <i class="fas fa-plus"></i> Create Your First Project
                     </a>
                     <% if (currentUser && !currentUser.isTeam) { %>
@@ -411,6 +411,9 @@
         <% } else { %>
             <div class="projects-grid">
                 <% campgrounds.forEach(campground => { 
+                    const customSkills = Array.isArray(campground.customProjectSkills)
+                        ? campground.customProjectSkills.map(s => String(s || '').trim()).filter(Boolean).slice(0, 3)
+                        : [];
                     // Get team member initials for avatars
                     let teamInitials = [];
                     if (campground.teamInfo && campground.teamInfo.groupMembers) {
@@ -438,9 +441,15 @@
                         </div>
                         <p class="project-card-innovation">Incremental Innovation</p>
                         <div class="project-card-pills">
+                            <% if (campground.isStudentLedProject && customSkills.length > 0) { %>
+                            <% customSkills.forEach(skill => { %>
+                            <span class="project-card-pill"><%= skill %></span>
+                            <% }); %>
+                            <% } else { %>
                             <span class="project-card-pill">Ideation</span>
                             <span class="project-card-pill">Market Research</span>
                             <span class="project-card-pill">Strategy</span>
+                            <% } %>
                         </div>
                         <p class="project-card-description">
                             <%= campground.description || campground.problem || 'Innovation project for solving real-world problems' %>
@@ -464,7 +473,6 @@
                                 <a href="/problems/<%= campground._id %>" class="open-btn">
                                     Open <i class="fas fa-arrow-right"></i>
                                 </a>
-                                <p class="project-card-adopted">10+ students have adopted this mission</p>
                             </div>
                         </div>
                     </div>

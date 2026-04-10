@@ -77,13 +77,15 @@ const resumeHref = overviewPhaseHref(phases[currentStage - 1].key);
 const gwShow = campground.missionLaunchGroundworkInfo || {};
 const tiShow = campground.teamInfo || {};
 const corp = campground.adoptedFromCorporateProblem;
-const subtitle = (corp && corp.companyName)
-    ? corp.companyName
-    : (gwShow.schoolName || tiShow.schoolName || 'Innovation project');
+const subtitle = campground.isStudentLedProject
+    ? 'Student-Led Project'
+    : ((corp && corp.companyName)
+        ? corp.companyName
+        : (gwShow.schoolName || tiShow.schoolName || 'Innovation project'));
 const challengeText = campground.problem || campground.description || 'Describe the challenge your team is working on.';
 const ps = campground.problemStatementInfo || {};
 const customPs = ps.customProblem || {};
-const objectiveText = customPs.expectedBenefit || campground.description || challengeText;
+const objectiveText = campground.customProjectObjective || customPs.expectedBenefit || campground.description || challengeText;
 const notesRaw = campground.notes || '';
 let noteSlots = [];
 if (typeof notesRaw === 'string') {
@@ -120,7 +122,9 @@ const canEditProject = currentUser && (
                     <p class="po-hero-sub"><%= subtitle %></p>
                 </div>
             </div>
-            <a href="<%= resumeHref %>" class="po-resume-btn groundwork-submit-btn"><span class="groundwork-submit-btn__text">Resume project</span></a>
+            <div class="po-hero-cta">
+                <a href="<%= resumeHref %>" class="po-resume-btn groundwork-submit-btn"><span class="groundwork-submit-btn__text">Resume project</span></a>
+            </div>
         </header>
 
         <section class="po-card" aria-labelledby="po-challenge-heading">
@@ -155,7 +159,7 @@ const canEditProject = currentUser && (
             <h2 class="po-section-title" id="po-images-heading">Problem Images</h2>
             <p class="po-section-lead po-section-lead--full">Document the problem. Upload visual evidence showing the problem&rsquo;s nature, its real-world occurrence, and the specific hurdles preventing a breakthrough.</p>
             <% if (canEditProject) { %>
-            <form action="/problems/<%= campground._id %>/images" method="POST" enctype="multipart/form-data" id="po-image-upload-form">
+            <form action="/problems/<%= campground._id %>/images" method="POST" enctype="multipart/form-data" id="po-image-upload-form" data-ajax-upload-bound="0">
                 <section class="prototype-upload-card">
                     <div class="prototype-dropzone" id="poProblemImageDropzone">
                         <input type="file" id="po-image-input" name="image" multiple accept="image/jpeg,image/png,.jpg,.jpeg,.png" hidden aria-label="Choose images to upload">
@@ -170,7 +174,10 @@ const canEditProject = currentUser && (
                 <p class="prototype-file-error" id="poProblemFileError" role="alert" aria-live="polite"></p>
                 <ul class="prototype-selected-files" id="poProblemSelectedFiles" aria-live="polite"></ul>
                 <div class="prototype-save-wrap">
-                    <button type="submit" class="groundwork-submit-btn prototype-save-btn"><span class="groundwork-submit-btn__text">Upload</span></button>
+                    <button type="submit" class="groundwork-submit-btn prototype-save-btn">
+                        <span class="groundwork-submit-btn__text">Upload</span>
+                        <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
             <% } else { %>
@@ -184,24 +191,34 @@ const canEditProject = currentUser && (
             <% } %>
 
             <% if (campground.images && campground.images.length > 0) { %>
-            <ul class="po-file-list" aria-label="Uploaded files">
-                <% campground.images.forEach((img) => { %>
-                <li><a href="<%= img.url %>" target="_blank" rel="noopener noreferrer"><%= img.filename || 'Image' %></a></li>
-                <% }); %>
-            </ul>
             <div class="po-images-grid">
-                <% campground.images.forEach((img) => { %>
+                <% campground.images.forEach((img, idx) => { %>
                 <div class="po-image-tile">
-                    <img src="<%= img.url %>" alt="Problem image">
+                    <a href="<%= img.url %>" target="_blank" rel="noopener noreferrer" class="po-image-link" aria-label="Open full image">
+                        <img src="<%= img.url %>" alt="Problem image">
+                    </a>
                     <% if (canEditProject) { %>
-                    <form class="po-image-delete" action="/problems/<%= campground._id %>/images/<%= img.filename %>?_method=DELETE" method="POST">
-                        <button type="submit" class="po-delete-icon-btn" onclick="return confirm('Delete this image?')" aria-label="Delete image">
-                            <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true">
+                    <form class="po-image-delete" id="po-image-delete-form-<%= idx %>" action="/problems/<%= campground._id %>/images/<%= encodeURIComponent(img.filename || '') %>?_method=DELETE" method="POST">
+                        <button type="button" class="po-delete-icon-btn po-image-delete-trigger" data-form-id="po-image-delete-form-<%= idx %>" aria-haspopup="dialog" aria-controls="po-image-delete-confirm-modal" aria-label="Delete image">
+                            <img src="/images/delete-icon.png" alt="" class="ideation-delete-btn__icon" width="14" height="14" aria-hidden="true">
                         </button>
                     </form>
                     <% } %>
                 </div>
                 <% }); %>
+            </div>
+            <% } %>
+            <% if (canEditProject) { %>
+            <div id="po-image-delete-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="po-image-delete-confirm-title" aria-describedby="po-image-delete-confirm-desc" hidden>
+                <div class="delete-confirm-backdrop"></div>
+                <div class="delete-confirm-dialog">
+                    <h3 id="po-image-delete-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+                    <p id="po-image-delete-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this image?</p>
+                    <div class="delete-confirm-actions">
+                        <button type="button" class="delete-confirm-cancel" id="po-image-delete-confirm-cancel">Cancel</button>
+                        <button type="button" class="delete-confirm-delete" id="po-image-delete-confirm-delete">Delete</button>
+                    </div>
+                </div>
             </div>
             <% } %>
         </section>
@@ -240,7 +257,7 @@ const canEditProject = currentUser && (
                         <span class="groundwork-submit-btn__text">Save note</span>
                         <span class="groundwork-submit-btn__spinner" aria-hidden="true"></span>
                     </button>
-                    <a href="/ideation/my-brainstorms?problemId=<%= campground._id %>" class="po-link-muted">View my brainstorm</a>
+                    <a href="/process/<%= campground._id %>/ideation/idea-generation" class="po-link-muted">View ideation</a>
                 </div>
             </form>
             <script type="application/json" id="po-notes-initial-state"><%- JSON.stringify(noteSlots) %></script>
@@ -319,8 +336,8 @@ const canEditProject = currentUser && (
                         </div>
                         <p class="po-review-text"><%= review.body %></p>
                         <% if (currentUser && review.author && typeof review.author.equals === 'function' && review.author.equals(currentUser._id)) { %>
-                        <form action="/problems/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-                            <button type="submit" class="po-btn-danger-outline po-btn-delete-with-icon">
+                        <form class="po-review-delete-form" id="po-review-delete-form-<%= review._id %>" action="/problems/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                            <button type="button" class="po-btn-danger-outline po-btn-delete-with-icon po-review-delete-trigger" data-form-id="po-review-delete-form-<%= review._id %>" aria-haspopup="dialog" aria-controls="po-review-delete-confirm-modal">
                                 <img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true">
                                 <span>Delete</span>
                             </button>
@@ -334,20 +351,68 @@ const canEditProject = currentUser && (
             <% } else { %>
             <p class="po-section-lead" style="margin-bottom:0">No reviews yet. Be the first to share feedback.</p>
             <% } %>
+            <% if (currentUser) { %>
+            <div id="po-review-delete-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="po-review-delete-confirm-title" aria-describedby="po-review-delete-confirm-desc" hidden>
+                <div class="delete-confirm-backdrop"></div>
+                <div class="delete-confirm-dialog">
+                    <h3 id="po-review-delete-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+                    <p id="po-review-delete-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this review?</p>
+                    <div class="delete-confirm-actions">
+                        <button type="button" class="delete-confirm-cancel" id="po-review-delete-confirm-cancel">Cancel</button>
+                        <button type="button" class="delete-confirm-delete" id="po-review-delete-confirm-delete">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <% } %>
         </section>
 
-        <% if (canEditProject) { %>
+        <% if (canEditProject && !corp) { %>
         <section class="po-card" aria-label="Problem statement actions">
             <div class="po-statement-actions">
-                <a href="/problems/<%= campground._id %>/edit" class="groundwork-submit-btn"><span class="groundwork-submit-btn__text">Edit problem statement</span></a>
-                <form class="d-inline" action="/problems/<%= campground._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this problem statement?');">
-                    <button type="submit" class="ideation-theme-delete-btn">
+                <a href="<%= campground.isStudentLedProject ? ('/dashboard/projects/' + campground._id + '/edit') : ('/problems/' + campground._id + '/edit') %>" class="groundwork-submit-btn"><span class="groundwork-submit-btn__text">Edit problem statement</span></a>
+                <form class="d-inline" id="po-delete-problem-form" action="/problems/<%= campground._id %>?_method=DELETE" method="POST">
+                    <button type="button" class="ideation-theme-delete-btn" id="po-delete-problem-trigger" aria-haspopup="dialog" aria-controls="po-delete-problem-confirm-modal">
                         <img src="/images/delete-icon.png" alt="" class="ideation-delete-btn__icon" width="14" height="14" aria-hidden="true">
                         <span>Delete problem statement</span>
                     </button>
                 </form>
             </div>
         </section>
+        <div id="po-delete-problem-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="po-delete-problem-confirm-title" aria-describedby="po-delete-problem-confirm-desc" hidden>
+            <div class="delete-confirm-backdrop"></div>
+            <div class="delete-confirm-dialog">
+                <h3 id="po-delete-problem-confirm-title" class="delete-confirm-title">Confirm delete</h3>
+                <p id="po-delete-problem-confirm-desc" class="delete-confirm-question">Are you sure you want to delete this problem statement?</p>
+                <div class="delete-confirm-actions">
+                    <button type="button" class="delete-confirm-cancel" id="po-delete-problem-confirm-cancel">Cancel</button>
+                    <button type="button" class="delete-confirm-delete" id="po-delete-problem-confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <% if (canEditProject && corp) { %>
+        <section class="po-card" aria-label="Problem statement actions">
+            <div class="po-statement-actions">
+                <form class="d-inline" id="po-unadopt-problem-form" action="/problems/<%= campground._id %>?_method=DELETE" method="POST">
+                    <button type="button" class="ideation-theme-delete-btn" id="po-unadopt-problem-trigger" aria-haspopup="dialog" aria-controls="po-unadopt-problem-confirm-modal">
+                        <img src="/images/delete-icon.png" alt="" class="ideation-delete-btn__icon" width="14" height="14" aria-hidden="true">
+                        <span>Unadopt problem statement</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+        <div id="po-unadopt-problem-confirm-modal" class="delete-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="po-unadopt-problem-confirm-title" aria-describedby="po-unadopt-problem-confirm-desc" hidden>
+            <div class="delete-confirm-backdrop"></div>
+            <div class="delete-confirm-dialog">
+                <h3 id="po-unadopt-problem-confirm-title" class="delete-confirm-title">Confirm unadopt</h3>
+                <p id="po-unadopt-problem-confirm-desc" class="delete-confirm-question">Are you sure you want to unadopt this problem statement?</p>
+                <div class="delete-confirm-actions">
+                    <button type="button" class="delete-confirm-cancel" id="po-unadopt-problem-confirm-cancel">Cancel</button>
+                    <button type="button" class="delete-confirm-delete" id="po-unadopt-problem-confirm-delete">Unadopt</button>
+                </div>
+            </div>
+        </div>
         <% } %>
 
         <% if (campground.solution) { %>
@@ -359,8 +424,15 @@ const canEditProject = currentUser && (
 
         <section class="po-card" aria-labelledby="po-expert-heading">
             <h2 class="po-section-title" id="po-expert-heading">Expert Consultation</h2>
-            <p class="po-section-lead po-section-lead--full">Need clarity on the mission? Schedule a session with the problem owners or our innovation mentors to refine your discovery.</p>
+            <p class="po-section-lead po-section-lead--full">
+                <% if (campground.isStudentLedProject) { %>
+                Need clarity on the mission? Schedule a session with our innovation mentors to refine your discovery.
+                <% } else { %>
+                Need clarity on the mission? Schedule a session with the problem owners or our innovation mentors to refine your discovery.
+                <% } %>
+            </p>
             <div class="po-expert-grid">
+                <% if (!campground.isStudentLedProject) { %>
                 <div class="po-expert-column">
                     <button type="button" class="po-expert-card" disabled aria-label="Consult Problem Owner (coming soon)">
                         <span class="po-expert-card-title">Consult Problem Owner</span>
@@ -368,6 +440,7 @@ const canEditProject = currentUser && (
                     </button>
                     <p class="po-expert-hint">Hint: Sync with the industry team to understand the real-world stakes.</p>
                 </div>
+                <% } %>
                 <div class="po-expert-column">
                     <button type="button" class="po-expert-card" disabled aria-label="Talk to Innovation Mentor (coming soon)">
                         <span class="po-expert-card-title">Talk to Innovation Mentor</span>
@@ -380,17 +453,62 @@ const canEditProject = currentUser && (
     </div>
 </div>
 
+<script src="/javascripts/projectOverviewImageUpload.js"></script>
 <script>
 (function () {
     var MAX = 5 * 1024 * 1024;
+    var MIN_LOADING_MS = 2000;
     var form = document.getElementById('po-image-upload-form');
     if (!form) return;
+    if (form.dataset.ajaxUploadBound === '1') return;
     var input = document.getElementById('po-image-input');
     var dropzone = document.getElementById('poProblemImageDropzone');
     var browseBtn = document.getElementById('poProblemBrowseBtn');
     var fileError = document.getElementById('poProblemFileError');
     var dropzoneFileName = document.getElementById('poDropzoneFileName');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var imagesSection = document.querySelector('section[aria-labelledby="po-images-heading"]');
     if (!input || !dropzone) return;
+
+    function ensureToastEl() {
+        var el = document.getElementById('mission-launch-saved-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'mission-launch-saved-toast';
+            el.className = 'mission-launch-saved-toast';
+            el.setAttribute('role', 'status');
+            el.textContent = 'Uploaded successfully!';
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    function showSavedToast(message) {
+        var el = ensureToastEl();
+        el.textContent = message || 'Uploaded successfully!';
+        el.classList.remove('mission-launch-saved-toast--hide');
+        el.classList.add('mission-launch-saved-toast--show');
+        if (el._hideTimer) clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function () {
+            el.classList.remove('mission-launch-saved-toast--show');
+            el.classList.add('mission-launch-saved-toast--hide');
+        }, 5000);
+    }
+
+    function parseJsonResponse(text) {
+        try {
+            return text ? JSON.parse(text) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setButtonLoading(loading) {
+        if (!submitBtn) return;
+        submitBtn.disabled = loading;
+        submitBtn.classList.toggle('groundwork-submit-btn--loading', loading);
+        submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
 
     function validateFiles(files) {
         var invalid = [];
@@ -432,6 +550,72 @@ const canEditProject = currentUser && (
         return true;
     }
 
+    function ensureImagesList() {
+        if (!imagesSection) return null;
+        var list = imagesSection.querySelector('.po-file-list');
+        if (list) return list;
+        list = document.createElement('ul');
+        list.className = 'po-file-list';
+        list.setAttribute('aria-label', 'Uploaded files');
+        form.insertAdjacentElement('afterend', list);
+        return list;
+    }
+
+    function ensureImagesGrid() {
+        if (!imagesSection) return null;
+        var grid = imagesSection.querySelector('.po-images-grid');
+        if (grid) return grid;
+        grid = document.createElement('div');
+        grid.className = 'po-images-grid';
+        imagesSection.appendChild(grid);
+        return grid;
+    }
+
+    function createDeleteForm(filename) {
+        var deleteForm = document.createElement('form');
+        deleteForm.className = 'po-image-delete';
+        deleteForm.action = '/problems/<%= campground._id %>/images/' + encodeURIComponent(filename) + '?_method=DELETE';
+        deleteForm.method = 'POST';
+        deleteForm.innerHTML = '<button type="submit" class="po-delete-icon-btn" onclick="return confirm(\'Delete this image?\')" aria-label="Delete image"><img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true"></button>';
+        return deleteForm;
+    }
+
+    function appendUploadedImages(images) {
+        if (!Array.isArray(images) || !images.length) return;
+        var list = ensureImagesList();
+        var grid = ensureImagesGrid();
+        for (var i = 0; i < images.length; i++) {
+            var imgData = images[i] || {};
+            var url = String(imgData.url || '');
+            var filename = String(imgData.filename || 'Image');
+            if (!url) continue;
+
+            if (list) {
+                var listItem = document.createElement('li');
+                var link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = filename;
+                listItem.appendChild(link);
+                list.appendChild(listItem);
+            }
+
+            if (grid) {
+                var tile = document.createElement('div');
+                tile.className = 'po-image-tile';
+
+                var img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Problem image';
+                tile.appendChild(img);
+
+                tile.appendChild(createDeleteForm(filename));
+                grid.appendChild(tile);
+            }
+        }
+    }
+
     input.addEventListener('change', function () {
         setFiles(Array.from(input.files));
     });
@@ -455,6 +639,63 @@ const canEditProject = currentUser && (
     dropzone.addEventListener('drop', function (e) {
         var dropped = Array.from(e.dataTransfer.files || []);
         if (dropped.length) setFiles(dropped);
+    });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var files = Array.from(input.files || []);
+        if (!files.length) {
+            if (fileError) fileError.textContent = 'No images selected';
+            return;
+        }
+        if (!setFiles(files)) return;
+
+        var start = Date.now();
+        setButtonLoading(true);
+
+        var data = new FormData(form);
+        data.set('imagesAjax', '1');
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: data,
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json'
+            }
+        })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    return { res: res, data: parseJsonResponse(text) };
+                });
+            })
+            .then(function (ref) {
+                var res = ref.res;
+                var payload = ref.data;
+                if (!res.ok || !payload || !payload.ok) {
+                    var msg = payload && payload.error ? payload.error : 'Could not upload images. Please try again.';
+                    window.alert(msg);
+                    return;
+                }
+                var elapsed = Date.now() - start;
+                var waitMore = Math.max(0, MIN_LOADING_MS - elapsed);
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, waitMore);
+                }).then(function () {
+                    appendUploadedImages(payload.images);
+                    input.value = '';
+                    updateDropzonePreview([]);
+                    if (fileError) fileError.textContent = '';
+                    showSavedToast('Uploaded successfully!');
+                });
+            })
+            .catch(function () {
+                window.alert('Network error. Please try again.');
+            })
+            .finally(function () {
+                setButtonLoading(false);
+            });
     });
 })();
 
@@ -661,9 +902,12 @@ const canEditProject = currentUser && (
 
         if (reviewId) {
             var deleteForm = document.createElement('form');
+            var dynamicReviewFormId = 'po-review-delete-form-dyn-' + reviewId;
+            deleteForm.className = 'po-review-delete-form';
+            deleteForm.id = dynamicReviewFormId;
             deleteForm.method = 'POST';
             deleteForm.action = form.getAttribute('action') + '/' + encodeURIComponent(reviewId) + '?_method=DELETE';
-            deleteForm.innerHTML = '<button type="submit" class="po-btn-danger-outline po-btn-delete-with-icon"><img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true"><span>Delete</span></button>';
+            deleteForm.innerHTML = '<button type="button" class="po-btn-danger-outline po-btn-delete-with-icon po-review-delete-trigger" data-form-id="' + dynamicReviewFormId + '" aria-haspopup="dialog" aria-controls="po-review-delete-confirm-modal"><img src="/images/delete-icon.png" alt="" class="prototype-file-chip__delete-icon" width="14" height="14" aria-hidden="true"><span>Delete</span></button>';
             article.appendChild(deleteForm);
         }
 
@@ -930,6 +1174,186 @@ const canEditProject = currentUser && (
             .finally(function () {
                 setButtonLoading(false);
             });
+    });
+})();
+
+(function () {
+    var reviewsSection = document.querySelector('section[aria-labelledby="po-reviews-heading"]');
+    var deleteModal = document.getElementById('po-review-delete-confirm-modal');
+    var deleteCancel = document.getElementById('po-review-delete-confirm-cancel');
+    var deleteConfirm = document.getElementById('po-review-delete-confirm-delete');
+    if (!reviewsSection || !deleteModal || !deleteCancel || !deleteConfirm) return;
+
+    var pendingDeleteForm = null;
+
+    function ensureToastEl() {
+        var el = document.getElementById('mission-launch-saved-toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'mission-launch-saved-toast';
+            el.className = 'mission-launch-saved-toast';
+            el.setAttribute('role', 'status');
+            document.body.appendChild(el);
+        }
+        return el;
+    }
+
+    function showSavedToast(message) {
+        var el = ensureToastEl();
+        el.textContent = message || 'Deleted Successfully!';
+        el.classList.remove('mission-launch-saved-toast--hide');
+        el.classList.add('mission-launch-saved-toast--show');
+        if (el._hideTimer) clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function () {
+            el.classList.remove('mission-launch-saved-toast--show');
+            el.classList.add('mission-launch-saved-toast--hide');
+        }, 5000);
+    }
+
+    function parseJsonResponse(text) {
+        try {
+            return text ? JSON.parse(text) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setDeleteButtonLoading(loading) {
+        deleteConfirm.disabled = loading;
+        deleteConfirm.classList.toggle('delete-confirm-delete--loading', loading);
+        deleteConfirm.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+
+    function openDeleteModal(formEl) {
+        pendingDeleteForm = formEl;
+        deleteModal.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        deleteModal.setAttribute('hidden', '');
+        document.body.style.overflow = '';
+        pendingDeleteForm = null;
+    }
+
+    function syncReviewsEmptyState() {
+        var track = reviewsSection.querySelector('#po-reviews-track');
+        if (track && track.children.length === 0) {
+            var carousel = reviewsSection.querySelector('.po-reviews-carousel');
+            if (carousel) carousel.remove();
+            var existingEmpty = reviewsSection.querySelector('.po-section-lead');
+            if (!existingEmpty) {
+                var p = document.createElement('p');
+                p.className = 'po-section-lead';
+                p.style.marginBottom = '0';
+                p.textContent = 'No reviews yet. Be the first to share feedback.';
+                reviewsSection.appendChild(p);
+            }
+        }
+    }
+
+    function submitDelete(formEl) {
+        var payload = new URLSearchParams();
+        payload.set('reviewsDeleteAjax', '1');
+        return fetch(formEl.getAttribute('action'), {
+            method: 'POST',
+            body: payload,
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    return { res: res, data: parseJsonResponse(text) };
+                });
+            })
+            .then(function (ref) {
+                if (!ref.res.ok || !ref.data || !ref.data.ok) {
+                    var msg = ref.data && ref.data.error ? ref.data.error : 'Could not delete review. Please try again.';
+                    window.alert(msg);
+                    return;
+                }
+                var card = formEl.closest('.po-review-card');
+                if (card) card.remove();
+                closeDeleteModal();
+                syncReviewsEmptyState();
+                showSavedToast('Deleted Successfully!');
+            })
+            .catch(function () {
+                window.alert('Network error. Please try again.');
+            });
+    }
+
+    reviewsSection.addEventListener('click', function (e) {
+        var trigger = e.target.closest('.po-review-delete-trigger');
+        if (!trigger) return;
+        e.preventDefault();
+        var formId = trigger.getAttribute('data-form-id');
+        if (!formId) return;
+        var formEl = document.getElementById(formId);
+        if (!formEl) return;
+        openDeleteModal(formEl);
+    });
+
+    deleteCancel.addEventListener('click', closeDeleteModal);
+    deleteModal.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-confirm-backdrop')) closeDeleteModal();
+    });
+    deleteConfirm.addEventListener('click', function () {
+        if (!pendingDeleteForm) return;
+        var targetForm = pendingDeleteForm;
+        setDeleteButtonLoading(true);
+        submitDelete(targetForm).finally(function () {
+            setDeleteButtonLoading(false);
+        });
+    });
+})();
+
+(function () {
+    function bindConfirmModal(config) {
+        var trigger = document.getElementById(config.triggerId);
+        var modal = document.getElementById(config.modalId);
+        var cancelBtn = document.getElementById(config.cancelId);
+        var confirmBtn = document.getElementById(config.confirmId);
+        var form = document.getElementById(config.formId);
+        if (!trigger || !modal || !cancelBtn || !confirmBtn || !form) return;
+
+        function openModal() {
+            modal.removeAttribute('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.setAttribute('hidden', '');
+            document.body.style.overflow = '';
+        }
+
+        trigger.addEventListener('click', openModal);
+        cancelBtn.addEventListener('click', closeModal);
+        confirmBtn.addEventListener('click', function () {
+            form.submit();
+        });
+        modal.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-confirm-backdrop')) closeModal();
+        });
+    }
+
+    bindConfirmModal({
+        triggerId: 'po-delete-problem-trigger',
+        modalId: 'po-delete-problem-confirm-modal',
+        cancelId: 'po-delete-problem-confirm-cancel',
+        confirmId: 'po-delete-problem-confirm-delete',
+        formId: 'po-delete-problem-form'
+    });
+
+    bindConfirmModal({
+        triggerId: 'po-unadopt-problem-trigger',
+        modalId: 'po-unadopt-problem-confirm-modal',
+        cancelId: 'po-unadopt-problem-confirm-cancel',
+        confirmId: 'po-unadopt-problem-confirm-delete',
+        formId: 'po-unadopt-problem-form'
     });
 })();
 </script>

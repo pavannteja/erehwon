@@ -232,6 +232,6 @@ module.exports.renderNewForm = (req, res) => {
   module.exports.deleteCampground = async(req, res) =>{
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
-    req.flash('success', 'Problem deleted');
+    req.session.problemStatementRemovedToast = true;
     res.redirect('/dashboard');
   }

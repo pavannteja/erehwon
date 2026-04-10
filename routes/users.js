@@ -32,6 +32,10 @@ router.post(
 
 // Dashboard (individual or team, decided in controller)
 router.get('/dashboard', isLoggedIn, catchAsync(users.renderDashboard));
+router.get('/dashboard/new-project', isLoggedIn, users.renderNewProjectForm);
+router.post('/dashboard/new-project', isLoggedIn, catchAsync(users.createNewProject));
+router.get('/dashboard/projects/:id/edit', isLoggedIn, catchAsync(users.renderEditCustomProjectForm));
+router.post('/dashboard/projects/:id/edit', isLoggedIn, catchAsync(users.updateCustomProject));
 
 // Team creation routes (individual users only)
 router.get('/teams/new', isLoggedIn, catchAsync(users.renderCreateTeam));

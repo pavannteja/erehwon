@@ -162,6 +162,12 @@ app.use(async (req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success") || [];
   res.locals.error = req.flash("error") || [];
+  res.locals.problemStatementRemovedToast = !!(req.session && req.session.problemStatementRemovedToast);
+  res.locals.customProjectSavedToast = req.session && req.session.customProjectSavedToast ? String(req.session.customProjectSavedToast) : '';
+  if (req.session) {
+    delete req.session.problemStatementRemovedToast;
+    delete req.session.customProjectSavedToast;
+  }
   res.locals.currentPath = req.path;
 
   // SEO and meta data

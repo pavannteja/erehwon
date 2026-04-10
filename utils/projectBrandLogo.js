@@ -4,6 +4,10 @@
  * @returns {{ kind: 'image', src: string, alt: string } | { kind: 'initial', letter: string }}
  */
 function projectBrandLogo(campground) {
+  if (campground && campground.isStudentLedProject) {
+    return { kind: 'initial', letter: 'S' };
+  }
+
   const corp = campground && campground.adoptedFromCorporateProblem;
   if (corp && typeof corp === 'object') {
     const name = (corp.companyName || '').trim();

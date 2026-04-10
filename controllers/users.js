@@ -100,6 +100,116 @@ module.exports.renderDashboard = async (req, res) => {
     }
 }
 
+module.exports.renderNewProjectForm = (req, res) => {
+    res.render('users/new-project');
+};
+
+function parseCustomProjectSkills(rawSkillsValue) {
+    const rawSkills = String(rawSkillsValue || '').trim();
+    if (!rawSkills) return [];
+
+    try {
+        const parsed = JSON.parse(rawSkills);
+        if (Array.isArray(parsed)) {
+            return parsed
+                .map((skill) => String(skill || '').trim())
+                .filter(Boolean)
+                .slice(0, 3);
+        }
+    } catch (e) {
+        return rawSkills
+            .split(',')
+            .map((skill) => String(skill || '').trim())
+            .filter(Boolean)
+            .slice(0, 3);
+    }
+
+    return [];
+}
+
+module.exports.createNewProject = async (req, res) => {
+    const title = String(req.body.title || '').trim();
+    const challenge = String(req.body.challenge || '').trim();
+    const objective = String(req.body.objective || '').trim();
+    const skills = parseCustomProjectSkills(req.body.skills);
+
+    if (!title || !challenge || !objective) {
+        req.flash('error', 'Project name, challenge, and objective are required.');
+        return res.redirect('/dashboard/new-project');
+    }
+
+    const campground = new Campground({
+        title,
+        problem: challenge,
+        description: objective,
+        customProjectObjective: objective,
+        customProjectSkills: skills,
+        isStudentLedProject: true,
+        author: req.user._id
+    });
+
+    await campground.save();
+    req.session.customProjectSavedToast = 'Project created successfully.';
+    res.redirect(`/problems/${campground._id}`);
+};
+
+module.exports.renderEditCustomProjectForm = async (req, res) => {
+    const project = await Campground.findById(req.params.id).lean();
+    if (!project) {
+        req.flash('error', 'Project not found.');
+        return res.redirect('/dashboard');
+    }
+    if (!project.isStudentLedProject) {
+        req.flash('error', 'Only custom student-led projects can be edited here.');
+        return res.redirect(`/problems/${project._id}`);
+    }
+    const isOwner = String(project.author) === String(req.user._id);
+    if (!isOwner && !req.user.isAdmin) {
+        req.flash('error', 'You do not have permission to edit this project.');
+        return res.redirect(`/problems/${project._id}`);
+    }
+
+    res.render('users/new-project', { project });
+};
+
+module.exports.updateCustomProject = async (req, res) => {
+    const project = await Campground.findById(req.params.id);
+    if (!project) {
+        req.flash('error', 'Project not found.');
+        return res.redirect('/dashboard');
+    }
+    if (!project.isStudentLedProject) {
+        req.flash('error', 'Only custom student-led projects can be edited here.');
+        return res.redirect(`/problems/${project._id}`);
+    }
+    const isOwner = String(project.author) === String(req.user._id);
+    if (!isOwner && !req.user.isAdmin) {
+        req.flash('error', 'You do not have permission to edit this project.');
+        return res.redirect(`/problems/${project._id}`);
+    }
+
+    const title = String(req.body.title || '').trim();
+    const challenge = String(req.body.challenge || '').trim();
+    const objective = String(req.body.objective || '').trim();
+    const skills = parseCustomProjectSkills(req.body.skills);
+
+    if (!title || !challenge || !objective) {
+        req.flash('error', 'Project name, challenge, and objective are required.');
+        return res.redirect(`/dashboard/projects/${project._id}/edit`);
+    }
+
+    project.title = title;
+    project.problem = challenge;
+    project.description = objective;
+    project.customProjectObjective = objective;
+    project.customProjectSkills = skills;
+    project.isStudentLedProject = true;
+
+    await project.save();
+    req.session.customProjectSavedToast = 'Project updated successfully.';
+    res.redirect(`/problems/${project._id}`);
+};
+
 module.exports.register = async(req, res) => {
     try{
         const {email, username, password} = req.body;
